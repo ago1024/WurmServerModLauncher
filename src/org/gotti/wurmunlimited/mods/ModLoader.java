@@ -2,12 +2,17 @@ package org.gotti.wurmunlimited.mods;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class ModLoader {
 
@@ -20,7 +25,9 @@ public class ModLoader {
 
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(modDir, "*.properties")) {
 			for (Path modInfo : directoryStream) {
-				mods.add(loadModFromInfo(modInfo));
+				WurmMod mod = loadModFromInfo(modInfo);
+				Logger.getLogger(this.getClass().getName()).info("Loaded " + mod.getClass().getName());
+				mods.add(mod);
 			}
 		}
 
@@ -34,15 +41,43 @@ public class ModLoader {
 			properties.load(inputStream);
 		}
 
+		String modname = modInfo.getFileName().toString().replaceAll("\\.properties$", "");
+		
 		final String className = properties.getProperty("classname");
 		if (className == null) {
 			throw new IOException("Missing property classname for mod " + modInfo);
 		}
-
+		
 		try {
-			return Class.forName(className).asSubclass(WurmMod.class).newInstance();
+			ClassLoader classloader = this.getClass().getClassLoader();
+			final String classpath = properties.getProperty("classpath");
+			if (classpath != null) {
+				classloader = createClassLoader(modname, classpath, classloader);
+			}
+
+			return classloader.loadClass(className).asSubclass(WurmMod.class).newInstance();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			throw new IOException(e);
 		}
+	}
+	
+	private ClassLoader createClassLoader(String modname, String classpath, ClassLoader parent) throws MalformedURLException {
+		
+		String[] entries = classpath.split(",");
+		
+		List<URL> urls = new ArrayList<>();
+		
+		for (String entry : entries) {
+			Path path = Paths.get("mods", modname, entry);
+			if (Files.isRegularFile(path)) {
+				urls.add(path.toUri().toURL());
+			} else if (Files.isDirectory(path)) {
+				urls.add(path.toUri().toURL());
+			} else {
+				urls.add(new URL(entry));
+			}
+		}
+		
+		return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
 	}
 }
