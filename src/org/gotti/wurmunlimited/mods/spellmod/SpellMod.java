@@ -100,5 +100,9 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 		removePriestRestrictions = Boolean.parseBoolean(properties.getProperty("removePriestRestrictions", Boolean.toString(removePriestRestrictions)));
 		favorLimit = Integer.parseInt(properties.getProperty("favorLimit", Integer.toString(favorLimit)));
 		allowAllSpells = Boolean.parseBoolean(properties.getProperty("allowAllSpells", Boolean.toString(allowAllSpells)));
+		
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "removePriestRestrictions: " + removePriestRestrictions);
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "favorLimit: " + favorLimit);
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "allowAllSpells: " + allowAllSpells);
 	}
 }
