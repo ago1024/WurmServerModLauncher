@@ -19,7 +19,9 @@ public class ServerHook {
 	public void fireOnServerStarted() {
 		for (WurmMod mod : mods) {
 			try {
-				mod.onServerStarted();
+				if (mod instanceof ServerStartedListener) {
+					((ServerStartedListener) mod).onServerStarted();
+				}
 			} catch (Exception e) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onServerStarted handler for mod " + mod.getClass().getSimpleName() + " failed", e);
 			}

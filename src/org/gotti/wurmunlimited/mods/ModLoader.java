@@ -55,7 +55,11 @@ public class ModLoader {
 				classloader = createClassLoader(modname, classpath, classloader);
 			}
 
-			return classloader.loadClass(className).asSubclass(WurmMod.class).newInstance();
+			WurmMod mod = classloader.loadClass(className).asSubclass(WurmMod.class).newInstance();
+			if (mod instanceof Configurable) {
+				((Configurable) mod).configure(properties);
+			}
+			return mod;
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			throw new IOException(e);
 		}
