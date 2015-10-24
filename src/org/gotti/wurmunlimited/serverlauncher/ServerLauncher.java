@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.gotti.wurmunlimited.mods.LoggingServerHook;
 import org.gotti.wurmunlimited.mods.ModLoader;
-import org.gotti.wurmunlimited.mods.ServerHook;
 import org.gotti.wurmunlimited.mods.WurmMod;
 
 import com.wurmonline.server.gui.WurmServerGuiMain;
@@ -16,7 +16,7 @@ public class ServerLauncher {
 		try {
 			List<WurmMod> wurmMods = new ModLoader().loadModsFromModDir(Paths.get("mods"));
 			
-			new ServerHook().addMods(wurmMods);
+			new LoggingServerHook().addMods(wurmMods);
 			
 			
 
