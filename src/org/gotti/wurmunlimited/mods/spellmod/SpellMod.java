@@ -23,16 +23,23 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 	private Integer favorLimit = Integer.MAX_VALUE;
 	private boolean removePriestRestrictions = true;
 	private boolean allowAllSpells = true;
+	private boolean allowLightSpells = true;
 
 	@Override
 	public void onServerStarted() {
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Initializing Spell modifications");
 
 		Set<Spell> allGodSpells = new TreeSet<>();
+		Set<Spell> whiteLightSpells = new TreeSet<>();
+		Set<Spell> blackLightSpells = new TreeSet<>();
 
-		// Make all spells available to all gods
 		for (Deity deity : Deities.getDeities()) {
 			allGodSpells.addAll(deity.getSpells());
+			if (deity.isHateGod()) {
+				blackLightSpells.addAll(deity.getSpells());
+			} else {
+				whiteLightSpells.addAll(deity.getSpells());
+			}
 		}
 
 		try {
@@ -45,9 +52,19 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 			Field isAllowMagranon = ReflectionUtil.getField(ActionEntry.class, "isAllowMagranon");
 			Field isAllowLibila = ReflectionUtil.getField(ActionEntry.class, "isAllowLibila");
 
+			// Make all spells available to all gods
 			for (Deity deity : Deities.getDeities()) {
-				if (allowAllSpells) {
-					for (Spell spell : allGodSpells) {
+				if (allowAllSpells || allowLightSpells) {
+					final Set<Spell> spells;
+					if (allowAllSpells) {
+						spells = allGodSpells;
+					} else if (deity.isHateGod()) {
+						spells = blackLightSpells;
+					} else {
+						spells = whiteLightSpells;
+					}
+					
+					for (Spell spell : spells) {
 						if (!deity.getSpells().contains(spell)) {
 							deity.addSpell(spell);
 						}
@@ -100,9 +117,11 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 		removePriestRestrictions = Boolean.parseBoolean(properties.getProperty("removePriestRestrictions", Boolean.toString(removePriestRestrictions)));
 		favorLimit = Integer.parseInt(properties.getProperty("favorLimit", Integer.toString(favorLimit)));
 		allowAllSpells = Boolean.parseBoolean(properties.getProperty("allowAllSpells", Boolean.toString(allowAllSpells)));
+		allowLightSpells = Boolean.parseBoolean(properties.getProperty("allowLightSpells", Boolean.toString(allowLightSpells)));
 		
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "removePriestRestrictions: " + removePriestRestrictions);
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "favorLimit: " + favorLimit);
 		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "allowAllSpells: " + allowAllSpells);
+		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "allowLightSpells: " + allowLightSpells);
 	}
 }
