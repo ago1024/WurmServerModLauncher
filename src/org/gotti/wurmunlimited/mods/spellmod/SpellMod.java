@@ -7,8 +7,8 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 import org.gotti.wurmunlimited.mods.Configurable;
-import org.gotti.wurmunlimited.mods.ReflectionUtil;
 import org.gotti.wurmunlimited.mods.ServerStartedListener;
 import org.gotti.wurmunlimited.mods.WurmMod;
 

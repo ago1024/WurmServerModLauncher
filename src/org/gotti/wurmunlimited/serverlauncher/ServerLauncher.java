@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.gotti.wurmunlimited.mods.LoggingServerHook;
-import org.gotti.wurmunlimited.mods.ModLoader;
+import org.gotti.wurmunlimited.modloader.LoggingServerHook;
+import org.gotti.wurmunlimited.modloader.ModLoader;
 import org.gotti.wurmunlimited.mods.WurmMod;
 
 import com.wurmonline.server.gui.WurmServerGuiMain;

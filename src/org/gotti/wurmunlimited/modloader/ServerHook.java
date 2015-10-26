@@ -1,9 +1,12 @@
-package org.gotti.wurmunlimited.mods;
+package org.gotti.wurmunlimited.modloader;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.gotti.wurmunlimited.mods.ServerStartedListener;
+import org.gotti.wurmunlimited.mods.WurmMod;
 
 public class ServerHook {
 	

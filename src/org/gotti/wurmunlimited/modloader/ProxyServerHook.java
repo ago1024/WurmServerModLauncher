@@ -1,4 +1,4 @@
-package org.gotti.wurmunlimited.mods;
+package org.gotti.wurmunlimited.modloader;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;

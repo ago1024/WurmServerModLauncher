@@ -1,4 +1,4 @@
-package org.gotti.wurmunlimited.mods;
+package org.gotti.wurmunlimited.modloader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+
+import org.gotti.wurmunlimited.mods.Configurable;
+import org.gotti.wurmunlimited.mods.WurmMod;
 
 public class ModLoader {
 

@@ -1,4 +1,4 @@
-package org.gotti.wurmunlimited.mods;
+package org.gotti.wurmunlimited.modloader;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
