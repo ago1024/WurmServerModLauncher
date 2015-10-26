@@ -7,15 +7,18 @@ public class InvocationTarget {
 	
 	private String methodName;
 	
+	private String identifier;
+	
 	private Method method;
 	
 	private InvocationHandler invocationHandler;
 
 	private Class<?>[] exceptionTypes;
 	
-	public InvocationTarget(InvocationHandler invocationHandler, String methodName, Class<?>[] exceptionTypes) {
+	public InvocationTarget(InvocationHandler invocationHandler, String methodName, String identifier, Class<?>[] exceptionTypes) {
 		this.setMethod(null);
 		this.setMethodName(methodName);
+		this.setIdentifier(identifier);
 		this.setInvocationHandler(invocationHandler);
 		this.setExceptionTypes(exceptionTypes);
 	}
@@ -63,5 +66,13 @@ public class InvocationTarget {
 
 	protected void setExceptionTypes(Class<?>[] exceptionTypes) {
 		this.exceptionTypes = exceptionTypes;
+	}
+	
+	public String getIdentifier() {
+		return identifier;
+	}
+	
+	protected void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 }

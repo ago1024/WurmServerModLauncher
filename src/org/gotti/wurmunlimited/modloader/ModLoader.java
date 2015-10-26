@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import org.gotti.wurmunlimited.modloader.classhooks.HookBuilder;
+import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
@@ -53,7 +53,7 @@ public class ModLoader {
 		}
 		
 		try {
-			ClassLoader classloader = HookBuilder.getInstance().getLoader();
+			ClassLoader classloader = HookManager.getInstance().getLoader();
 			final String classpath = properties.getProperty("classpath");
 			if (classpath != null) {
 				classloader = createClassLoader(modname, classpath, classloader);

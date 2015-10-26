@@ -29,4 +29,12 @@
 			</classpath>
 		</javac>
 	</target>
+	<target name="zip" depends="jar">
+		<zip destfile="modlauncher.zip">
+			<zipfileset dir="." includes="modlauncher.jar"/>
+			<zipfileset dir="." includes="modlauncher.bat"/>
+			<zipfileset dir="mods" prefix="mods"/>
+			<zipfileset dir="lib" includes="javassist.jar"/>
+		</zip>
+	</target>
 </project>

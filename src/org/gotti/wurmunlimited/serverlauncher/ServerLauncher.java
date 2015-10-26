@@ -2,14 +2,14 @@ package org.gotti.wurmunlimited.serverlauncher;
 
 import javassist.Loader;
 
-import org.gotti.wurmunlimited.modloader.classhooks.HookBuilder;
+import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 
 public class ServerLauncher {
 
 	public static void main(String[] args) {
 		try {
 
-			Loader loader = HookBuilder.getInstance().getLoader();
+			Loader loader = HookManager.getInstance().getLoader();
 			loader.delegateLoadingOf("javafx.");
 			loader.delegateLoadingOf("com.sun.");
 			loader.delegateLoadingOf("org.controlsfx.");

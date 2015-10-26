@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
-import org.gotti.wurmunlimited.modloader.classhooks.HookBuilder;
+import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
@@ -136,7 +136,7 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 		logger.log(Level.INFO, "noPrayerDelay: " + noPrayerDelay);
 
 		if (unlimitedPrayers || noPrayerDelay) {
-			HookBuilder.getInstance().registerHook("com.wurmonline.server.players.DbPlayerInfo", "setNumFaith", "(BJ)V", new InvocationHandler() {
+			HookManager.getInstance().registerHook("com.wurmonline.server.players.DbPlayerInfo", "setNumFaith", "(BJ)V", new InvocationHandler() {
 
 				@Override
 				public Object invoke(Object object, Method method, Object[] args) throws Throwable {
