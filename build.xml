@@ -29,12 +29,18 @@
 			</classpath>
 		</javac>
 	</target>
-	<target name="zip" depends="jar">
+	<target name="zip" depends="clean,jar">
 		<zip destfile="modlauncher.zip">
 			<zipfileset dir="." includes="modlauncher.jar"/>
 			<zipfileset dir="." includes="modlauncher.bat"/>
 			<zipfileset dir="mods" prefix="mods"/>
 			<zipfileset dir="lib" includes="javassist.jar"/>
 		</zip>
+	</target>
+	<target name="clean">
+		<delete dir="bin.ant"/>
+		<delete file="modlauncher.zip"/>
+		<delete file="modlauncher.jar"/>
+		<delete file="mods/spellmod/spellmod.jar"/>
 	</target>
 </project>

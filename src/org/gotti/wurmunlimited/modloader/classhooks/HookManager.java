@@ -95,7 +95,7 @@ public class HookManager {
 		String type = newMethod.getReturnType().getName();
 		StringBuilder builder = new StringBuilder();
 		builder.append("{\n");
-		builder.append(String.format("Object result = org.gotti.wurmunlimited.modloader.classhooks.HookBuilder.getInstance().invoke(this,\"%s\",$args);\n", origMethod.getLongName()));
+		builder.append(String.format("Object result = %s.getInstance().invoke(this,\"%s\",$args);\n", HookManager.class.getName(), origMethod.getLongName()));
 		if (!"void".equals(type)) {
 			builder.append(String.format("return (%s)result;\n", type));
 		}
