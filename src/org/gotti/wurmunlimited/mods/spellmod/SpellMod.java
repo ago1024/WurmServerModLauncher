@@ -1,6 +1,8 @@
 package org.gotti.wurmunlimited.mods.spellmod;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
@@ -8,14 +10,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
-import org.gotti.wurmunlimited.mods.Configurable;
-import org.gotti.wurmunlimited.mods.ServerStartedListener;
-import org.gotti.wurmunlimited.mods.WurmMod;
+import org.gotti.wurmunlimited.modloader.classhooks.HookBuilder;
+import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
+import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
 import com.wurmonline.server.behaviours.ActionEntry;
 import com.wurmonline.server.behaviours.Actions;
 import com.wurmonline.server.deities.Deities;
 import com.wurmonline.server.deities.Deity;
+import com.wurmonline.server.players.DbPlayerInfo;
 import com.wurmonline.server.spells.Spell;
 
 public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
@@ -24,10 +28,13 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 	private boolean removePriestRestrictions = true;
 	private boolean allowAllSpells = true;
 	private boolean allowLightSpells = true;
+	private boolean unlimitedPrayers = false;
+	private boolean noPrayerDelay = false;
+	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Override
 	public void onServerStarted() {
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Initializing Spell modifications");
+		logger.log(Level.INFO, "Initializing Spell modifications");
 
 		Set<Spell> allGodSpells = new TreeSet<>();
 		Set<Spell> whiteLightSpells = new TreeSet<>();
@@ -63,7 +70,7 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 					} else {
 						spells = whiteLightSpells;
 					}
-					
+
 					for (Spell spell : spells) {
 						if (!deity.getSpells().contains(spell)) {
 							deity.addSpell(spell);
@@ -76,7 +83,7 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 						ReflectionUtil.setPrivateField(deity, buildWallBonus, Float.valueOf(0.0f));
 						ReflectionUtil.setPrivateField(deity, roadProtector, Boolean.TRUE);
 					} catch (IllegalAccessException | IllegalArgumentException | ClassCastException e) {
-						Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage(), e);
+						logger.log(Level.WARNING, e.getMessage(), e);
 					}
 				}
 			}
@@ -87,7 +94,7 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 						try {
 							ReflectionUtil.setPrivateField(spell, cost, Integer.valueOf(favorLimit));
 						} catch (IllegalAccessException | IllegalArgumentException | ClassCastException e) {
-							Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage(), e);
+							logger.log(Level.WARNING, e.getMessage(), e);
 						}
 
 					}
@@ -102,13 +109,13 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 						ReflectionUtil.setPrivateField(action, isAllowMagranon, Boolean.TRUE);
 						ReflectionUtil.setPrivateField(action, isAllowLibila, Boolean.TRUE);
 					} catch (IllegalArgumentException | IllegalAccessException e) {
-						Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage(), e);
+						logger.log(Level.WARNING, e.getMessage(), e);
 					}
 				}
 			}
 
 		} catch (NoSuchFieldException e) {
-			Logger.getLogger(this.getClass().getName()).log(Level.WARNING, e.getMessage(), e);
+			logger.log(Level.WARNING, e.getMessage(), e);
 		}
 	}
 
@@ -118,10 +125,32 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 		favorLimit = Integer.parseInt(properties.getProperty("favorLimit", Integer.toString(favorLimit)));
 		allowAllSpells = Boolean.parseBoolean(properties.getProperty("allowAllSpells", Boolean.toString(allowAllSpells)));
 		allowLightSpells = Boolean.parseBoolean(properties.getProperty("allowLightSpells", Boolean.toString(allowLightSpells)));
-		
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "removePriestRestrictions: " + removePriestRestrictions);
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "favorLimit: " + favorLimit);
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "allowAllSpells: " + allowAllSpells);
-		Logger.getLogger(this.getClass().getName()).log(Level.INFO, "allowLightSpells: " + allowLightSpells);
+		unlimitedPrayers = Boolean.parseBoolean(properties.getProperty("unlimitedPrayers", Boolean.toString(unlimitedPrayers)));
+		noPrayerDelay = Boolean.parseBoolean(properties.getProperty("noPrayerDelay", Boolean.toString(noPrayerDelay)));
+
+		logger.log(Level.INFO, "removePriestRestrictions: " + removePriestRestrictions);
+		logger.log(Level.INFO, "favorLimit: " + favorLimit);
+		logger.log(Level.INFO, "allowAllSpells: " + allowAllSpells);
+		logger.log(Level.INFO, "allowLightSpells: " + allowLightSpells);
+		logger.log(Level.INFO, "unlimitedPrayers: " + unlimitedPrayers);
+		logger.log(Level.INFO, "noPrayerDelay: " + noPrayerDelay);
+
+		if (unlimitedPrayers || noPrayerDelay) {
+			HookBuilder.getInstance().registerHook("com.wurmonline.server.players.DbPlayerInfo", "setNumFaith", "(BJ)V", new InvocationHandler() {
+
+				@Override
+				public Object invoke(Object object, Method method, Object[] args) throws Throwable {
+					DbPlayerInfo dbPlayerInfo = (DbPlayerInfo) object;
+					if (unlimitedPrayers) {
+						args[0] = dbPlayerInfo.numFaith = 0;
+					}
+					if (noPrayerDelay) {
+						args[1] = dbPlayerInfo.lastFaith = 0;
+					}
+
+					return method.invoke(object, args);
+				}
+			});
+		}
 	}
 }

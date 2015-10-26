@@ -5,8 +5,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.gotti.wurmunlimited.mods.ServerStartedListener;
-import org.gotti.wurmunlimited.mods.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
 public class ServerHook {
 	
@@ -29,5 +29,9 @@ public class ServerHook {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onServerStarted handler for mod " + mod.getClass().getSimpleName() + " failed", e);
 			}
 		}
+	}
+	
+	public static ServerHook createServerHook() {
+		return new ProxyServerHook();
 	}
 }

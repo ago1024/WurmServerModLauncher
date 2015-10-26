@@ -1,4 +1,4 @@
-package org.gotti.wurmunlimited.mods;
+package org.gotti.wurmunlimited.modloader.interfaces;
 
 import java.util.Properties;
 
