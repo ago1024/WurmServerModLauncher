@@ -129,7 +129,7 @@ public class HookManager {
 		builder.append(String.format("%s#getInstance().invoke(%s,\"%s\",$args);\n", HookManager.class.getName(), callee, origMethod.getLongName()));
 		if (!voidType) {
 			if (!type.isPrimitive()) {
-				builder.append(String.format("return result;\n", typeName));
+				builder.append(String.format("return (%s)result;\n", typeName));
 			} else if (type == CtClass.booleanType) {
 				builder.append(String.format("return ((java.lang.Boolean)result).booleanValue();\n", typeName));
 			} else if (type == CtClass.byteType) {
