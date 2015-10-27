@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 
 public class InvocationTarget {
 	
+	private boolean staticMethod;
+	
 	private String methodName;
 	
 	private String identifier;
@@ -15,9 +17,10 @@ public class InvocationTarget {
 
 	private Class<?>[] exceptionTypes;
 	
-	public InvocationTarget(InvocationHandler invocationHandler, String methodName, String identifier, Class<?>[] exceptionTypes) {
+	public InvocationTarget(InvocationHandler invocationHandler, boolean staticMethod, String methodName, String identifier, Class<?>[] exceptionTypes) {
 		this.setMethod(null);
 		this.setMethodName(methodName);
+		this.setStaticMethod(staticMethod);
 		this.setIdentifier(identifier);
 		this.setInvocationHandler(invocationHandler);
 		this.setExceptionTypes(exceptionTypes);
@@ -74,5 +77,13 @@ public class InvocationTarget {
 	
 	protected void setIdentifier(String identifier) {
 		this.identifier = identifier;
+	}
+	
+	public boolean isStaticMethod() {
+		return staticMethod;
+	}
+	
+	protected void setStaticMethod(boolean staticMethod) {
+		this.staticMethod = staticMethod;
 	}
 }

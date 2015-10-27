@@ -2,16 +2,20 @@ package org.gotti.wurmunlimited.modloader.classhooks;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import com.sun.istack.internal.logging.Logger;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
+import javassist.CtPrimitiveType;
 import javassist.Loader;
 import javassist.NotFoundException;
 
@@ -28,6 +32,8 @@ public class HookManager {
 
 	// Instance
 	private static HookManager instance;
+	
+	private static final Logger LOG = Logger.getLogger(HookManager.class);
 
 	private HookManager() {
 		classPool = ClassPool.getDefault();
@@ -74,8 +80,27 @@ public class HookManager {
 	}
 
 	private InvocationTarget createHook(CtClass ctClass, ClassHook classHook) throws NotFoundException, CannotCompileException {
-		CtMethod origMethod = ctClass.getMethod(classHook.getMethodName(), classHook.getMethodType());
+		CtMethod origMethod;
+		
+		if (classHook.getMethodType() != null) {
+			origMethod = ctClass.getMethod(classHook.getMethodName(), classHook.getMethodType());
+		} else {
+			origMethod = ctClass.getDeclaredMethod(classHook.getMethodName());
+		}
+		
+		if (Modifier.isNative(origMethod.getModifiers())) {
+			throw new CannotCompileException("native methods can not be hooked");
+		}
+		
 
+		String callee;
+		boolean isStatic = Modifier.isStatic(origMethod.getModifiers());
+		if (isStatic) {
+			callee = String.format("%s.class", ctClass.getName());
+		} else {
+			callee = "this";
+		}
+		
 		origMethod.setName(getUniqueMethodName(ctClass, classHook.getMethodName()));
 
 		CtMethod newMethod = CtNewMethod.copy(origMethod, classHook.getMethodName(), ctClass, null);
@@ -89,19 +114,45 @@ public class HookManager {
 				throw new CannotCompileException(e);
 			}
 		}
+		
+		InvocationTarget invocationTarget = new InvocationTarget(classHook.getInvocationHandler(), isStatic, origMethod.getName(), origMethod.getLongName(), exceptionClasses);
 
-		InvocationTarget invocationTarget = new InvocationTarget(classHook.getInvocationHandler(), origMethod.getName(), origMethod.getLongName(), exceptionClasses);
-
-		String type = newMethod.getReturnType().getName();
+		CtClass type = newMethod.getReturnType();
+		String typeName = type.getName();
+		boolean voidType = "void".equals(typeName);
+		
 		StringBuilder builder = new StringBuilder();
 		builder.append("{\n");
-		builder.append(String.format("Object result = %s.getInstance().invoke(this,\"%s\",$args);\n", HookManager.class.getName(), origMethod.getLongName()));
-		if (!"void".equals(type)) {
-			builder.append(String.format("return (%s)result;\n", type));
+		if (!voidType) {
+			builder.append("Object result = ");
+		}
+		builder.append(String.format("%s#getInstance().invoke(%s,\"%s\",$args);\n", HookManager.class.getName(), callee, origMethod.getLongName()));
+		if (!voidType) {
+			if (!type.isPrimitive()) {
+				builder.append(String.format("return result;\n", typeName));
+			} else if (type == CtClass.booleanType) {
+				builder.append(String.format("return ((java.lang.Boolean)result).booleanValue();\n", typeName));
+			} else if (type == CtClass.byteType) {
+				builder.append(String.format("return ((java.lang.Number)result).byteValue();\n", typeName));
+			} else if (type == CtClass.shortType) {
+				builder.append(String.format("return ((java.lang.Number)result).shortValue();\n", typeName));
+			} else if (type == CtClass.intType) {
+				builder.append(String.format("return ((java.lang.Number)result).intValue();\n", typeName));
+			} else if (type == CtClass.longType) {
+				builder.append(String.format("return ((java.lang.Number)result).longValue();\n", typeName));
+			} else if (type == CtClass.floatType) {
+				builder.append(String.format("return ((java.lang.Number)result).floatValue();\n", typeName));
+			} else if (type == CtClass.doubleType) {
+				builder.append(String.format("return ((java.lang.Number)result).doubleValue();\n", typeName));
+			} else if (type == CtClass.charType) {
+				builder.append(String.format("return ((java.lang.Character)result).charValue();\n", typeName));
+			}
 		}
 		builder.append("\n}");
-
-		newMethod.setBody(builder.toString());
+		
+		String body = builder.toString();
+		LOG.fine(body);
+		newMethod.setBody(body);
 		ctClass.addMethod(newMethod);
 
 		return invocationTarget;
@@ -152,10 +203,16 @@ public class HookManager {
 
 		try {
 			// Get the called method
-			Method method = invocationTarget.resolveMethod(object.getClass());
+			Method method = invocationTarget.resolveMethod(invocationTarget.isStaticMethod() ? (Class<?>)object : object.getClass());
 
-			// Call the invocation handler
-			return invocationTarget.getInvocationHandler().invoke(object, method, args);
+			boolean accessible = method.isAccessible();
+			method.setAccessible(true);
+			try {
+				// Call the invocation handler
+				return invocationTarget.getInvocationHandler().invoke(object, method, args);
+			} finally {
+				method.setAccessible(accessible);
+			}
 		} catch (Throwable e) {
 			for (Class<?> exceptionType : invocationTarget.getExceptionTypes()) {
 				if (exceptionType.isInstance(e)) {
