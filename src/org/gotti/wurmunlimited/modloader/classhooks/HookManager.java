@@ -7,15 +7,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import com.sun.istack.internal.logging.Logger;
+import java.util.logging.Logger;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
-import javassist.CtPrimitiveType;
 import javassist.Loader;
 import javassist.NotFoundException;
 
@@ -33,7 +31,7 @@ public class HookManager {
 	// Instance
 	private static HookManager instance;
 	
-	private static final Logger LOG = Logger.getLogger(HookManager.class);
+	private static final Logger LOG = Logger.getLogger(HookManager.class.getName());
 
 	private HookManager() {
 		classPool = ClassPool.getDefault();
