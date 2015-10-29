@@ -20,6 +20,11 @@
 				<include name="org/gotti/wurmunlimited/mods/cropmod/**"/>
 			</fileset>
 		</jar>
+		<jar destfile="mods/disciomod/disciomod.jar">
+			<fileset dir="bin.ant">
+				<include name="org/gotti/wurmunlimited/mods/disciomod/**"/>
+			</fileset>
+		</jar>
 		
 	</target>
 	<target name="compile">
@@ -48,5 +53,6 @@
 		<delete file="modlauncher.jar"/>
 		<delete file="mods/spellmod/spellmod.jar"/>
 		<delete file="mods/cropmod/cropmod.jar"/>
+		<delete file="mods/disciomod/disciomod.jar"/>
 	</target>
 </project>
