@@ -15,6 +15,11 @@
 				<include name="org/gotti/wurmunlimited/mods/spellmod/**"/>
 			</fileset>
 		</jar>
+		<jar destfile="mods/cropmod/cropmod.jar">
+			<fileset dir="bin.ant">
+				<include name="org/gotti/wurmunlimited/mods/cropmod/**"/>
+			</fileset>
+		</jar>
 		
 	</target>
 	<target name="compile">
@@ -42,5 +47,6 @@
 		<delete file="modlauncher.zip"/>
 		<delete file="modlauncher.jar"/>
 		<delete file="mods/spellmod/spellmod.jar"/>
+		<delete file="mods/cropmod/cropmod.jar"/>
 	</target>
 </project>
