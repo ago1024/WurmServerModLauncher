@@ -120,6 +120,17 @@ public class HookManagerTest {
 				}
 			});
 		}
+		
+		for (final String methodName : Arrays.asList("voidMethod")) {
+			HookManager.getInstance().registerHook("org.gotti.wurmunlimited.modloader.classhooks.HookManagerTest$TestClass", methodName, null, new InvocationHandler() {
+				@Override
+				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+					calledMethods.add(methodName + "_twice");
+					return method.invoke(proxy, args);
+				}
+			});
+		}
+		
 
 	}
 
@@ -166,6 +177,11 @@ public class HookManagerTest {
 		Assert.assertTrue(calledMethods.contains("floatMethod"));
 		Assert.assertTrue(calledMethods.contains("doubleMethod"));
 		Assert.assertTrue(calledMethods.contains("stringMethod"));
+	}
+	
+	@Test
+	public void testHookTwice() {
+		Assert.assertTrue(calledMethods.contains("voidMethod_twice"));
 	}
 	
 
