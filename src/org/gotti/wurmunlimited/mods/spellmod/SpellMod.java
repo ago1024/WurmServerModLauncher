@@ -81,7 +81,7 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 				if (removePriestRestrictions) {
 					try {
 						ReflectionUtil.setPrivateField(deity, buildWallBonus, Float.valueOf(0.0f));
-						ReflectionUtil.setPrivateField(deity, roadProtector, Boolean.TRUE);
+						ReflectionUtil.setPrivateField(deity, roadProtector, Boolean.FALSE);
 					} catch (IllegalAccessException | IllegalArgumentException | ClassCastException e) {
 						logger.log(Level.WARNING, e.getMessage(), e);
 					}
