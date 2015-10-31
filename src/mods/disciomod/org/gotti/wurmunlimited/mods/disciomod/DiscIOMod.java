@@ -20,9 +20,11 @@ public class DiscIOMod implements WurmMod, Configurable {
 
 	@Override
 	public void configure(Properties properties) {
-
 		logger.log(Level.INFO, "fix disc io problem");
+	}
 
+	@Override
+	public void init() {
 		HookManager.getInstance().registerHook("com.wurmonline.server.zones.Zones", "saveProtectedTiles", "()V", new InvocationHandler() {
 			@Override
 			public Object invoke(Object object, Method method, Object[] args) throws Throwable {
