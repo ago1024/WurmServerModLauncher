@@ -35,6 +35,15 @@ public class ModLoader {
 			}
 		}
 
+
+		for (WurmMod mod : mods) {
+			mod.preInit();
+		}
+		
+		for (WurmMod mod : mods) {
+			mod.init();
+		}
+
 		return mods;
 	}
 
