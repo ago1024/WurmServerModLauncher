@@ -1,15 +1,25 @@
 package org.gotti.wurmunlimited.mods.cropmod;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javassist.CannotCompileException;
 import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.CtPrimitiveType;
 import javassist.NotFoundException;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.CodeAttribute;
+import javassist.bytecode.CodeIterator;
 import javassist.bytecode.Descriptor;
+import javassist.bytecode.LocalVariableAttribute;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.Mnemonic;
 
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
@@ -19,6 +29,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 public class CropMod implements WurmMod, Configurable {
 
 	private boolean disableWeeds = true;
+	private int extraHarvest = 0;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
 
@@ -29,8 +40,78 @@ public class CropMod implements WurmMod, Configurable {
 	public void configure(Properties properties) {
 
 		disableWeeds = Boolean.valueOf(properties.getProperty("disableWeeds", Boolean.toString(disableWeeds)));
+		extraHarvest = Integer.valueOf(properties.getProperty("extraHarvest", Integer.toString(extraHarvest)));
 		logger.log(Level.INFO, "disableWeeds: " + disableWeeds);
+		
+	}
+	
+	@Override
+	public void preInit() {
+		if (extraHarvest > 0) {
+			initExtraHarvest();
+		}
+		
+	}
+	
+	private void initExtraHarvest() {
+		try {
+			CtClass terraForming = HookManager.getInstance().getClassPool().get("com.wurmonline.server.behaviours.Terraforming");
 
+			CtClass[] paramTypes = {
+					HookManager.getInstance().getClassPool().get("com.wurmonline.server.creatures.Creature"),
+					CtPrimitiveType.intType,
+					CtPrimitiveType.intType,
+					CtPrimitiveType.booleanType,
+					CtPrimitiveType.intType,
+					CtPrimitiveType.floatType,
+					HookManager.getInstance().getClassPool().get("com.wurmonline.server.items.Item")
+			};
+			
+			CtMethod method = terraForming.getMethod("harvest", Descriptor.ofMethod(CtPrimitiveType.booleanType, paramTypes));
+			MethodInfo methodInfo = method.getMethodInfo();
+			CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
+			CodeIterator codeIterator = codeAttribute.iterator();
+			
+			LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
+			int quantityIndex = -1;
+			for (int i = 0; i < attr.tableLength(); i++) {
+				if ("quantity".equals(attr.variableName(i))) {
+					quantityIndex = attr.index(i);
+				}
+			}
+			
+			if (quantityIndex == -1) {
+				throw new HookException("Quantity variable can not be resolved");
+			}
+			
+			while (codeIterator.hasNext()) {
+				int pos = codeIterator.next();
+				int op = codeIterator.byteAt(pos);
+				System.out.println(Mnemonic.OPCODE[op]);
+				if (op == CodeIterator.ISTORE) {
+					int fieldRefIdx = codeIterator.byteAt(pos + 1);
+					if (quantityIndex == fieldRefIdx) {
+						Bytecode bytecode = new Bytecode(codeIterator.get().getConstPool());
+						bytecode.addIconst(extraHarvest);
+						bytecode.add(Bytecode.IADD);
+						codeIterator.insertAt(pos, bytecode.get());
+						break;
+					}
+				}
+			}
+			
+			
+			terraForming.writeFile("generated");
+			
+			
+			
+		} catch (NotFoundException | BadBytecode | IOException | CannotCompileException e) {
+			throw new HookException(e);
+		}
+	}
+	
+	@Override
+	public void init() {
 		//
 		// We initialize a method hook that gets called right before CropTilePoller.checkForFarmGrowth is called
 		//
@@ -71,7 +152,7 @@ public class CropMod implements WurmMod, Configurable {
 						int tileAge = tileState & 0x7;
 						if (tileAge == 6) {
 							// tileAge is 6. Advancing it further would create weeds. 
-							// Therefor we just exit here. 
+							// Therefore we just exit here. 
 							// return null is required if the hooked method has a void return type 
 							return null;
 						}
