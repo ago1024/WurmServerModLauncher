@@ -118,7 +118,7 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 			logger.log(Level.WARNING, e.getMessage(), e);
 		}
 	}
-
+	
 	@Override
 	public void configure(Properties properties) {
 		removePriestRestrictions = Boolean.parseBoolean(properties.getProperty("removePriestRestrictions", Boolean.toString(removePriestRestrictions)));
@@ -134,7 +134,11 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 		logger.log(Level.INFO, "allowLightSpells: " + allowLightSpells);
 		logger.log(Level.INFO, "unlimitedPrayers: " + unlimitedPrayers);
 		logger.log(Level.INFO, "noPrayerDelay: " + noPrayerDelay);
-
+		
+	}
+	
+	@Override
+	public void init() {
 		if (unlimitedPrayers || noPrayerDelay) {
 			HookManager.getInstance().registerHook("com.wurmonline.server.players.DbPlayerInfo", "setNumFaith", "(BJ)V", new InvocationHandler() {
 
@@ -152,5 +156,18 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 				}
 			});
 		}
+		
+		HookManager.getInstance().registerHook("com.wurmonline.server.players.Player", "isPriest", "()Z", new InvocationHandler() {
+			@Override
+			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+				StackTraceElement[] stackTrace = new Exception().getStackTrace();
+				for (StackTraceElement stackTraceElement : stackTrace) {
+					if ("com.wurmonline.server.behaviours.MethodsItems".equals(stackTraceElement.getClassName())) {
+						return Boolean.FALSE;
+					}
+				}
+				return method.invoke(proxy, args);
+			}
+		});
 	}
 }
