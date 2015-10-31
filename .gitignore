@@ -1,4 +1,7 @@
-bin.ant
+bin.ant*
 bin
 data
 modlauncher.jar
+mods/*/*.jar
+lib
+modlauncher.zip
