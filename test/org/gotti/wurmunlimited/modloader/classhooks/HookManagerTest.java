@@ -102,35 +102,52 @@ public class HookManagerTest {
 		loader.delegateLoadingOf("org.gotti.wurmunlimited.modloader.classhooks.HookManager");
 
 		for (final String methodName : Arrays.asList("method", "privateMethod", "staticMethod", "staticPrivateMethod")) {
-			HookManager.getInstance().registerHook("org.gotti.wurmunlimited.modloader.classhooks.HookManagerTest$TestClass", methodName, "()I", new InvocationHandler() {
-				@Override
-				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-					calledMethods.add(methodName);
-					return method.invoke(proxy, args);
-				}
+			HookManager.getInstance().registerHook("org.gotti.wurmunlimited.modloader.classhooks.HookManagerTest$TestClass", methodName, "()I", new InvocationHandlerFactory() {
+
+				public InvocationHandler createInvocationHandler() {
+					return new InvocationHandler() {
+						@Override
+						public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+							calledMethods.add(methodName);
+							return method.invoke(proxy, args);
+						}
+					};
+				};
+
 			});
 		}
 
 		for (final String methodName : Arrays.asList("voidMethod", "booleanMethod", "charMethod", "byteMethod", "shortMethod", "intMethod", "longMethod", "floatMethod", "doubleMethod", "stringMethod")) {
-			HookManager.getInstance().registerHook("org.gotti.wurmunlimited.modloader.classhooks.HookManagerTest$TestClass", methodName, null, new InvocationHandler() {
+			HookManager.getInstance().registerHook("org.gotti.wurmunlimited.modloader.classhooks.HookManagerTest$TestClass", methodName, null, new InvocationHandlerFactory() {
+
 				@Override
-				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-					calledMethods.add(methodName);
-					return method.invoke(proxy, args);
+				public InvocationHandler createInvocationHandler() {
+					return new InvocationHandler() {
+						@Override
+						public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+							calledMethods.add(methodName);
+							return method.invoke(proxy, args);
+						}
+					};
 				}
 			});
 		}
-		
+
 		for (final String methodName : Arrays.asList("voidMethod")) {
-			HookManager.getInstance().registerHook("org.gotti.wurmunlimited.modloader.classhooks.HookManagerTest$TestClass", methodName, null, new InvocationHandler() {
+			HookManager.getInstance().registerHook("org.gotti.wurmunlimited.modloader.classhooks.HookManagerTest$TestClass", methodName, null, new InvocationHandlerFactory() {
+
 				@Override
-				public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-					calledMethods.add(methodName + "_twice");
-					return method.invoke(proxy, args);
+				public InvocationHandler createInvocationHandler() {
+					return new InvocationHandler() {
+						@Override
+						public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+							calledMethods.add(methodName + "_twice");
+							return method.invoke(proxy, args);
+						}
+					};
 				}
 			});
 		}
-		
 
 	}
 
@@ -165,7 +182,7 @@ public class HookManagerTest {
 	public void testHookVoid() {
 		Assert.assertTrue(calledMethods.contains("voidMethod"));
 	}
-	
+
 	@Test
 	public void testHookPrimitives() {
 		Assert.assertTrue(calledMethods.contains("booleanMethod"));
@@ -178,11 +195,10 @@ public class HookManagerTest {
 		Assert.assertTrue(calledMethods.contains("doubleMethod"));
 		Assert.assertTrue(calledMethods.contains("stringMethod"));
 	}
-	
+
 	@Test
 	public void testHookTwice() {
 		Assert.assertTrue(calledMethods.contains("voidMethod_twice"));
 	}
-	
 
 }

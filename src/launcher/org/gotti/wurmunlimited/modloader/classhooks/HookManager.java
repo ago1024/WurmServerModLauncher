@@ -113,7 +113,7 @@ public class HookManager {
 			}
 		}
 		
-		InvocationTarget invocationTarget = new InvocationTarget(classHook.getInvocationHandler(), isStatic, origMethod.getName(), origMethod.getLongName(), exceptionClasses);
+		InvocationTarget invocationTarget = new InvocationTarget(classHook.getInvocationHandlerFactory(), isStatic, origMethod.getName(), origMethod.getLongName(), exceptionClasses);
 
 		CtClass type = newMethod.getReturnType();
 		String typeName = type.getName();
@@ -165,11 +165,11 @@ public class HookManager {
 	 *            Method to hook
 	 * @param methodType
 	 *            Method signature to hook
-	 * @param invocationHandler
-	 *            InvocationHandler to call
+	 * @param invocationHandlerFactory
+	 *            Factory to create the InvocationHandler to call
 	 */
-	public void registerHook(String className, String methodName, String methodType, InvocationHandler invocationHandler) {
-		ClassHook classHook = new ClassHook(methodName, methodType, invocationHandler);
+	public void registerHook(String className, String methodName, String methodType, InvocationHandlerFactory invocationHandlerFactory) {
+		ClassHook classHook = new ClassHook(methodName, methodType, invocationHandlerFactory);
 		try {
 			CtClass ctClass = classPool.get(className);
 			InvocationTarget target = createHook(ctClass, classHook);
@@ -177,6 +177,27 @@ public class HookManager {
 		} catch (NotFoundException | CannotCompileException e) {
 			throw new HookException(e); 
 		}
+	}
+	
+	/**
+	 * Register a hook.
+	 * 
+	 * @param className
+	 *            Class name to hook
+	 * @param methodName
+	 *            Method to hook
+	 * @param methodType
+	 *            Method signature to hook
+	 * @param invocationHandler
+	 *            InvocationHandler to call
+	 */
+	@Deprecated
+	public void registerHook(String className, String methodName, String methodType, InvocationHandler invocationHandler) {
+		registerHook(className, methodName, methodType, new InvocationHandlerFactory() {
+			public InvocationHandler createInvocationHandler() {
+				return invocationHandler;
+			};
+		});
 	}
 
 	/**
@@ -207,7 +228,7 @@ public class HookManager {
 			method.setAccessible(true);
 			try {
 				// Call the invocation handler
-				return invocationTarget.getInvocationHandler().invoke(object, method, args);
+				return invocationTarget.resolveInvocationHandler().invoke(object, method, args);
 			} finally {
 				method.setAccessible(accessible);
 			}

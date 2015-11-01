@@ -1,16 +1,15 @@
 package org.gotti.wurmunlimited.modloader.classhooks;
 
-import java.lang.reflect.InvocationHandler;
 
 public class ClassHook {
 	private String methodName;
 	private String methodType;
-	private InvocationHandler invocationHandler;
+	private InvocationHandlerFactory invocationHandlerFactory;
 
-	public ClassHook(String methodName, String methodType, InvocationHandler invocationHandler) {
+	public ClassHook(String methodName, String methodType, InvocationHandlerFactory invocationHandlerFactory) {
 		this.setMethodName(methodName);
 		this.setMethodType(methodType);
-		this.setInvocationHandler(invocationHandler);
+		this.setInvocationHandlerFactory(invocationHandlerFactory);
 	}
 
 	public String getMethodName() {
@@ -29,11 +28,11 @@ public class ClassHook {
 		this.methodType = methodType;
 	}
 
-	public InvocationHandler getInvocationHandler() {
-		return invocationHandler;
+	public InvocationHandlerFactory getInvocationHandlerFactory() {
+		return invocationHandlerFactory;
 	}
 
-	protected void setInvocationHandler(InvocationHandler invocationHandler) {
-		this.invocationHandler = invocationHandler;
+	protected void setInvocationHandlerFactory(InvocationHandlerFactory invocationHandlerFactory) {
+		this.invocationHandlerFactory = invocationHandlerFactory;
 	}
 }

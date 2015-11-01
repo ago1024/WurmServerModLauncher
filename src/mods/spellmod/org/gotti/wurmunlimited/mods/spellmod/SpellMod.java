@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
+import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
@@ -140,33 +141,45 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener {
 	@Override
 	public void init() {
 		if (unlimitedPrayers || noPrayerDelay) {
-			HookManager.getInstance().registerHook("com.wurmonline.server.players.DbPlayerInfo", "setNumFaith", "(BJ)V", new InvocationHandler() {
-
+			HookManager.getInstance().registerHook("com.wurmonline.server.players.DbPlayerInfo", "setNumFaith", "(BJ)V", new InvocationHandlerFactory() {
+				
 				@Override
-				public Object invoke(Object object, Method method, Object[] args) throws Throwable {
-					DbPlayerInfo dbPlayerInfo = (DbPlayerInfo) object;
-					if (unlimitedPrayers) {
-						args[0] = dbPlayerInfo.numFaith = 0;
-					}
-					if (noPrayerDelay) {
-						args[1] = dbPlayerInfo.lastFaith = 0;
-					}
+				public InvocationHandler createInvocationHandler() {
+					return new InvocationHandler() {
 
-					return method.invoke(object, args);
+						@Override
+						public Object invoke(Object object, Method method, Object[] args) throws Throwable {
+							DbPlayerInfo dbPlayerInfo = (DbPlayerInfo) object;
+							if (unlimitedPrayers) {
+								args[0] = dbPlayerInfo.numFaith = 0;
+							}
+							if (noPrayerDelay) {
+								args[1] = dbPlayerInfo.lastFaith = 0;
+							}
+
+							return method.invoke(object, args);
+						}
+					};
 				}
 			});
 		}
 		
-		HookManager.getInstance().registerHook("com.wurmonline.server.players.Player", "isPriest", "()Z", new InvocationHandler() {
+		HookManager.getInstance().registerHook("com.wurmonline.server.players.Player", "isPriest", "()Z", new InvocationHandlerFactory() {
+			
 			@Override
-			public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-				StackTraceElement[] stackTrace = new Exception().getStackTrace();
-				for (StackTraceElement stackTraceElement : stackTrace) {
-					if ("com.wurmonline.server.behaviours.MethodsItems".equals(stackTraceElement.getClassName())) {
-						return Boolean.FALSE;
+			public InvocationHandler createInvocationHandler() {
+				return new InvocationHandler() {
+					@Override
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+						StackTraceElement[] stackTrace = new Exception().getStackTrace();
+						for (StackTraceElement stackTraceElement : stackTrace) {
+							if ("com.wurmonline.server.behaviours.MethodsItems".equals(stackTraceElement.getClassName())) {
+								return Boolean.FALSE;
+							}
+						}
+						return method.invoke(proxy, args);
 					}
-				}
-				return method.invoke(proxy, args);
+				};
 			}
 		});
 	}

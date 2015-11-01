@@ -1,13 +1,11 @@
 package org.gotti.wurmunlimited.mods.cropmod;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javassist.CannotCompileException;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtPrimitiveType;
@@ -19,10 +17,10 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
-import javassist.bytecode.Mnemonic;
 
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
+import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
@@ -87,7 +85,6 @@ public class CropMod implements WurmMod, Configurable {
 			while (codeIterator.hasNext()) {
 				int pos = codeIterator.next();
 				int op = codeIterator.byteAt(pos);
-				System.out.println(Mnemonic.OPCODE[op]);
 				if (op == CodeIterator.ISTORE) {
 					int fieldRefIdx = codeIterator.byteAt(pos + 1);
 					if (quantityIndex == fieldRefIdx) {
@@ -99,13 +96,7 @@ public class CropMod implements WurmMod, Configurable {
 					}
 				}
 			}
-			
-			
-			terraForming.writeFile("generated");
-			
-			
-			
-		} catch (NotFoundException | BadBytecode | IOException | CannotCompileException e) {
+		} catch (NotFoundException | BadBytecode e) {
 			throw new HookException(e);
 		}
 	}
@@ -135,32 +126,38 @@ public class CropMod implements WurmMod, Configurable {
 				// next we register the hook for 
 				// com.wurmonline.server.zones.CropTilePoller.checkForFarmGrowth(int, int, int, byte, byte, MeshIO, boolean) 
 				//
-				HookManager.getInstance().registerHook("com.wurmonline.server.zones.CropTilePoller", "checkForFarmGrowth", Descriptor.ofMethod(CtPrimitiveType.voidType, paramTypes), new InvocationHandler() {
-	
-					//
-					// The actual hook is an InvocationHandler. It's invoke method is called instead of the hooked method.
-					// The object, method and arguments are passed as parameters to invoke()
-					//
+				HookManager.getInstance().registerHook("com.wurmonline.server.zones.CropTilePoller", "checkForFarmGrowth", Descriptor.ofMethod(CtPrimitiveType.voidType, paramTypes), new InvocationHandlerFactory() {
+
 					@Override
-					public Object invoke(Object object, Method method, Object[] args) throws Throwable {
-						//
-						// When the hook is called we can do stuff depending on the input parameters
-						// Here we check if the tileAge is 6 (the second ripe stage)
-						//
-						byte aData = ((Number)args[4]).byteValue();
-						final int tileState = aData >> 4;
-						int tileAge = tileState & 0x7;
-						if (tileAge == 6) {
-							// tileAge is 6. Advancing it further would create weeds. 
-							// Therefore we just exit here. 
-							// return null is required if the hooked method has a void return type 
-							return null;
-						}
-	
-						//
-						// tileAge is not 6. We just continue by calling the hooked method
-						//
-						return method.invoke(object, args);
+					public InvocationHandler createInvocationHandler() {
+						return new InvocationHandler() {
+
+							//
+							// The actual hook is an InvocationHandler. It's invoke method is called instead of the hooked method.
+							// The object, method and arguments are passed as parameters to invoke()
+							//
+							@Override
+							public Object invoke(Object object, Method method, Object[] args) throws Throwable {
+								//
+								// When the hook is called we can do stuff depending on the input parameters
+								// Here we check if the tileAge is 6 (the second ripe stage)
+								//
+								byte aData = ((Number) args[4]).byteValue();
+								final int tileState = aData >> 4;
+								int tileAge = tileState & 0x7;
+								if (tileAge == 6) {
+									// tileAge is 6. Advancing it further would create weeds.
+									// Therefore we just exit here.
+									// return null is required if the hooked method has a void return type
+									return null;
+								}
+
+								//
+								// tileAge is not 6. We just continue by calling the hooked method
+								//
+								return method.invoke(object, args);
+							}
+						};
 					}
 				});
 			} catch (NotFoundException e) {

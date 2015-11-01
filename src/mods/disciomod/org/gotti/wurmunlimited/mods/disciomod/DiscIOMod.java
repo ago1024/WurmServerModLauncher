@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
+import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
@@ -25,12 +26,18 @@ public class DiscIOMod implements WurmMod, Configurable {
 
 	@Override
 	public void init() {
-		HookManager.getInstance().registerHook("com.wurmonline.server.zones.Zones", "saveProtectedTiles", "()V", new InvocationHandler() {
+		HookManager.getInstance().registerHook("com.wurmonline.server.zones.Zones", "saveProtectedTiles", "()V", new InvocationHandlerFactory() {
+			
 			@Override
-			public Object invoke(Object object, Method method, Object[] args) throws Throwable {
-				Field lastResetTiles = ReflectionUtil.getField(Server.class, "lastResetTiles");
-				ReflectionUtil.setPrivateField(Server.class, lastResetTiles, System.currentTimeMillis());
-				return method.invoke(object, args);
+			public InvocationHandler createInvocationHandler() {
+				return new InvocationHandler() {
+					@Override
+					public Object invoke(Object object, Method method, Object[] args) throws Throwable {
+						Field lastResetTiles = ReflectionUtil.getField(Server.class, "lastResetTiles");
+						ReflectionUtil.setPrivateField(Server.class, lastResetTiles, System.currentTimeMillis());
+						return method.invoke(object, args);
+					}
+				};
 			}
 		});
 	}

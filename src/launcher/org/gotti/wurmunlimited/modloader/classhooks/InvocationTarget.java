@@ -3,6 +3,8 @@ package org.gotti.wurmunlimited.modloader.classhooks;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+
 public class InvocationTarget {
 	
 	private boolean staticMethod;
@@ -13,16 +15,18 @@ public class InvocationTarget {
 	
 	private Method method;
 	
+	private InvocationHandlerFactory invocationHandlerFactory;
+	
 	private InvocationHandler invocationHandler;
 
 	private Class<?>[] exceptionTypes;
 	
-	public InvocationTarget(InvocationHandler invocationHandler, boolean staticMethod, String methodName, String identifier, Class<?>[] exceptionTypes) {
+	public InvocationTarget(InvocationHandlerFactory invocationHandlerFactory, boolean staticMethod, String methodName, String identifier, Class<?>[] exceptionTypes) {
 		this.setMethod(null);
 		this.setMethodName(methodName);
 		this.setStaticMethod(staticMethod);
 		this.setIdentifier(identifier);
-		this.setInvocationHandler(invocationHandler);
+		this.setInvocationHandlerFactory(invocationHandlerFactory);
 		this.setExceptionTypes(exceptionTypes);
 	}
 
@@ -30,13 +34,16 @@ public class InvocationTarget {
 		if (getMethod() != null) {
 			return getMethod();
 		}
-		for (Method m : targetClass.getDeclaredMethods()) {
-			if (m.getName().equals(getMethodName())) {
-				setMethod(m);
-				return getMethod();
-			}
+		method = ReflectionUtil.getMethod(targetClass, getMethodName());
+		return method;
+	}
+	
+	public InvocationHandler resolveInvocationHandler() {
+		if (invocationHandler != null) {
+			return invocationHandler;
 		}
-		throw new NoSuchMethodException(getMethodName());
+		invocationHandler = invocationHandlerFactory.createInvocationHandler();
+		return invocationHandler;
 	}
 
 	public String getMethodName() {
@@ -55,12 +62,12 @@ public class InvocationTarget {
 		this.method = method;
 	}
 
-	public InvocationHandler getInvocationHandler() {
-		return invocationHandler;
+	public InvocationHandlerFactory getInvocationHandlerFactory() {
+		return invocationHandlerFactory;
 	}
 
-	protected void setInvocationHandler(InvocationHandler invocationHandler) {
-		this.invocationHandler = invocationHandler;
+	protected void setInvocationHandlerFactory(InvocationHandlerFactory invocationHandlerFactory) {
+		this.invocationHandlerFactory = invocationHandlerFactory;
 	}
 
 	public Class<?>[] getExceptionTypes() {
