@@ -13,41 +13,59 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
+import org.gotti.wurmunlimited.modloader.interfaces.Initable;
+import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
 public class ModLoader {
+	
+	private static Logger logger = Logger.getLogger(ModLoader.class.getName());
+	
+	private class ModEntry {
+		private WurmMod mod;
+		private Properties properties;
+		private String name;
+		public ModEntry(WurmMod mod, Properties properties, String name) {
+			this.mod = mod;
+			this.properties = properties;
+			this.name = name;
+		}
+	}
 
 	public ModLoader() {
 
 	}
 
 	public List<WurmMod> loadModsFromModDir(Path modDir) throws IOException {
-		List<WurmMod> mods = new ArrayList<WurmMod>();
+		List<ModEntry> mods = new ArrayList<ModEntry>();
 
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(modDir, "*.properties")) {
 			for (Path modInfo : directoryStream) {
-				WurmMod mod = loadModFromInfo(modInfo);
-				Logger.getLogger(this.getClass().getName()).info("Loaded " + mod.getClass().getName());
+				ModEntry mod = loadModFromInfo(modInfo);
 				mods.add(mod);
 			}
 		}
-
-
-		for (WurmMod mod : mods) {
-			mod.preInit();
-		}
 		
-		for (WurmMod mod : mods) {
-			mod.init();
-		}
+		// new style mods with initable will do configure, preInit, init
+		mods.stream().filter(modEntry -> modEntry.mod instanceof Initable && modEntry.mod instanceof Configurable).forEach(modEntry -> ((Configurable) modEntry.mod).configure(modEntry.properties));
 
-		return mods;
+		mods.stream().filter(modEntry -> modEntry.mod instanceof PreInitable).forEach(modEntry -> ((PreInitable)modEntry.mod).preInit());
+
+		mods.stream().filter(modEntry -> modEntry.mod instanceof Initable).forEach(modEntry -> ((Initable)modEntry.mod).init());
+
+		// old style mods without initable will just be configure, but they are handled last
+		mods.stream().filter(modEntry -> !(modEntry.mod instanceof Initable) && modEntry.mod instanceof Configurable).forEach(modEntry -> ((Configurable) modEntry.mod).configure(modEntry.properties));
+
+		mods.stream().forEach(modEntry -> logger.info("Loaded " + modEntry.mod.getClass().getName() + " as " + modEntry.name));
+		
+		return mods.stream().map(modEntry -> modEntry.mod).collect(Collectors.toList());
 	}
 
-	public WurmMod loadModFromInfo(Path modInfo) throws IOException {
+	public ModEntry loadModFromInfo(Path modInfo) throws IOException {
 		Properties properties = new Properties();
 
 		try (InputStream inputStream = Files.newInputStream(modInfo)) {
@@ -69,10 +87,7 @@ public class ModLoader {
 			}
 
 			WurmMod mod = classloader.loadClass(className).asSubclass(WurmMod.class).newInstance();
-			if (mod instanceof Configurable) {
-				((Configurable) mod).configure(properties);
-			}
-			return mod;
+			return new ModEntry(mod, properties, modname);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
 			throw new IOException(e);
 		}

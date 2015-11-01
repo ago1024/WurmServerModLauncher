@@ -17,13 +17,14 @@ import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
+import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
 import com.wurmonline.server.WurmCalendar;
 import com.wurmonline.server.creatures.CreatureStatus;
 import com.wurmonline.server.creatures.CreatureTemplateIds;
 
-public class CreatureAgeMod implements WurmMod, Configurable {
+public class CreatureAgeMod implements WurmMod, Configurable, Initable {
 
 	private static final long ORIG_CREATURE_POLL_TIMER = 2419200L;
 

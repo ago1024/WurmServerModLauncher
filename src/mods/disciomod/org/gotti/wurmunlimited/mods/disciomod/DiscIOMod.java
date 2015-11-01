@@ -11,11 +11,12 @@ import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
+import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
 import com.wurmonline.server.Server;
 
-public class DiscIOMod implements WurmMod, Configurable {
+public class DiscIOMod implements WurmMod, Configurable, Initable {
 
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 
