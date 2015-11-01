@@ -18,3 +18,7 @@ increaseGrowthUntilAge=8
 # 691200 - 1 day real time
 # 259200 - increased horse growth time on pvp servers, 9 hours real time
 increaseGrowthTimer=28800
+
+# Exclude creature types from faster aging
+# Names correspond to names in CreateTemplateIds without the trailing "_cid"
+excludedTemplates=boar_fo,zombie,worg,gorilla_magranon,skeleton,hyena_libila
