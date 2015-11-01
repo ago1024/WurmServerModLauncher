@@ -91,7 +91,7 @@ public class ModLoader {
 			} else if (Files.isDirectory(path)) {
 				urls.add(path.toUri().toURL());
 			} else {
-				urls.add(new URL(entry));
+				throw new MalformedURLException("Missing classpath entry " + path.toString());
 			}
 		}
 		
