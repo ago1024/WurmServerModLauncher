@@ -163,6 +163,28 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener, I
 					};
 				}
 			});
+			
+			HookManager.getInstance().registerHook("com.wurmonline.server.players.PlayerInfo", "checkPrayerFaith", "()Z", new InvocationHandlerFactory() {
+				
+				@Override
+				public InvocationHandler createInvocationHandler() {
+					return new InvocationHandler() {
+
+						@Override
+						public Object invoke(Object object, Method method, Object[] args) throws Throwable {
+							DbPlayerInfo dbPlayerInfo = (DbPlayerInfo) object;
+							if (unlimitedPrayers) {
+								dbPlayerInfo.numFaith = 0;
+							}
+							if (noPrayerDelay) {
+								dbPlayerInfo.lastFaith = 0;
+							}
+
+							return method.invoke(object, args);
+						}
+					};
+				}
+			});
 		}
 		
 		HookManager.getInstance().registerHook("com.wurmonline.server.players.Player", "isPriest", "()Z", new InvocationHandlerFactory() {
