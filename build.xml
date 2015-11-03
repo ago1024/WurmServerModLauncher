@@ -54,9 +54,6 @@
 			<property name="modname" value="cropmod"/>
 		</ant>
 		<ant target="build-mod">
-			<property name="modname" value="disciomod"/>
-		</ant>
-		<ant target="build-mod">
 			<property name="modname" value="creatureagemod"/>
 		</ant>
 	</target>
@@ -75,7 +72,6 @@
 		<delete file="modlauncher.jar"/>
 		<delete file="mods/spellmod/spellmod.jar"/>
 		<delete file="mods/cropmod/cropmod.jar"/>
-		<delete file="mods/disciomod/disciomod.jar"/>
 		<delete file="mods/creatureagemod/creatureagemod.jar"/>
 	</target>
 </project>
