@@ -42,7 +42,7 @@ public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
 		disableWeeds = Boolean.valueOf(properties.getProperty("disableWeeds", Boolean.toString(disableWeeds)));
 		extraHarvest = Integer.valueOf(properties.getProperty("extraHarvest", Integer.toString(extraHarvest)));
 		logger.log(Level.INFO, "disableWeeds: " + disableWeeds);
-		
+		logger.log(Level.INFO, "extraHarvest: " + extraHarvest);
 	}
 	
 	@Override
