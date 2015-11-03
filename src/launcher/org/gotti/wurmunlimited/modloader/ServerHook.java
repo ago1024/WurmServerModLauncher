@@ -5,8 +5,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+
+import com.wurmonline.server.creatures.Communicator;
 
 public class ServerHook {
 	
@@ -30,8 +33,22 @@ public class ServerHook {
 			}
 		}
 	}
+
+	public boolean fireOnMessage(Communicator communicator, String message) {
+		boolean state = false;
+		for (WurmMod mod : mods) {
+			try {
+				if (mod instanceof PlayerMessageListener) {
+					state |= ((PlayerMessageListener) mod).onPlayerMessage(communicator, message);
+				}
+			} catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onPlayerMessage handler for mod " + mod.getClass().getSimpleName() + " failed", e);
+			}
+		}
+		return state;
+	}
 	
 	public static ServerHook createServerHook() {
-		return new ProxyServerHook();
+		return ProxyServerHook.getInstance();
 	}
 }
