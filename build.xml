@@ -62,6 +62,7 @@
 		<zip destfile="modlauncher.zip">
 			<zipfileset dir="." includes="modlauncher.jar"/>
 			<zipfileset dir="." includes="modlauncher.bat"/>
+			<zipfileset dir="." includes="modlauncher.sh"/>
 			<zipfileset dir="mods" prefix="mods"/>
 			<zipfileset dir="lib" includes="javassist.jar"/>
 		</zip>
