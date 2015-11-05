@@ -1,11 +1,11 @@
 package org.gotti.wurmunlimited.mods.cropmod;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javassist.CannotCompileException;
+import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtPrimitiveType;
@@ -17,10 +17,11 @@ import javassist.bytecode.CodeIterator;
 import javassist.bytecode.Descriptor;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
 
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
-import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
@@ -31,7 +32,6 @@ public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
 	private boolean disableWeeds = true;
 	private int extraHarvest = 0;
 	private Logger logger = Logger.getLogger(this.getClass().getName());
-
 
 	//
 	// The method configure is called when the mod is being loaded
@@ -44,34 +44,35 @@ public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
 		logger.log(Level.INFO, "disableWeeds: " + disableWeeds);
 		logger.log(Level.INFO, "extraHarvest: " + extraHarvest);
 	}
-	
+
 	@Override
 	public void preInit() {
 		if (extraHarvest > 0) {
 			initExtraHarvest();
 		}
-		
+
 	}
-	
+
 	private void initExtraHarvest() {
 		try {
-			CtClass terraForming = HookManager.getInstance().getClassPool().get("com.wurmonline.server.behaviours.Terraforming");
+			ClassPool classPool = HookManager.getInstance().getClassPool();
+			CtClass terraForming = classPool.get("com.wurmonline.server.behaviours.Terraforming");
 
 			CtClass[] paramTypes = {
-					HookManager.getInstance().getClassPool().get("com.wurmonline.server.creatures.Creature"),
+					classPool.get("com.wurmonline.server.creatures.Creature"),
 					CtPrimitiveType.intType,
 					CtPrimitiveType.intType,
 					CtPrimitiveType.booleanType,
 					CtPrimitiveType.intType,
 					CtPrimitiveType.floatType,
-					HookManager.getInstance().getClassPool().get("com.wurmonline.server.items.Item")
+					classPool.get("com.wurmonline.server.items.Item")
 			};
-			
+
 			CtMethod method = terraForming.getMethod("harvest", Descriptor.ofMethod(CtPrimitiveType.booleanType, paramTypes));
 			MethodInfo methodInfo = method.getMethodInfo();
 			CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
 			CodeIterator codeIterator = codeAttribute.iterator();
-			
+
 			LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
 			int quantityIndex = -1;
 			for (int i = 0; i < attr.tableLength(); i++) {
@@ -79,11 +80,11 @@ public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
 					quantityIndex = attr.index(i);
 				}
 			}
-			
+
 			if (quantityIndex == -1) {
 				throw new HookException("Quantity variable can not be resolved");
 			}
-			
+
 			while (codeIterator.hasNext()) {
 				int pos = codeIterator.next();
 				int op = codeIterator.byteAt(pos);
@@ -102,7 +103,7 @@ public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
 			throw new HookException(e);
 		}
 	}
-	
+
 	@Override
 	public void init() {
 		//
@@ -110,59 +111,27 @@ public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
 		//
 		if (disableWeeds) {
 			try {
-
-				//
-				// To make sure we hook the correct method the list of method parameter types is compiled
-				//
-				CtClass[] paramTypes = {
-						CtPrimitiveType.intType,
-						CtPrimitiveType.intType,
-						CtPrimitiveType.intType,
-						CtPrimitiveType.byteType,
-						CtPrimitiveType.byteType,
-						HookManager.getInstance().getClassPool().get("com.wurmonline.mesh.MeshIO"),
-						CtPrimitiveType.booleanType
-				};
-				
-				//
-				// next we register the hook for 
-				// com.wurmonline.server.zones.CropTilePoller.checkForFarmGrowth(int, int, int, byte, byte, MeshIO, boolean) 
-				//
-				HookManager.getInstance().registerHook("com.wurmonline.server.zones.CropTilePoller", "checkForFarmGrowth", Descriptor.ofMethod(CtPrimitiveType.voidType, paramTypes), new InvocationHandlerFactory() {
-
-					@Override
-					public InvocationHandler createInvocationHandler() {
-						return new InvocationHandler() {
-
-							//
-							// The actual hook is an InvocationHandler. It's invoke method is called instead of the hooked method.
-							// The object, method and arguments are passed as parameters to invoke()
-							//
-							@Override
-							public Object invoke(Object object, Method method, Object[] args) throws Throwable {
-								//
-								// When the hook is called we can do stuff depending on the input parameters
-								// Here we check if the tileAge is 6 (the second ripe stage)
-								//
-								byte aData = ((Number) args[4]).byteValue();
-								final int tileState = aData >> 4;
-								int tileAge = tileState & 0x7;
-								if (tileAge == 6) {
-									// tileAge is 6. Advancing it further would create weeds.
-									// Therefore we just exit here.
-									// return null is required if the hooked method has a void return type
-									return null;
-								}
-
-								//
-								// tileAge is not 6. We just continue by calling the hooked method
-								//
-								return method.invoke(object, args);
-							}
-						};
+				CtClass ctCropTilePoller = HookManager.getInstance().getClassPool().get("com.wurmonline.server.zones.CropTilePoller");
+				// pollCropTiles is where the server runs through all the fields to call checkForFarmGrowth on them.
+				// But it keeps all the tiles in one list. We get that method...
+				CtMethod ctPollCropTiles = ctCropTilePoller.getDeclaredMethod("pollCropTiles");
+				// Now to employ a new ExprEditor that marks tiles of age 6 as for removal, and skips the
+				// checkForFarmGrowth call. If it's not age 6, continue as normal.
+				ctPollCropTiles.instrument(new ExprEditor() {
+					public void edit(MethodCall methodCall) throws CannotCompileException {
+						if (methodCall.getClassName().equals("com.wurmonline.server.zones.CropTilePoller") && methodCall.getMethodName().equals("checkForFarmGrowth")) {
+							String replaceString = "if (((data >> 4) & 0x7) == 6) {\n";
+							// Now for the removal, and the else clause to call checkForFarmGrowth on younger tiles...
+							replaceString += "	toRemove.add(cTile);\n" + "}\n"
+									+ "else {\n"
+									+ "	checkForFarmGrowth(currTileId, cTile.getX(), cTile.getY(), type, (byte)data, meshToUse, cTile.isOnSurface());\n" 
+									+ "}\n"
+									+ "$_ = null;";
+							methodCall.replace(replaceString);
+						}
 					}
 				});
-			} catch (NotFoundException e) {
+			} catch (NotFoundException | CannotCompileException e) {
 				throw new HookException(e);
 			}
 		}
