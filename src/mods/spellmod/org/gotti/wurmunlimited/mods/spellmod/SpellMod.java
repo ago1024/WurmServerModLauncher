@@ -9,11 +9,19 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javassist.CannotCompileException;
+import javassist.CtClass;
+import javassist.NotFoundException;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
+
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
+import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
@@ -24,7 +32,7 @@ import com.wurmonline.server.deities.Deity;
 import com.wurmonline.server.players.DbPlayerInfo;
 import com.wurmonline.server.spells.Spell;
 
-public class SpellMod implements WurmMod, Configurable, ServerStartedListener, Initable {
+public class SpellMod implements WurmMod, Configurable, ServerStartedListener, Initable, PreInitable {
 
 	private Integer favorLimit = Integer.MAX_VALUE;
 	private boolean removePriestRestrictions = true;
@@ -140,6 +148,27 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener, I
 	}
 	
 	@Override
+	public void preInit() {
+		try {
+		    CtClass ctMethodsItems = HookManager.getInstance().getClassPool().get("com.wurmonline.server.behaviours.MethodsItems");
+		    ctMethodsItems.getDeclaredMethod("improveItem").instrument(new IsPriestSuppressor());
+		    ctMethodsItems.getDeclaredMethod("polishItem").instrument(new IsPriestSuppressor());
+		    ctMethodsItems.getDeclaredMethod("temper").instrument(new IsPriestSuppressor());
+		}
+		catch (NotFoundException | CannotCompileException e) {
+		    throw new HookException(e);
+		}
+	}
+	
+	static class IsPriestSuppressor extends ExprEditor {
+		public void edit(MethodCall m) throws CannotCompileException {
+			if (m.getClassName().equals("com.wurmonline.server.creatures.Creature") && m.getMethodName().equals("isPriest")) {
+				m.replace("$_ = false;");
+			}
+		}
+	}
+	
+	@Override
 	public void init() {
 		if (unlimitedPrayers || noPrayerDelay) {
 			HookManager.getInstance().registerHook("com.wurmonline.server.players.DbPlayerInfo", "setNumFaith", "(BJ)V", new InvocationHandlerFactory() {
@@ -186,24 +215,5 @@ public class SpellMod implements WurmMod, Configurable, ServerStartedListener, I
 				}
 			});
 		}
-		
-		HookManager.getInstance().registerHook("com.wurmonline.server.players.Player", "isPriest", "()Z", new InvocationHandlerFactory() {
-			
-			@Override
-			public InvocationHandler createInvocationHandler() {
-				return new InvocationHandler() {
-					@Override
-					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-						StackTraceElement[] stackTrace = new Exception().getStackTrace();
-						for (StackTraceElement stackTraceElement : stackTrace) {
-							if ("com.wurmonline.server.behaviours.MethodsItems".equals(stackTraceElement.getClassName())) {
-								return Boolean.FALSE;
-							}
-						}
-						return method.invoke(proxy, args);
-					}
-				};
-			}
-		});
 	}
 }
