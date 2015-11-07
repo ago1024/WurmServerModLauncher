@@ -1,2 +1,5 @@
-#!/usr/bin/env bash 
-./runtime/jre1.8.0_60/bin/java "-Dworkdir=$PWD" "-Djava.library.path=$PWD/nativelibs" -Xmn256M -Xms512m -Xmx2048m -XX:+OptimizeStringConcat -XX:+AggressiveOpts -jar ./modlauncher.jar "$*"
+#!/usr/bin/env bash
+if test -e "logging.properties"; then
+	LOGGING=-Djava.util.logging.config.file=logging.properties
+fi
+./runtime/jre1.8.0_60/bin/java "-Dworkdir=$PWD" "-Djava.library.path=$PWD/nativelibs" $LOGGING -Xmn256M -Xms512m -Xmx2048m -XX:+OptimizeStringConcat -XX:+AggressiveOpts -jar ./modlauncher.jar "$*"
