@@ -15,6 +15,9 @@ import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javassist.Loader;
+import javassist.NotFoundException;
+
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
@@ -80,20 +83,24 @@ public class ModLoader {
 		}
 		
 		try {
-			ClassLoader classloader = HookManager.getInstance().getLoader();
+			Loader loader = HookManager.getInstance().getLoader();;
 			final String classpath = properties.getProperty("classpath");
+
+			final ClassLoader classloader;
 			if (classpath != null) {
-				classloader = createClassLoader(modname, classpath, classloader);
+				classloader = createClassLoader(modname, classpath, loader, Boolean.valueOf(properties.getProperty("sharedClassLoader", "false")));
+			} else {
+				classloader = loader;
 			}
 
 			WurmMod mod = classloader.loadClass(className).asSubclass(WurmMod.class).newInstance();
 			return new ModEntry(mod, properties, modname);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NotFoundException e) {
 			throw new IOException(e);
 		}
 	}
 	
-	private ClassLoader createClassLoader(String modname, String classpath, ClassLoader parent) throws MalformedURLException {
+	private ClassLoader createClassLoader(String modname, String classpath, Loader parent, Boolean shared) throws MalformedURLException, NotFoundException {
 		
 		String[] entries = classpath.split(",");
 		
@@ -101,15 +108,21 @@ public class ModLoader {
 		
 		for (String entry : entries) {
 			Path path = Paths.get("mods", modname, entry);
-			if (Files.isRegularFile(path)) {
-				urls.add(path.toUri().toURL());
-			} else if (Files.isDirectory(path)) {
-				urls.add(path.toUri().toURL());
-			} else {
+			if (!Files.isRegularFile(path) && !Files.isDirectory(path)) {
 				throw new MalformedURLException("Missing classpath entry " + path.toString());
+			}
+			
+			if (shared) {
+				HookManager.getInstance().getClassPool().appendClassPath(path.toString());
+			} else {
+				urls.add(path.toUri().toURL());
 			}
 		}
 		
-		return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
+		if (shared) {
+			return parent;
+		} else {
+			return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
+		}
 	}
 }
