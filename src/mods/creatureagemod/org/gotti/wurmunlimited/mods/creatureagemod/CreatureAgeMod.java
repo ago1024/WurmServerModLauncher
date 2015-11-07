@@ -1,8 +1,6 @@
 package org.gotti.wurmunlimited.mods.creatureagemod;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,25 +10,31 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import javassist.CannotCompileException;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.NotFoundException;
+import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
+
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
-import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
+import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
 import com.wurmonline.server.WurmCalendar;
 import com.wurmonline.server.creatures.CreatureStatus;
 import com.wurmonline.server.creatures.CreatureTemplateIds;
 
-public class CreatureAgeMod implements WurmMod, Configurable, Initable {
+public class CreatureAgeMod implements WurmMod, Configurable, Initable, PreInitable {
 
 	private static final long ORIG_CREATURE_POLL_TIMER = 2419200L;
 
-	private int increaseGrowthUntilAge = 8;
-	private long increaseGrowthTimer = 259200L;
-	private Set<Integer> excludedTemplates = new HashSet<>(Arrays.asList(
+	private static int increaseGrowthUntilAge = 8;
+	private static long increaseGrowthTimer = 259200L;
+	private static Set<Integer> excludedTemplates = new HashSet<>(Arrays.asList(
 			CreatureTemplateIds.BOAR_FO_CID,
 			CreatureTemplateIds.HYENA_LIBILA_CID,
 			CreatureTemplateIds.WORG_CID,
@@ -60,8 +64,8 @@ public class CreatureAgeMod implements WurmMod, Configurable, Initable {
 		}
 		
 		
-		this.increaseGrowthUntilAge = Integer.valueOf(properties.getProperty("increaseGrowthUntilAge", Integer.toString(increaseGrowthUntilAge)));
-		this.increaseGrowthTimer = Math.min(ORIG_CREATURE_POLL_TIMER, Long.valueOf(properties.getProperty("increaseGrowthTimer", Long.toString(increaseGrowthTimer))));
+		increaseGrowthUntilAge = Integer.valueOf(properties.getProperty("increaseGrowthUntilAge", Integer.toString(increaseGrowthUntilAge)));
+		increaseGrowthTimer = Math.min(ORIG_CREATURE_POLL_TIMER, Long.valueOf(properties.getProperty("increaseGrowthTimer", Long.toString(increaseGrowthTimer))));
 		
 		String excl = properties.getProperty("excludedTemplates");
 		if (excl != null) {
@@ -89,56 +93,45 @@ public class CreatureAgeMod implements WurmMod, Configurable, Initable {
 		Iterable<String> iterable = () -> excludedTemplates.stream().map((id) -> idToName.get(id)).iterator();
 		logger.log(Level.INFO, "excludedTemplates: " + String.join(",", iterable));
 	}
+	
+	public static long getAdjustedLastPolledAge(CreatureStatus creatureStatus, boolean reborn) {
+
+		int age = creatureStatus.age;
+		int templateId = creatureStatus.getTemplate().getTemplateId();
+
+		if (!reborn && age < increaseGrowthUntilAge && WurmCalendar.currentTime - creatureStatus.lastPolledAge > increaseGrowthTimer && !excludedTemplates.contains(templateId)) {
+			return WurmCalendar.currentTime - ORIG_CREATURE_POLL_TIMER - 1;
+		}
+		
+		return creatureStatus.lastPolledAge;
+	}
+	
+	@Override
+	public void preInit() {
+		try {
+		
+			CtClass ctCreatureStatus = HookManager.getInstance().getClassPool().get("com.wurmonline.server.creatures.CreatureStatus");
+			CtMethod method = ctCreatureStatus.getMethod("pollAge", "(I)Z");
+			method.instrument(new ExprEditor() {
+				
+				@Override
+				public void edit(FieldAccess f) throws CannotCompileException {
+					if ("lastPolledAge".equals(f.getFieldName())) {
+						StringBuilder replacement = new StringBuilder();
+						
+						replacement.append(String.format("$_ = %s#getAdjustedLastPolledAge(this, reborn);", CreatureAgeMod.class.getName()));
+						f.replace(replacement.toString());
+					}
+				}
+			});
+		
+		} catch (NotFoundException | CannotCompileException e ) {
+			throw new HookException(e);
+		}
+	}
 
 	@Override
 	public void init() {
-
-		HookManager.getInstance().registerHook("com.wurmonline.server.creatures.CreatureStatus", "pollAge", "(I)Z", new InvocationHandlerFactory() {
-
-			@Override
-			public InvocationHandler createInvocationHandler() {
-				try {
-
-					return new InvocationHandler() {
-
-						Field field = ReflectionUtil.getField(CreatureStatus.class, "reborn");
-
-						@Override
-						public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-							CreatureStatus creatureStatus = (CreatureStatus) proxy;
-
-							Boolean value = ReflectionUtil.getPrivateField(creatureStatus, field);
-							boolean reborn = value != null && value.booleanValue();
-							int age = creatureStatus.age;
-							int templateId = creatureStatus.getTemplate().getTemplateId();
-
-							// Check if the shorter timer applies and has elapsed
-							if (!reborn && age < increaseGrowthUntilAge && WurmCalendar.currentTime - creatureStatus.lastPolledAge > increaseGrowthTimer && !excludedTemplates.contains(templateId)) {
-								long origLastPolled = creatureStatus.lastPolledAge;
-
-								// Set a fake last polled time earlier in time
-								long newLastPolled = WurmCalendar.currentTime - ORIG_CREATURE_POLL_TIMER - 1;
-								creatureStatus.lastPolledAge = newLastPolled;
-
-								// run pollAge()
-								Object result = method.invoke(proxy, args);
-
-								// Check if pollAge did not set a new last polled time (i.e. it did not increase the age for some reason). Revert to the original value
-								if (creatureStatus.lastPolledAge == newLastPolled) {
-									creatureStatus.lastPolledAge = origLastPolled;
-								}
-
-								return result;
-							} else {
-								return method.invoke(proxy, args);
-							}
-						}
-					};
-				} catch (NoSuchFieldException e) {
-					throw new HookException(e);
-				}
-			}
-		});
 	}
 
 }
