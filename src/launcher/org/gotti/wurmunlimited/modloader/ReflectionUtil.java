@@ -1,6 +1,7 @@
 package org.gotti.wurmunlimited.modloader;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +69,17 @@ public final class ReflectionUtil {
 			return (T) field.get(object);
 		} finally {
 			field.setAccessible(isAccesible);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T callPrivateMethod(Object target, Method method, Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		boolean isAccesible = method.isAccessible();
+		method.setAccessible(true);
+		try {
+			return (T) method.invoke(target, args);
+		} finally {
+			method.setAccessible(isAccesible);
 		}
 	}
 
