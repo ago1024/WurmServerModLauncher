@@ -56,6 +56,9 @@
 		<ant target="build-mod">
 			<property name="modname" value="creatureagemod"/>
 		</ant>
+		<ant target="build-mod">
+			<property name="modname" value="bagofholding"/>
+		</ant>
 	</target>
 	
 	<target name="zip" depends="clean,jar">
@@ -74,5 +77,6 @@
 		<delete file="mods/spellmod/spellmod.jar"/>
 		<delete file="mods/cropmod/cropmod.jar"/>
 		<delete file="mods/creatureagemod/creatureagemod.jar"/>
+		<delete file="mods/creatureagemod/bagofholding.jar"/>
 	</target>
 </project>
