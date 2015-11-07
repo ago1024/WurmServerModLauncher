@@ -1,5 +1,6 @@
 classname=org.gotti.wurmunlimited.mods.bagofholding.BagOfHoldingMod
 classpath=bagofholding.jar
+sharedClassLoader=true
 spellCost=30
 spellDifficulty=20
 spellCooldown=300000

@@ -75,7 +75,7 @@ public class BagOfHolding extends ReligiousSpell {
 			performer.getCommunicator().sendNormalServerMessage("You frown as you fail to enlarge the " + target.getName() + ".");
 			Server.getInstance().broadCastAction(String.valueOf(performer.getName()) + " frowns.", performer, 5);
 		} else {
-			performer.getCommunicator().sendNormalServerMessage("You succeed in enlarging the " + this.name + ".");
+			performer.getCommunicator().sendNormalServerMessage("You succeed in enlarging the " + target.getName() + ".");
 			eff.improvePower((float) power);
 			if (!target.isEnchantedTurret()) {
 				target.setHasCourier(true);
