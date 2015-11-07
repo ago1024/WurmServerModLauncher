@@ -68,18 +68,12 @@ public class BagOfHolding extends ReligiousSpell {
 			eff = new SpellEffect(target.getWurmId(), BUFF_COURIER, (float) power, 20000000);
 			effs.addSpellEffect(eff);
 			Server.getInstance().broadCastAction(String.valueOf(performer.getName()) + " looks pleased as " + performer.getHeSheItString() + " magicly enlarges the " + target.getName() + ".", performer, 5);
-			if (!target.isEnchantedTurret()) {
-				target.setHasCourier(true);
-			}
 		} else if (eff.getPower() > power) {
 			performer.getCommunicator().sendNormalServerMessage("You frown as you fail to enlarge the " + target.getName() + ".");
 			Server.getInstance().broadCastAction(String.valueOf(performer.getName()) + " frowns.", performer, 5);
 		} else {
 			performer.getCommunicator().sendNormalServerMessage("You succeed in enlarging the " + target.getName() + ".");
 			eff.improvePower((float) power);
-			if (!target.isEnchantedTurret()) {
-				target.setHasCourier(true);
-			}
 			Server.getInstance().broadCastAction(String.valueOf(performer.getName()) + " looks pleased as " + performer.getHeSheItString() + " enlarges the " + target.getName() + ".", performer, 5);
 		}
 	}
