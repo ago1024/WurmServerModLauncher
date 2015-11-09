@@ -28,6 +28,7 @@ public class BagOfHoldingMod implements WurmMod, Initable, PreInitable, Configur
 	private int spellCost = 30;
 	private int spellDifficulty = 20;
 	private long spellCooldown = 300000L;
+	private int effectModifier = 0;
 	
 	private static final Logger logger = Logger.getLogger(BagOfHoldingMod.class.getName());
 	
@@ -53,10 +54,12 @@ public class BagOfHoldingMod implements WurmMod, Initable, PreInitable, Configur
 		spellCost = Integer.valueOf(properties.getProperty("spellCost", Integer.toString(spellCost)));
 		spellDifficulty = Integer.valueOf(properties.getProperty("spellDifficulty", Integer.toString(spellDifficulty)));
 		spellCooldown = Long.valueOf(properties.getProperty("spellCooldown", Long.toString(spellCooldown)));
+		effectModifier = Integer.valueOf(properties.getProperty("effectModifier", Integer.toString(effectModifier)));
 		
 		logger.log(Level.INFO, "spellCost: " + spellCost);
 		logger.log(Level.INFO, "spellDifficulty: " + spellDifficulty);
 		logger.log(Level.INFO, "spellCooldown: " + spellCooldown);
+		logger.log(Level.INFO, "effectModifier: " + effectModifier);
 	}
 	
 	@Override
@@ -80,8 +83,15 @@ public class BagOfHoldingMod implements WurmMod, Initable, PreInitable, Configur
 							Item target = (Item)proxy;
 							
 							float modifier = BagOfHolding.getSpellEffect(target);
-							if (modifier > 1) {
-								double newVolume = Math.min(Integer.MAX_VALUE, modifier * ((Number) volume).doubleValue());
+							
+							if (effectModifier == 0) {
+								if (modifier > 1) {
+									double newVolume = Math.min(Integer.MAX_VALUE, modifier * ((Number) volume).doubleValue());
+									return (int) newVolume;
+								}
+							} else if (modifier > 0) {
+								double scale = 1 + modifier * modifier * effectModifier * 0.0001;
+								double newVolume = Math.min(Integer.MAX_VALUE, scale * ((Number) volume).doubleValue());
 								return (int) newVolume;
 							}
 						}
