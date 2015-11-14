@@ -3,6 +3,7 @@ bin
 data
 beta
 modlauncher.jar
+patcher.jar
 mods/*/*.jar
 lib
 modlauncher.zip

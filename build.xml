@@ -3,13 +3,13 @@
 	
 	<path id="server">
 		<fileset dir="lib">
-		<include name="server.jar"/>
-		<include name="common.jar"/>
-		<include name="javassist.jar"/>
+			<include name="server.jar"/>
+			<include name="common.jar"/>
+			<include name="javassist.jar"/>
 		</fileset>
 	</path>
 	
-	<target name="jar" depends="build-launcher,build-mods">
+	<target name="jar" depends="build-launcher,build-mods,build-patcher">
 	</target>
 	
 	
@@ -30,6 +30,30 @@
 			</fileset>
 		</jar>
 	</target>
+	
+	<target name="compile-patcher">
+		<delete dir="bin.ant.patcher"/>
+		<mkdir dir="bin.ant.patcher"/>
+		<javac srcdir="src/patcher" destdir="bin.ant.patcher" debug="true">
+			<classpath>
+				<fileset dir="lib">
+					<include name="javassist.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="build-patcher" depends="compile-patcher">
+		<jar destfile="patcher.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.gotti.wurmunlimited.patcher.PatchServerJar" />
+				<attribute name="Class-Path" value="javassist.jar" />
+			</manifest>
+			<fileset dir="bin.ant.patcher">
+			</fileset>
+		</jar>
+	</target>
+	
 	
 	<target name="build-mod" depends="build-launcher">
 		<delete dir="bin.ant.${modname}"/>
@@ -66,14 +90,18 @@
 			<zipfileset dir="." includes="modlauncher.jar"/>
 			<zipfileset dir="." includes="modlauncher.bat"/>
 			<zipfileset dir="." includes="modlauncher.sh"/>
+			<zipfileset dir="." includes="patcher.jar"/>
+			<zipfileset dir="." includes="patcher.bat"/>
 			<zipfileset dir="mods" prefix="mods"/>
 			<zipfileset dir="lib" includes="javassist.jar"/>
 		</zip>
 	</target>
 	<target name="clean">
 		<delete dir="bin.ant"/>
+		<delete dir="bin.ant.patcher"/>
 		<delete file="modlauncher.zip"/>
 		<delete file="modlauncher.jar"/>
+		<delete file="patcher.jar"/>
 		<delete file="mods/spellmod/spellmod.jar"/>
 		<delete file="mods/cropmod/cropmod.jar"/>
 		<delete file="mods/creatureagemod/creatureagemod.jar"/>
