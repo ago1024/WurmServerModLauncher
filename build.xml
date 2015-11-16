@@ -104,5 +104,6 @@
 	
 	<target name="clean-mod" if="modname">
 		<delete file="mods/${modname}/${modname}.jar"/>
+		<delete dir="bin.ant.${modname}"/>
 	</target>
 </project>
