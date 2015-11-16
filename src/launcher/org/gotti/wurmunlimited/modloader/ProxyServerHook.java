@@ -1,10 +1,8 @@
 package org.gotti.wurmunlimited.modloader;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -24,6 +22,7 @@ import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 
 import com.wurmonline.server.creatures.Communicator;
+import com.wurmonline.server.players.Player;
 
 /**
  * Hook into com.wurmonline.server.Server.startRunning()
@@ -37,6 +36,7 @@ public class ProxyServerHook extends ServerHook {
 	private ProxyServerHook() {
 		registerStartRunningHook();
 		registerOnMessageHook();
+		registerOnPlayerLoginHook();
 	}
 	
 	private void registerStartRunningHook() {
@@ -119,6 +119,34 @@ public class ProxyServerHook extends ServerHook {
 			throw new HookException(e);
 		}
 	}
+	
+	
+	private void registerOnPlayerLoginHook() {
+		
+		try {
+			String descriptor = Descriptor.ofMethod(CtClass.voidType, new CtClass[] {
+					HookManager.getInstance().getClassPool().get("com.wurmonline.server.players.Player")
+			});
+			HookManager.getInstance().registerHook("com.wurmonline.server.LoginHandler", "sendLoggedInPeople", descriptor, new InvocationHandlerFactory() {
+				
+				@Override
+				public InvocationHandler createInvocationHandler() {
+					return new InvocationHandler() {
+						
+						@Override
+						public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+							Object result = method.invoke(proxy, args);
+							fireOnPlayerLogin((Player)args[0]);
+							return result;
+						}
+					};
+				}
+			});
+		} catch (NotFoundException e) {
+			throw new HookException(e);
+		}
+	}
+	
 	
 	public static boolean communicatorMessageHook(Communicator communicator, String message) {
 		return getInstance().fireOnMessage(communicator, message);

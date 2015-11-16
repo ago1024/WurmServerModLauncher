@@ -21,6 +21,8 @@ import javassist.NotFoundException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
+import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
+import org.gotti.wurmunlimited.modloader.interfaces.ModListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
@@ -28,14 +30,26 @@ public class ModLoader {
 	
 	private static Logger logger = Logger.getLogger(ModLoader.class.getName());
 	
-	private class ModEntry {
+	private class Entry implements ModEntry {
 		private WurmMod mod;
 		private Properties properties;
 		private String name;
-		public ModEntry(WurmMod mod, Properties properties, String name) {
+		public Entry(WurmMod mod, Properties properties, String name) {
 			this.mod = mod;
 			this.properties = properties;
 			this.name = name;
+		}
+		@Override
+		public String getName() {
+			return name;
+		}
+		@Override
+		public Properties getProperties() {
+			return properties;
+		}
+		@Override
+		public WurmMod getWurmMod() {
+			return mod;
 		}
 	}
 
@@ -44,11 +58,11 @@ public class ModLoader {
 	}
 
 	public List<WurmMod> loadModsFromModDir(Path modDir) throws IOException {
-		List<ModEntry> mods = new ArrayList<ModEntry>();
+		List<Entry> mods = new ArrayList<Entry>();
 
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(modDir, "*.properties")) {
 			for (Path modInfo : directoryStream) {
-				ModEntry mod = loadModFromInfo(modInfo);
+				Entry mod = loadModFromInfo(modInfo);
 				mods.add(mod);
 			}
 		}
@@ -65,10 +79,15 @@ public class ModLoader {
 
 		mods.stream().forEach(modEntry -> logger.info("Loaded " + modEntry.mod.getClass().getName() + " as " + modEntry.name));
 		
+		// Send the list of initialized mods to all modlisteners
+		mods.stream().filter(modEntry -> modEntry.mod instanceof ModListener).forEach(
+				modEntry -> mods.stream().forEach(mod -> ((ModListener)modEntry.mod).modInitialized(mod))
+			);
+		
 		return mods.stream().map(modEntry -> modEntry.mod).collect(Collectors.toList());
 	}
 
-	public ModEntry loadModFromInfo(Path modInfo) throws IOException {
+	public Entry loadModFromInfo(Path modInfo) throws IOException {
 		Properties properties = new Properties();
 
 		try (InputStream inputStream = Files.newInputStream(modInfo)) {
@@ -94,7 +113,7 @@ public class ModLoader {
 			}
 
 			WurmMod mod = classloader.loadClass(className).asSubclass(WurmMod.class).newInstance();
-			return new ModEntry(mod, properties, modname);
+			return new Entry(mod, properties, modname);
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NotFoundException e) {
 			throw new IOException(e);
 		}

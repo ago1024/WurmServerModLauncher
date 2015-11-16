@@ -5,11 +5,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
 import com.wurmonline.server.creatures.Communicator;
+import com.wurmonline.server.players.Player;
 
 public class ServerHook {
 	
@@ -46,6 +48,18 @@ public class ServerHook {
 			}
 		}
 		return state;
+	}
+	
+	public void fireOnPlayerLogin(Player player) {
+		for (WurmMod mod : mods) {
+			try {
+				if (mod instanceof PlayerLoginListener) {
+					((PlayerLoginListener) mod).onPlayerLogin(player);
+				}
+			} catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onPlayerLogin handler for mod " + mod.getClass().getSimpleName() + " failed", e);
+			}
+		}
 	}
 	
 	public static ServerHook createServerHook() {

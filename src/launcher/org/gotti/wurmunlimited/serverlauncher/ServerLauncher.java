@@ -16,7 +16,7 @@ public class ServerLauncher {
 			loader.delegateLoadingOf("impl.org.controlsfx");
 			loader.delegateLoadingOf("com.mysql.");
 			loader.delegateLoadingOf("org.sqlite.");
-			loader.delegateLoadingOf("org.gotti.wurmunlimited.modloader.");
+			loader.delegateLoadingOf("org.gotti.wurmunlimited.modloader.classhooks.");
 			loader.delegateLoadingOf("javassist.");
 
 			Thread.currentThread().setContextClassLoader(loader);
