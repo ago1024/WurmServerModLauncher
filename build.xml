@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="jar" name="Wurm Unlimited Mod Launcher">
 	
+	<property name="mods" value="spellmod,cropmod,creatureagemod,bagofholding"/>
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="lib/ant-contrib-1.0b3.jar" />
+		</classpath>
+	</taskdef>
+
 	<path id="server">
 		<fileset dir="lib">
 			<include name="server.jar"/>
@@ -8,18 +16,18 @@
 			<include name="javassist.jar"/>
 		</fileset>
 	</path>
-	
+
 	<target name="jar" depends="build-launcher,build-mods,build-patcher">
 	</target>
-	
-	
+
+
 	<target name="compile-launcher">
 		<delete dir="bin.ant"/>
 		<mkdir dir="bin.ant"/>
 		<javac srcdir="src/launcher" destdir="bin.ant" debug="true" classpathref="server">
 		</javac>
 	</target>
-	
+
 	<target name="build-launcher" depends="compile-launcher">
 		<jar destfile="modlauncher.jar">
 			<manifest>
@@ -30,7 +38,7 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<target name="compile-patcher">
 		<delete dir="bin.ant.patcher"/>
 		<mkdir dir="bin.ant.patcher"/>
@@ -53,8 +61,8 @@
 			</fileset>
 		</jar>
 	</target>
-	
-	
+
+
 	<target name="build-mod" depends="build-launcher">
 		<delete dir="bin.ant.${modname}"/>
 		<mkdir dir="bin.ant.${modname}"/>
@@ -69,22 +77,11 @@
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<target name="build-mods">
-		<ant target="build-mod">
-			<property name="modname" value="spellmod"/>
-		</ant>
-		<ant target="build-mod">
-			<property name="modname" value="cropmod"/>
-		</ant>
-		<ant target="build-mod">
-			<property name="modname" value="creatureagemod"/>
-		</ant>
-		<ant target="build-mod">
-			<property name="modname" value="bagofholding"/>
-		</ant>
+		<foreach list="${mods}" param="modname" target="build-mod"/>
 	</target>
-	
+
 	<target name="zip" depends="clean,jar">
 		<zip destfile="modlauncher.zip">
 			<zipfileset dir="." includes="modlauncher.jar"/>
@@ -102,9 +99,10 @@
 		<delete file="modlauncher.zip"/>
 		<delete file="modlauncher.jar"/>
 		<delete file="patcher.jar"/>
-		<delete file="mods/spellmod/spellmod.jar"/>
-		<delete file="mods/cropmod/cropmod.jar"/>
-		<delete file="mods/creatureagemod/creatureagemod.jar"/>
-		<delete file="mods/creatureagemod/bagofholding.jar"/>
+		<foreach list="${mods}" param="modname" target="clean-mod"/>
+	</target>
+	
+	<target name="clean-mod" if="modname">
+		<delete file="mods/${modname}/${modname}.jar"/>
 	</target>
 </project>
