@@ -34,19 +34,25 @@ public class BagOfHoldingMod implements WurmMod, Initable, PreInitable, Configur
 	
 	@Override
 	public void onServerStarted() {
-		logger.log(Level.INFO, "Registering BagOfHolding spell");
+		new Runnable() {
+			
+			@Override
+			public void run() {
+				logger.log(Level.INFO, "Registering BagOfHolding spell");
 
-		BagOfHolding bagOfHolding = new BagOfHolding(spellCost, spellDifficulty, spellCooldown);
-		
-		try {
-			ReflectionUtil.callPrivateMethod(Spells.class, ReflectionUtil.getMethod(Spells.class, "addSpell"), bagOfHolding);
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e ) {
-			throw new RuntimeException(e);
-		}
-		
-		for (Deity deity : Deities.getDeities()) {
-			deity.addSpell(bagOfHolding);
-		}
+				BagOfHolding bagOfHolding = new BagOfHolding(spellCost, spellDifficulty, spellCooldown);
+				
+				try {
+					ReflectionUtil.callPrivateMethod(Spells.class, ReflectionUtil.getMethod(Spells.class, "addSpell"), bagOfHolding);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e ) {
+					throw new RuntimeException(e);
+				}
+				
+				for (Deity deity : Deities.getDeities()) {
+					deity.addSpell(bagOfHolding);
+				}
+			}
+		}.run();
 	}
 	
 	@Override
