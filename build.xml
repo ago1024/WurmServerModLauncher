@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="jar" name="Wurm Unlimited Mod Launcher">
 	
-	<property name="mods" value="spellmod,cropmod,creatureagemod,bagofholding,harvesthelper"/>
+	<property name="mods" value="spellmod,cropmod,creatureagemod,bagofholding,harvesthelper,serverpacks"/>
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>

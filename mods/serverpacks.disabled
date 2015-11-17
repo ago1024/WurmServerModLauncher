@@ -1,0 +1,4 @@
+classname=org.gotti.wurmunlimited.mods.serverpacks.ServerPackMod
+classpath=serverpacks.jar
+#Set a fixed port. If no port is selected a random free port will be used
+#serverPort=8787
