@@ -77,27 +77,39 @@
 			</fileset>
 		</jar>
 	</target>
-
+	
 	<target name="build-mods">
 		<foreach list="${mods}" param="modname" target="build-mod"/>
 	</target>
 
+	<target name="zip-mod" if="modname">
+		<zip destfile="dist/${modname}.zip">
+			<zipfileset dir="mods" prefix="mods">
+				<include name="${modname}.disabled"/>
+				<include name="${modname}/**"/>
+			</zipfileset>
+		</zip>
+	</target>
+
 	<target name="zip" depends="clean,jar">
-		<zip destfile="modlauncher.zip">
+		<mkdir dir="dist"/>
+		<zip destfile="dist/modlauncher.zip">
 			<zipfileset dir="." includes="modlauncher.jar"/>
 			<zipfileset dir="." includes="modlauncher.bat"/>
 			<zipfileset dir="." includes="modlauncher.sh"/>
 			<zipfileset dir="." includes="patcher.jar"/>
 			<zipfileset dir="." includes="patcher.bat"/>
 			<zipfileset dir="." includes="patcher.sh"/>
-			<zipfileset dir="mods" prefix="mods"/>
 			<zipfileset dir="lib" includes="javassist.jar"/>
+			<zipfileset dir="mods" prefix="mods"/>
 		</zip>
+		<foreach list="${mods}" param="modname" target="zip-mod"/>
 	</target>
+	
 	<target name="clean">
 		<delete dir="bin.ant"/>
 		<delete dir="bin.ant.patcher"/>
-		<delete file="modlauncher.zip"/>
+		<delete file="dist/modlauncher.zip"/>
 		<delete file="modlauncher.jar"/>
 		<delete file="patcher.jar"/>
 		<foreach list="${mods}" param="modname" target="clean-mod"/>
@@ -106,5 +118,6 @@
 	<target name="clean-mod" if="modname">
 		<delete file="mods/${modname}/${modname}.jar"/>
 		<delete dir="bin.ant.${modname}"/>
+		<delete file="dist/${modname}.zip"/>
 	</target>
 </project>
