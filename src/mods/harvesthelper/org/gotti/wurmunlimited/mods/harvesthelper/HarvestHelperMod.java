@@ -1,8 +1,12 @@
 package org.gotti.wurmunlimited.mods.harvesthelper;
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -78,12 +82,16 @@ public class HarvestHelperMod implements WurmMod, Configurable, Initable, PreIni
 	@Override
 	public void init() {
 	}
+	
+	private List<HarvestHelperSeasons> getSortedSeasons() {
+		return Arrays.stream(HarvestHelperSeasons.values()).sorted(comparator.reversed()).collect(Collectors.toList());
+	}
 
 	@Override
 	public void onPlayerLogin(Player player) {
 		if (enableSeasonsMotd && player != null) {
 			long now = WurmCalendar.currentTime;
-			for (HarvestHelperSeasons season : HarvestHelperSeasons.values()) {
+			for (HarvestHelperSeasons season : getSortedSeasons()) {
 				long start = season.getStartGrowth();
 				if (now >= start) {
 					player.getCommunicator().sendNormalServerMessage(String.format("%s is in season", capitalize(season.getName())));
@@ -98,7 +106,7 @@ public class HarvestHelperMod implements WurmMod, Configurable, Initable, PreIni
 	public boolean onPlayerMessage(Communicator communicator, String message) {
 		if (enableSeasonsCommand && message != null && message.startsWith("/seasons")) {
 			long now = WurmCalendar.currentTime;
-			for (HarvestHelperSeasons season : HarvestHelperSeasons.values()) {
+			for (HarvestHelperSeasons season : getSortedSeasons()) {
 				long start = season.getStartGrowth();
 				if (now >= start) {
 					communicator.sendNormalServerMessage(String.format("%s is in season", capitalize(season.getName())));
@@ -118,4 +126,12 @@ public class HarvestHelperMod implements WurmMod, Configurable, Initable, PreIni
 		}
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
+	
+	private static Comparator<HarvestHelperSeasons> comparator = new Comparator<HarvestHelperSeasons>() {
+
+		@Override
+		public int compare(HarvestHelperSeasons o1, HarvestHelperSeasons o2) {
+			return Long.compare(o1.getStartGrowth(), o2.getStartGrowth());
+		}
+	}; 
 }
