@@ -7,7 +7,17 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.NotFoundException;
+import javassist.bytecode.Descriptor;
+import javassist.expr.ExprEditor;
+import javassist.expr.MethodCall;
+
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
@@ -71,6 +81,38 @@ public class BagOfHoldingMod implements WurmMod, Initable, PreInitable, Configur
 	@Override
 	public void preInit() {
 		ModActions.init();
+
+		/**
+		 * Replace this.template.getContainerX() to this.getContainerX()
+		 */
+		try {
+			ClassPool classPool = HookManager.getInstance().getClassPool();
+
+			ExprEditor exprEditor = new ExprEditor() {
+				@Override
+				public void edit(MethodCall m) throws CannotCompileException {
+					if ("com.wurmonline.server.items.ItemTemplate".equals(m.getClassName())) {
+						if ("getContainerSizeX".equals(m.getMethodName())) {
+							m.replace("$_ = this.getContainerSizeX();");
+						} else if ("getContainerSizeY".equals(m.getMethodName())) {
+							m.replace("$_ = this.getContainerSizeY();");
+						} else if ("getContainerSizeZ".equals(m.getMethodName())) {
+							m.replace("$_ = this.getContainerSizeZ();");
+						}
+					}
+				}
+			};
+			
+			String descriptor = Descriptor.ofMethod(CtClass.booleanType, new CtClass[] { classPool.get("com.wurmonline.server.items.Item"), CtClass.booleanType });
+			classPool.get("com.wurmonline.server.items.Item").getMethod("insertItem", descriptor).instrument(exprEditor);
+			
+			descriptor = Descriptor.ofMethod(CtClass.booleanType, new CtClass[] { classPool.get("com.wurmonline.server.items.Item"), CtClass.booleanType });
+			classPool.get("com.wurmonline.server.items.Item").getMethod("testInsertHollowItem", descriptor).instrument(exprEditor);
+			
+		
+		} catch (NotFoundException | CannotCompileException e) {
+			throw new HookException(e);
+		}
 	}
 
 	@Override
@@ -107,5 +149,42 @@ public class BagOfHoldingMod implements WurmMod, Initable, PreInitable, Configur
 				};
 			}
 		});
+		
+		InvocationHandlerFactory invocationHandlerFactory = new InvocationHandlerFactory() {
+			
+			@Override
+			public InvocationHandler createInvocationHandler() {
+				return new InvocationHandler() {
+					
+					@Override
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+						Object dimension = method.invoke(proxy, args);
+						
+						if (dimension instanceof Number && proxy instanceof Item && BagOfHolding.isValidTarget((Item) proxy)) {
+							Item target = (Item)proxy;
+							
+							float modifier = BagOfHolding.getSpellEffect(target);
+							
+							if (effectModifier == 0) {
+								if (modifier > 1) {
+									double newDimension = Math.min(1200, Math.cbrt(modifier) * ((Number) dimension).doubleValue());
+									return (int) newDimension;
+								}
+							} else if (modifier > 0) {
+								double scale = 1 + modifier * modifier * effectModifier * 0.0001;
+								double newDimension = Math.min(1200, Math.cbrt(scale) * ((Number) dimension).doubleValue());
+								return (int) newDimension;
+							}
+						}
+						
+						return dimension;
+					}
+				};
+			}
+		};
+		
+		HookManager.getInstance().registerHook("com.wurmonline.server.items.Item", "getContainerSizeX", "()I", invocationHandlerFactory);
+		HookManager.getInstance().registerHook("com.wurmonline.server.items.Item", "getContainerSizeY", "()I", invocationHandlerFactory);
+		HookManager.getInstance().registerHook("com.wurmonline.server.items.Item", "getContainerSizeZ", "()I", invocationHandlerFactory);
 	}
 }
