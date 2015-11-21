@@ -3,8 +3,8 @@ package com.wurmonline.server.spells;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.gotti.wurmunlimited.actions.ModActions;
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import org.gotti.wurmunlimited.modsupport.actions.ModActions;
 
 import com.wurmonline.server.Server;
 import com.wurmonline.server.behaviours.ActionEntry;
