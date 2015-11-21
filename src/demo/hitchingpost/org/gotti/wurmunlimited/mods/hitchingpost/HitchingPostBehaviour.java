@@ -14,6 +14,9 @@ public class HitchingPostBehaviour extends ModVehicleBehaviour {
 	}
 
 	public void setSettingsForVehicle(final Item item, final Vehicle v) {
+		/*
+		 * Vehicle has some protected fields. The facade will deal with those.
+		 */
 		VehicleFacade vehicle = wrap(v);
 		vehicle.setUnmountable(true);
 		vehicle.createOnlyPassengerSeats(1);
@@ -25,7 +28,9 @@ public class HitchingPostBehaviour extends ModVehicleBehaviour {
 		vehicle.setMaxHeightDiff(0.04f);
 		vehicle.setCommandType((byte)2);
 		
-		
+		/*
+		 * The Seat constructor is protected too. createSeat() will handle that
+		 */
 		final Seat[] hitches = { createSeat(Seat.TYPE_HITCHED), createSeat(Seat.TYPE_HITCHED), createSeat(Seat.TYPE_HITCHED) };
 		hitches[0].offx = 2.0f;
 		hitches[0].offy = 1.0f;

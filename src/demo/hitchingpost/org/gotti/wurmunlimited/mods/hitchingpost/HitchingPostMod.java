@@ -21,6 +21,15 @@ import com.wurmonline.server.items.ItemTemplate;
 import com.wurmonline.server.items.ItemTypes;
 import com.wurmonline.server.skills.SkillList;
 
+/**
+ * Server packs and item creation example.
+ * 
+ * Steps:
+ * 1. Create item template
+ * 2. Create creation entry to allow building the hitching post
+ * 3. Register a custom vehicle behaviour
+ * 
+ */
 public class HitchingPostMod implements WurmMod, Initable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants {
 
 	private static Logger logger = Logger.getLogger(HitchingPostMod.class.getName());
@@ -29,8 +38,21 @@ public class HitchingPostMod implements WurmMod, Initable, ServerStartedListener
 	@Override
 	public void onItemTemplatesCreated() {
 		logger.log(Level.INFO, "Adding hitchingpost");
+		
+		/*
+		 * Create the item template.
+		 * 
+		 * onItemTemplatesCreated is called right after ItemTemplateCreator.createItemTemplates() finished. 
+		 * Other item templates should be added after this hook to make them available during server startup.
+		 * 
+		 * This method uses the ItemTemplateBuilder. While it's more text than the simple createItemTemplate(......) call it's more readable.
+		 */
 
 		try {
+			/* 
+			 * The ItemTemplateBuilder will use the IdFactory to pick the next free id.
+			 * "ago.hitchingpost" is used as an identifier that can be used to retrieve the same id again. 
+			 */
 			ItemTemplateBuilder itemTemplateBuilder = new ItemTemplateBuilder("ago.hitchingpost");
 			itemTemplateBuilder.name("hitching post", "hitching posts", "A post used to tie up animals.");
 			itemTemplateBuilder.descriptions("excellent", "good", "ok", "poor");
@@ -70,13 +92,23 @@ public class HitchingPostMod implements WurmMod, Initable, ServerStartedListener
 	@Override
 	public void onServerStarted() {
 		
+		/*
+		 * Once the server is fully started we finish with the other initializations.
+		 */
+		
 		if (hitchingPostId > 0) {
+			/*
+			 * Create an CreationEntry
+			 */
 			final AdvancedCreationEntry creationEntry = CreationEntryCreator.createAdvancedEntry(SkillList.CARPENTRY, ItemList.log, ItemList.plank, hitchingPostId, false, false, 0.0f, true, true, CreationCategories.ANIMAL_EQUIPMENT);
 			creationEntry.addRequirement(new CreationRequirement(1, ItemList.log, 2, true));
 			creationEntry.addRequirement(new CreationRequirement(2, ItemList.nailsIronLarge, 5, true));
 			creationEntry.addRequirement(new CreationRequirement(3, ItemList.plank, 2, true));
 			creationEntry.addRequirement(new CreationRequirement(4, ItemList.horseShoe, 3, true));
 			
+			/*
+			 * Add a custom vehicle behaviour 
+			 */
 			HitchingPostBehaviour hitchingPostBehaviour = new HitchingPostBehaviour();
 			ModVehicleBehaviours.addItemVehicle(hitchingPostId, hitchingPostBehaviour);
 		}
