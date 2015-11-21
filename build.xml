@@ -2,6 +2,7 @@
 <project default="jar" name="Wurm Unlimited Mod Launcher">
 	
 	<property name="mods" value="spellmod,cropmod,creatureagemod,bagofholding,harvesthelper,serverpacks"/>
+	<property name="demo" value="hitchingpost"/>
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
@@ -17,7 +18,7 @@
 		</fileset>
 	</path>
 
-	<target name="jar" depends="build-launcher,build-mods,build-patcher">
+	<target name="jar" depends="build-launcher,build-mods,build-demo,build-patcher">
 	</target>
 
 
@@ -63,23 +64,39 @@
 	</target>
 
 
-	<target name="build-mod" depends="build-launcher">
+	<target name="build-mod" depends="build-launcher" if="modname">
 		<delete dir="bin.ant.${modname}"/>
 		<mkdir dir="bin.ant.${modname}"/>
-		<javac srcdir="src/mods/${modname}" destdir="bin.ant.${modname}" debug="true">
+		<javac srcdir="src/${mode}/${modname}" destdir="bin.ant.${modname}" debug="true">
 			<classpath>
 				<path refid="server"/>
 				<pathelement path="modlauncher.jar"/>
 			</classpath>
 		</javac>
-		<jar destfile="mods/${modname}/${modname}.jar">
+		<jar destfile="${mode}/${modname}/${modname}.jar">
 			<fileset dir="bin.ant.${modname}">
 			</fileset>
 		</jar>
 	</target>
 	
+	<target name="build-mod-mods">
+		<ant target="build-mod">
+			<property name="mode" value="mods"/>
+		</ant>
+	</target>
+	
+	<target name="build-mod-demo">
+		<ant target="build-mod">
+			<property name="mode" value="demo"/>
+		</ant>
+	</target>
+	
 	<target name="build-mods">
-		<foreach list="${mods}" param="modname" target="build-mod"/>
+		<foreach list="${mods}" param="modname" target="build-mod-mods" inheritall="true"/>
+	</target>
+	
+	<target name="build-demo">
+		<foreach list="${demo}" param="modname" target="build-mod-demo" inheritall="true"/>
 	</target>
 
 	<target name="zip-mod" if="modname">
@@ -90,6 +107,16 @@
 			</zipfileset>
 		</zip>
 	</target>
+	
+	<target name="zip-demo" if="modname">
+		<zip destfile="dist/${modname}.zip">
+			<zipfileset dir="demo" prefix="mods">
+				<include name="${modname}.properties"/>
+				<include name="${modname}/**"/>
+			</zipfileset>
+		</zip>
+	</target>
+	
 
 	<target name="zip" depends="clean,jar">
 		<mkdir dir="dist"/>
@@ -104,6 +131,7 @@
 			<zipfileset dir="mods" prefix="mods"/>
 		</zip>
 		<foreach list="${mods}" param="modname" target="zip-mod"/>
+		<foreach list="${demo}" param="modname" target="zip-demo"/>
 	</target>
 	
 	<target name="clean">
@@ -112,11 +140,12 @@
 		<delete file="dist/modlauncher.zip"/>
 		<delete file="modlauncher.jar"/>
 		<delete file="patcher.jar"/>
-		<foreach list="${mods}" param="modname" target="clean-mod"/>
+		<foreach list="${mods},${demo}" param="modname" target="clean-mod"/>
 	</target>
 	
 	<target name="clean-mod" if="modname">
 		<delete file="mods/${modname}/${modname}.jar"/>
+		<delete file="demo/${modname}/${modname}.jar"/>
 		<delete dir="bin.ant.${modname}"/>
 		<delete file="dist/${modname}.zip"/>
 	</target>
