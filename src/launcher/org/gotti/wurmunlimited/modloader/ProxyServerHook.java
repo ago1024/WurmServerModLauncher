@@ -35,6 +35,7 @@ public class ProxyServerHook extends ServerHook {
 
 	private ProxyServerHook() {
 		registerStartRunningHook();
+		registerItemTemplatesCreatedHook();
 		registerOnMessageHook();
 		registerOnPlayerLoginHook();
 	}
@@ -59,6 +60,28 @@ public class ProxyServerHook extends ServerHook {
 
 		HookManager.getInstance().registerHook("com.wurmonline.server.Server", "startRunning", "()V", invocationHandlerFactory);
 	}
+	
+	private void registerItemTemplatesCreatedHook() {
+
+		InvocationHandlerFactory invocationHandlerFactory = new InvocationHandlerFactory() {
+
+			@Override
+			public InvocationHandler createInvocationHandler() {
+				return new InvocationHandler() {
+
+					@Override
+					public Object invoke(Object wrapped, Method method, Object[] args) throws Throwable {
+						Object result = method.invoke(wrapped, args);
+						fireOnItemTemplatesCreated();
+						return result;
+					}
+				};
+			}
+		};
+
+		HookManager.getInstance().registerHook("com.wurmonline.server.items.ItemTemplateCreator", "initialiseItemTemplates", "()V", invocationHandlerFactory);
+	}
+	
 	
 	private void registerOnMessageHook() {
 		try {

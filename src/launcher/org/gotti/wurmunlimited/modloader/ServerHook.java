@@ -5,6 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
@@ -32,6 +33,18 @@ public class ServerHook {
 				}
 			} catch (Exception e) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onServerStarted handler for mod " + mod.getClass().getSimpleName() + " failed", e);
+			}
+		}
+	}
+	
+	public void fireOnItemTemplatesCreated() {
+		for (WurmMod mod : mods) {
+			try {
+				if (mod instanceof ItemTemplatesCreatedListener) {
+					((ItemTemplatesCreatedListener) mod).onItemTemplatesCreated();
+				}
+			} catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onItemTemplatesCreated handler for mod " + mod.getClass().getSimpleName() + " failed", e);
 			}
 		}
 	}
