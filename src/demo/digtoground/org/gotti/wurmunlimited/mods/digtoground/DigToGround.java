@@ -14,8 +14,6 @@ import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
-import com.wurmonline.server.creatures.Creature;
-
 public class DigToGround implements WurmMod, PreInitable, Initable {
 	
 	@Override
