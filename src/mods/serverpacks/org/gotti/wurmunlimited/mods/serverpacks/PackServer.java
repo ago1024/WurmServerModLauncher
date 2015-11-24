@@ -23,7 +23,13 @@ public abstract class PackServer {
 	
 	private HttpServer httpServer;
 	
-	public PackServer(int port) throws IOException {
+	private final String publicServerAddress;
+	private final int publicServerPort;
+	
+	public PackServer(int port, String publicServerAddress, int publicServerPort) throws IOException {
+		
+		this.publicServerAddress = publicServerAddress;
+		this.publicServerPort = publicServerPort;
 		
 		InetAddress addr = InetAddress.getByAddress(Server.getInstance().getExternalIp());
 		InetSocketAddress address = new InetSocketAddress(addr, port);
@@ -65,7 +71,15 @@ public abstract class PackServer {
 	protected abstract InputStream getPackStream(String packid) throws IOException;
 
 	public URI getUri() throws URISyntaxException {
-		return new URI("http", null, httpServer.getAddress().getHostString(), httpServer.getAddress().getPort(), "/packs/", null, null);
+		String address = publicServerAddress;
+		if (publicServerAddress == null)
+			address = httpServer.getAddress().getHostString();
+		
+		int port = publicServerPort;
+		if (port == 0)
+			port = httpServer.getAddress().getPort();
+		
+		return new URI("http", null, address, port, "/packs/", null, null);
 	}
 	
 

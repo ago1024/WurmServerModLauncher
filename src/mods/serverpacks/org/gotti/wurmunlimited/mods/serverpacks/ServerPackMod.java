@@ -33,6 +33,8 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 	private Logger logger = Logger.getLogger(ServerPackMod.class.getName());
 
 	private int serverPort = 0;
+	private String publicServerAddress = null;
+	private int publicServerPort = 0;
 
 	private PackServer packServer;
 
@@ -43,8 +45,12 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 	@Override
 	public void configure(Properties properties) {
 		this.serverPort = Integer.parseInt(properties.getProperty("serverPort", Integer.toString(serverPort)));
+		this.publicServerPort = Integer.parseInt(properties.getProperty("publicServerPort", Integer.toString(publicServerPort)));
+		this.publicServerAddress = properties.getProperty("publicServerAddress");
 
 		logger.info("serverPort: " + serverPort);
+		logger.info("publicServerAddress: " + publicServerAddress);
+		logger.info("publicServerPort: " + publicServerPort);
 	}
 
 	@Override
@@ -125,7 +131,7 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 	@Override
 	public void onServerStarted() {
 		try {
-			packServer = new PackServer(serverPort) {
+			packServer = new PackServer(serverPort, publicServerAddress, publicServerPort) {
 
 				@Override
 				protected InputStream getPackStream(String packid) throws IOException {

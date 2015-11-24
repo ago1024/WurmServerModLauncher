@@ -2,3 +2,11 @@ classname=org.gotti.wurmunlimited.mods.serverpacks.ServerPackMod
 classpath=serverpacks.jar
 #Set a fixed port. If no port is selected a random free port will be used
 #serverPort=8787
+# Use this to announce a different server name or IP address to the clients
+# By default the setting "External Server IP Address" will be used for pack URLs
+# This setting may be required when doing port forwarding in the router
+#publicServerPort=
+# Use this to announce a different server port to the client
+# By default the serverPort or the automaticly choosen port will be used
+# This setting may be required when doing port forwarding in the router
+#publicServerPort=
