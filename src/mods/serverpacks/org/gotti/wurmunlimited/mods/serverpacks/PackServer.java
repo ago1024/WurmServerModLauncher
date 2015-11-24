@@ -52,7 +52,7 @@ public abstract class PackServer {
 							return;
 						}
 					} catch (IOException e) {
-						logger.log(Level.SEVERE, null, e);
+						logger.log(Level.SEVERE, e.getMessage(), e);
 					}
 				}
 				paramHttpExchange.sendResponseHeaders(404, -1);
@@ -65,7 +65,7 @@ public abstract class PackServer {
 	protected abstract InputStream getPackStream(String packid) throws IOException;
 
 	public URI getUri() throws URISyntaxException {
-		return new URI("http", null, httpServer.getAddress().getHostName(), httpServer.getAddress().getPort(), "/packs/", null, null); 
+		return new URI("http", null, httpServer.getAddress().getHostString(), httpServer.getAddress().getPort(), "/packs/", null, null);
 	}
 	
 

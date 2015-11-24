@@ -11,7 +11,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -104,6 +103,10 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 		new Runnable() {
 			public void run() {
 				try {
+					if (packServer == null) {
+						logger.log(Level.WARNING, "HTTP server did not start properly. No server packs will be delivered.");
+						return;
+					}
 					URI uri = packServer.getUri();
 					if (player != null) {
 						for (String packId : packs.keySet()) {
@@ -113,7 +116,7 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 						}
 					}
 				} catch (URISyntaxException e) {
-					logger.log(Level.WARNING, null, e);
+					logger.log(Level.WARNING, e.getMessage(), e);
 				}
 			}
 		}.run();
@@ -134,7 +137,7 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 				}
 			};
 		} catch (IOException e) {
-			logger.log(Level.SEVERE, null, e);
+			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 }
