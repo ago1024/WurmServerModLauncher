@@ -36,7 +36,26 @@ public class DigToGround implements WurmMod, PreInitable, Initable {
 				@Override
 				public void edit(MethodCall m) throws CannotCompileException {
 					if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("insertItem")) {
-						m.replace("{ created.putItemInfrontof(performer); $_ = true; }");
+						StringBuffer buffer = new StringBuffer();
+						buffer.append("{");
+						buffer.append("	com.wurmonline.server.items.Item v = dredging && performer.getVehicle() != -10 ? com.wurmonline.server.Items.getItem(performer.getVehicle()) : null;");
+						buffer.append("	if (v != null && v.isHollow() && v.getNumItemsNotCoins() < 100 && v.getFreeVolume() >= created.getVolume()) {");
+						buffer.append("		v.insertItem(created, true);");
+						buffer.append("	} else if (v != null && v.isHollow()) {");
+						buffer.append("		created.putItemInfrontof(performer);");
+						buffer.append("		performer.getCommunicator().sendNormalServerMessage(\"The \" + v.getName() + \" is full and the \" + created.getName() + \" flows to the ground.\");");
+						buffer.append("	} else {");
+						buffer.append("		created.putItemInfrontof(performer);");
+						buffer.append("	}");
+						buffer.append("	$_ = true;");
+						buffer.append("}");
+						m.replace(buffer.toString());
+					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("getNumItemsNotCoins")) {
+						m.replace("$_ = 0;");
+					} else if ("com.wurmonline.server.creatures.Creature".equals(m.getClassName()) && m.getMethodName().equals("canCarry")) {
+						m.replace("$_ = true;");
+					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("getFreeVolume")) {
+						m.replace("$_ = 1000;");
 					}
 				}
 			});
