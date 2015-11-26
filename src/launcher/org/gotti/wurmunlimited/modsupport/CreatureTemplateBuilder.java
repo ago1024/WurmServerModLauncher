@@ -112,9 +112,13 @@ public class CreatureTemplateBuilder {
 
 	private boolean isHorse;
 
-	public CreatureTemplateBuilder(String identifier) {
-		this.templateId = IdFactory.getIdFor(identifier, IdType.CREATURETEMPLATE);
+	public CreatureTemplateBuilder(int id) {
+		this.templateId = id;
 		defaultSkills();
+	}
+	
+	public CreatureTemplateBuilder(String identifier) {
+		this(IdFactory.getIdFor(identifier, IdType.CREATURETEMPLATE));
 	}
 
 	public CreatureTemplateBuilder(final String identifier, final String name, final String description, final String modelName, final int[] types, final byte bodyType, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong, final short centimetersWide,
