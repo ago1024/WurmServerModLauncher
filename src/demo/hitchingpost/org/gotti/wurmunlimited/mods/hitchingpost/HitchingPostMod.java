@@ -84,6 +84,13 @@ public class HitchingPostMod implements WurmMod, Initable, ServerStartedListener
 			ItemTemplate hitchingPostTemplate = itemTemplateBuilder.build();
 			this.hitchingPostId = hitchingPostTemplate.getTemplateId();
 			logger.log(Level.INFO, "Using template id " + hitchingPostId);
+			
+			/*
+			 * Add a custom vehicle behaviour 
+			 */
+			HitchingPostBehaviour hitchingPostBehaviour = new HitchingPostBehaviour();
+			ModVehicleBehaviours.addItemVehicle(hitchingPostId, hitchingPostBehaviour);
+			
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -105,12 +112,6 @@ public class HitchingPostMod implements WurmMod, Initable, ServerStartedListener
 			creationEntry.addRequirement(new CreationRequirement(2, ItemList.nailsIronLarge, 5, true));
 			creationEntry.addRequirement(new CreationRequirement(3, ItemList.plank, 2, true));
 			creationEntry.addRequirement(new CreationRequirement(4, ItemList.horseShoe, 3, true));
-			
-			/*
-			 * Add a custom vehicle behaviour 
-			 */
-			HitchingPostBehaviour hitchingPostBehaviour = new HitchingPostBehaviour();
-			ModVehicleBehaviours.addItemVehicle(hitchingPostId, hitchingPostBehaviour);
 		}
 	}
 

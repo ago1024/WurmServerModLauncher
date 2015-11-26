@@ -23,6 +23,16 @@ public interface VehicleFacade {
 	void setCommandType(byte i);
 
 	void addHitchSeats(Seat[] hitches);
+
+	void createPassengerSeats(int i);
+
+	void setSeatOffset(int i, float f, float g, float h);
+
+	void setSkillNeeded(float f);
+
+	void setMaxSpeed(float f);
+
+	void setCanHaveEquipment(boolean b);
 }
 
 

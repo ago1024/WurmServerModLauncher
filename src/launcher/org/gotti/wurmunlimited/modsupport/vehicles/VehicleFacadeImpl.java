@@ -12,12 +12,18 @@ import com.wurmonline.server.behaviours.Vehicle;
 public class VehicleFacadeImpl implements VehicleFacade {
 
 	private static Method createOnlyPassengerSeats;
+	private static Method createPassengerSeats;
 	private static Field embarkString;
+	private static Field maxSpeed;
+	private static Field canHaveEquipment;
 
 	static {
 		try {
 			createOnlyPassengerSeats = ReflectionUtil.getMethod(Vehicle.class, "createOnlyPassengerSeats");
+			createPassengerSeats = ReflectionUtil.getMethod(Vehicle.class, "createPassengerSeats");
 			embarkString = ReflectionUtil.getField(Vehicle.class, "embarkString");
+			maxSpeed = ReflectionUtil.getField(Vehicle.class, "maxSpeed");
+			canHaveEquipment = ReflectionUtil.getField(Vehicle.class, "canHaveEquipment");
 		} catch (NoSuchMethodException | NoSuchFieldException e) {
 			throw new RuntimeException(e);
 		}
@@ -93,6 +99,32 @@ public class VehicleFacadeImpl implements VehicleFacade {
 	@Override
 	public void addHitchSeats(Seat[] hitches) {
 		v.addHitchSeats(hitches);
+	}
+
+	@Override
+	public void createPassengerSeats(int passengerSeats) {
+		callPrivateMethod(createPassengerSeats, passengerSeats);
+	}
+
+	@Override
+	public void setSeatOffset(final int aNumber, final float aOffx, final float aOffy, final float aOffz) {
+		v.setSeatOffset(aNumber, aOffx, aOffy, aOffz);
+	}
+
+	@Override
+	public void setSkillNeeded(float skillNeeded) {
+		v.skillNeeded = skillNeeded;
+
+	}
+
+	@Override
+	public void setMaxSpeed(float f) {
+		setPrivateField(maxSpeed, f);
+	}
+
+	@Override
+	public void setCanHaveEquipment(boolean b) {
+		setPrivateField(canHaveEquipment, b);
 	}
 
 }

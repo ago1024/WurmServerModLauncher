@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,6 +65,8 @@ public class IdFactory {
 	}
 	
 	public static int getIdFor(String identifier, IdType idType) {
-		return getInstance().getId(identifier, idType);
+		int id = getInstance().getId(identifier, idType);
+		logger.log(Level.INFO, String.format("Using id %d for %s %s", id, idType.name().toLowerCase(Locale.ROOT), identifier));
+		return id;
 	}
 }
