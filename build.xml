@@ -2,7 +2,7 @@
 <project default="jar" name="Wurm Unlimited Mod Launcher">
 	
 	<property name="mods" value="spellmod,cropmod,creatureagemod,bagofholding,harvesthelper,serverpacks,inbreedwarning"/>
-	<property name="demo" value="hitchingpost,digtoground"/>
+	<property name="demo" value="hitchingpost,digtoground,creaturedemo"/>
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
