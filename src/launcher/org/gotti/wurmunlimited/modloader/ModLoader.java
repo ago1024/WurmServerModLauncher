@@ -1,5 +1,6 @@
 package org.gotti.wurmunlimited.modloader;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -10,13 +11,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javassist.CannotCompileException;
+import javassist.ClassPool;
 import javassist.Loader;
 import javassist.NotFoundException;
+import javassist.Translator;
 
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
@@ -25,6 +31,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
 import org.gotti.wurmunlimited.modloader.interfaces.ModListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.serverlauncher.DelegatedLauncher;
 
 public class ModLoader {
 	
@@ -68,21 +75,39 @@ public class ModLoader {
 		}
 		
 		// new style mods with initable will do configure, preInit, init
-		mods.stream().filter(modEntry -> (modEntry.mod instanceof Initable || modEntry.mod instanceof PreInitable) && modEntry.mod instanceof Configurable).forEach(modEntry -> ((Configurable) modEntry.mod).configure(modEntry.properties));
+		mods.stream().filter(modEntry -> (modEntry.mod instanceof Initable || modEntry.mod instanceof PreInitable) && modEntry.mod instanceof Configurable).forEach(modEntry -> { 
+			try (EarlyLoadingChecker c = initEarlyLoadingChecker(modEntry.name, "configure")) {
+				((Configurable) modEntry.mod).configure(modEntry.properties);
+				}
+			});
 
-		mods.stream().filter(modEntry -> modEntry.mod instanceof PreInitable).forEach(modEntry -> ((PreInitable)modEntry.mod).preInit());
+		mods.stream().filter(modEntry -> modEntry.mod instanceof PreInitable).forEach(modEntry -> {
+			try (EarlyLoadingChecker c = initEarlyLoadingChecker(modEntry.name, "preinit")) {
+				((PreInitable)modEntry.mod).preInit();
+				}
+			});
 
-		mods.stream().filter(modEntry -> modEntry.mod instanceof Initable).forEach(modEntry -> ((Initable)modEntry.mod).init());
+		mods.stream().filter(modEntry -> modEntry.mod instanceof Initable).forEach(modEntry -> {
+			try (EarlyLoadingChecker c = initEarlyLoadingChecker(modEntry.name, "init")) {
+				((Initable)modEntry.mod).init();
+				}
+			});
 
 		// old style mods without initable ir preinitable will just be configure, but they are handled last
-		mods.stream().filter(modEntry -> !(modEntry.mod instanceof Initable || modEntry.mod instanceof PreInitable) && modEntry.mod instanceof Configurable).forEach(modEntry -> ((Configurable) modEntry.mod).configure(modEntry.properties));
+		mods.stream().filter(modEntry -> !(modEntry.mod instanceof Initable || modEntry.mod instanceof PreInitable) && modEntry.mod instanceof Configurable).forEach(modEntry -> {
+			try (EarlyLoadingChecker c = initEarlyLoadingChecker(modEntry.name, "configure")) {
+				((Configurable) modEntry.mod).configure(modEntry.properties);
+				}
+			});
 
 		mods.stream().forEach(modEntry -> logger.info("Loaded " + modEntry.mod.getClass().getName() + " as " + modEntry.name));
 		
 		// Send the list of initialized mods to all modlisteners
-		mods.stream().filter(modEntry -> modEntry.mod instanceof ModListener).forEach(
-				modEntry -> mods.stream().forEach(mod -> ((ModListener)modEntry.mod).modInitialized(mod))
-			);
+		mods.stream().filter(modEntry -> modEntry.mod instanceof ModListener).forEach(modEntry -> {
+			try (EarlyLoadingChecker c = initEarlyLoadingChecker(modEntry.name, "modListener")) {
+				mods.stream().forEach(mod -> ((ModListener)modEntry.mod).modInitialized(mod));
+				}
+			});
 		
 		return mods.stream().map(modEntry -> modEntry.mod).collect(Collectors.toList());
 	}
@@ -143,5 +168,60 @@ public class ModLoader {
 		} else {
 			return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
 		}
+	}
+	
+	private interface EarlyLoadingChecker extends Closeable {
+		@Override
+		public void close();
+	}
+	
+	private EarlyLoadingChecker initEarlyLoadingChecker(String modname, String phase) {
+
+		final List<String> earlyLoaded = new LinkedList<>();
+		
+		try {
+			HookManager.getInstance().getLoader().addTranslator(HookManager.getInstance().getClassPool(), new Translator() {
+
+				@Override
+				public void start(ClassPool paramClassPool) throws NotFoundException, CannotCompileException {
+				}
+				
+				@Override
+				public void onLoad(ClassPool paramClassPool, String paramString) throws NotFoundException, CannotCompileException {
+					if (paramString.startsWith("com.wurmonline.") && !paramString.endsWith("Exception")) {
+						earlyLoaded.add(paramString);
+					}
+				}
+			});
+			
+			return new EarlyLoadingChecker() {
+				
+				@Override
+				public void close() {
+					
+					if (!earlyLoaded.isEmpty()) {
+						for (String classname : earlyLoaded) {
+							logger.log(Level.WARNING, String.format("Mod %1$s loaded server class %3$s during phase %2$s", modname, phase, classname));
+						}
+					}
+					
+					try {
+						HookManager.getInstance().getLoader().addTranslator(HookManager.getInstance().getClassPool(), new Translator() {
+							@Override
+							public void start(ClassPool paramClassPool) throws NotFoundException, CannotCompileException {
+							}
+							
+							@Override
+							public void onLoad(ClassPool paramClassPool, String paramString) throws NotFoundException, CannotCompileException {
+							}
+						});
+					} catch (CannotCompileException | NotFoundException e) {
+					}
+				}
+			};
+		} catch (CannotCompileException | NotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 }
