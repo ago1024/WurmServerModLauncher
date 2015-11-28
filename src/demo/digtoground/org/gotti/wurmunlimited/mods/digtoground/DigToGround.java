@@ -1,5 +1,9 @@
 package org.gotti.wurmunlimited.mods.digtoground;
 
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -10,11 +14,24 @@ import javassist.expr.MethodCall;
 
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
+import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
 
-public class DigToGround implements WurmMod, PreInitable, Initable {
+
+public class DigToGround implements WurmMod, PreInitable, Initable, Configurable {
+
+	private static Logger logger = Logger.getLogger(DigToGround.class.getName());
+	
+	boolean dredgeToShip = true;
+	
+	@Override
+	public void configure(Properties properties) {
+		this.dredgeToShip = Boolean.parseBoolean(properties.getProperty("dregeToShip", String.valueOf(this.dredgeToShip)));
+		
+		logger.log(Level.INFO, "dredgeToShip: " + dredgeToShip);
+	}
 	
 	@Override
 	public void preInit() {
@@ -37,18 +54,25 @@ public class DigToGround implements WurmMod, PreInitable, Initable {
 				public void edit(MethodCall m) throws CannotCompileException {
 					if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("insertItem")) {
 						StringBuffer buffer = new StringBuffer();
-						buffer.append("{");
-						buffer.append("	com.wurmonline.server.items.Item v = dredging && performer.getVehicle() != -10 ? com.wurmonline.server.Items.getItem(performer.getVehicle()) : null;");
-						buffer.append("	if (v != null && v.isHollow() && v.getNumItemsNotCoins() < 100 && v.getFreeVolume() >= created.getVolume()) {");
-						buffer.append("		v.insertItem(created, true);");
-						buffer.append("	} else if (v != null && v.isHollow()) {");
-						buffer.append("		created.putItemInfrontof(performer);");
-						buffer.append("		performer.getCommunicator().sendNormalServerMessage(\"The \" + v.getName() + \" is full and the \" + created.getName() + \" flows to the ground.\");");
-						buffer.append("	} else {");
-						buffer.append("		created.putItemInfrontof(performer);");
-						buffer.append("	}");
-						buffer.append("	$_ = true;");
-						buffer.append("}");
+						if (dredgeToShip) {
+							buffer.append("{");
+							buffer.append("	com.wurmonline.server.items.Item v = dredging && performer.getVehicle() != -10 ? com.wurmonline.server.Items.getItem(performer.getVehicle()) : null;");
+							buffer.append("	if (v != null && v.isHollow() && v.getNumItemsNotCoins() < 100 && v.getFreeVolume() >= created.getVolume()) {");
+							buffer.append("		v.insertItem(created, true);");
+							buffer.append("	} else if (v != null && v.isHollow()) {");
+							buffer.append("		created.putItemInfrontof(performer);");
+							buffer.append("		performer.getCommunicator().sendNormalServerMessage(\"The \" + v.getName() + \" is full and the \" + created.getName() + \" flows to the ground.\");");
+							buffer.append("	} else {");
+							buffer.append("		created.putItemInfrontof(performer);");
+							buffer.append("	}");
+							buffer.append("	$_ = true;");
+							buffer.append("}");
+						} else {
+							buffer.append("{");
+							buffer.append("	created.putItemInfrontof(performer);");
+							buffer.append("	$_ = true;");
+							buffer.append("}");
+						}
 						m.replace(buffer.toString());
 					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("getNumItemsNotCoins")) {
 						m.replace("$_ = 0;");
