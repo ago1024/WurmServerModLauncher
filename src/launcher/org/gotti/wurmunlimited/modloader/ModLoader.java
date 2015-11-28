@@ -31,7 +31,6 @@ import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
 import org.gotti.wurmunlimited.modloader.interfaces.ModListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
-import org.gotti.wurmunlimited.serverlauncher.DelegatedLauncher;
 
 public class ModLoader {
 	
