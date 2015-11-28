@@ -44,6 +44,7 @@ public abstract class PackServer {
 				if (matcher.matches()) {
 					try (InputStream stream = getPackStream(matcher.group(1))) {
 						if (stream != null) {
+							paramHttpExchange.getResponseHeaders().add("Cache-control", "max-age=31556926");
 							paramHttpExchange.sendResponseHeaders(200, 0);
 							try (OutputStream os = paramHttpExchange.getResponseBody()) {
 								int n = 0;
