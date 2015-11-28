@@ -74,7 +74,7 @@ public class HitchingPostMod implements WurmMod, Initable, ServerStartedListener
 			itemTemplateBuilder.behaviourType((short) 41);
 			itemTemplateBuilder.combatDamage(0);
 			itemTemplateBuilder.decayTime(9072000L);
-			itemTemplateBuilder.dimensions(90, 10, 64);
+			itemTemplateBuilder.dimensions(400, 100, 300);
 			itemTemplateBuilder.primarySkill((int) NOID);
 			itemTemplateBuilder.bodySpaces(EMPTY_BYTE_PRIMITIVE_ARRAY);
 			itemTemplateBuilder.modelName("model.structure.hitchingpost.");
