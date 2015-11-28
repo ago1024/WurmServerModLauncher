@@ -50,9 +50,17 @@ public class DigToGround implements WurmMod, PreInitable, Initable, Configurable
 					classpool.get("com.wurmonline.mesh.MeshIO")
 			});
 			classpool.get("com.wurmonline.server.behaviours.Terraforming").getMethod("dig", descriptor).instrument(new ExprEditor() {
+				
+				int i = 0;
+				
 				@Override
 				public void edit(MethodCall m) throws CannotCompileException {
 					if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("insertItem")) {
+						/* Only replace the first two occurances of insert item */
+						if (i >= 2)
+							return;
+						i++;
+						
 						StringBuffer buffer = new StringBuffer();
 						if (dredgeToShip) {
 							buffer.append("{");
