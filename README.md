@@ -18,3 +18,4 @@ Demo status (conversions of other mods for demonstration and testing purposes):
 * DigToGround: Dig to ground, dredge to ship (or ground)
 * HitchingPost: Arkoniks Hitchingpost mod
 
+Check the [Wiki](https://github.com/ago1024/WurmServerModLauncher/wiki) for details
