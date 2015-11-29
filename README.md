@@ -14,7 +14,7 @@ ModLauncher for WurmUnlimited and a set of mods
 
 Demo status (conversions of other mods for demonstration and testing purposes): 
 
-* CreatureDemo: AbsolutlyNobodys creature mods
+* CreatureDemo: AbsolutelyNobodys creature mods
 * DigToGround: Dig to ground, dredge to ship (or ground)
 * HitchingPost: Arkoniks Hitchingpost mod
 
