@@ -66,10 +66,14 @@ public class ModLoader {
 	public List<WurmMod> loadModsFromModDir(Path modDir) throws IOException {
 		List<Entry> mods = new ArrayList<Entry>();
 
+		logger.info(String.format("ModLoader version %1$s", this.getClass().getPackage().getImplementationVersion()));
+
 		try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(modDir, "*.properties")) {
 			for (Path modInfo : directoryStream) {
-				Entry mod = loadModFromInfo(modInfo);
-				mods.add(mod);
+				try (EarlyLoadingChecker c = initEarlyLoadingChecker(modInfo.getFileName().toString().replaceAll("\\.properties$", ""), "load")) {
+					Entry mod = loadModFromInfo(modInfo);
+					mods.add(mod);
+				}
 			}
 		}
 		
@@ -99,7 +103,13 @@ public class ModLoader {
 				}
 			});
 
-		mods.stream().forEach(modEntry -> logger.info("Loaded " + modEntry.mod.getClass().getName() + " as " + modEntry.name));
+		mods.stream().forEach(modEntry -> {
+			String implementationVersion = modEntry.mod.getClass().getPackage().getImplementationVersion();
+			if (implementationVersion == null || implementationVersion.isEmpty()) {
+				implementationVersion = "unversioned";
+			}
+			logger.info(String.format("Loaded %1$s as %2$s (%3$s)", modEntry.mod.getClass().getName(),  modEntry.name, implementationVersion));
+		});
 		
 		// Send the list of initialized mods to all modlisteners
 		mods.stream().filter(modEntry -> modEntry.mod instanceof ModListener).forEach(modEntry -> {
@@ -205,15 +215,7 @@ public class ModLoader {
 					}
 					
 					try {
-						HookManager.getInstance().getLoader().addTranslator(HookManager.getInstance().getClassPool(), new Translator() {
-							@Override
-							public void start(ClassPool paramClassPool) throws NotFoundException, CannotCompileException {
-							}
-							
-							@Override
-							public void onLoad(ClassPool paramClassPool, String paramString) throws NotFoundException, CannotCompileException {
-							}
-						});
+						HookManager.getInstance().getLoader().addTranslator(HookManager.getInstance().getClassPool(), NOOP_TRANSLATOR);
 					} catch (CannotCompileException | NotFoundException e) {
 					}
 				}
@@ -223,4 +225,14 @@ public class ModLoader {
 		}
 		
 	}
+	
+	private final static Translator NOOP_TRANSLATOR = new Translator() {
+		@Override
+		public void start(ClassPool paramClassPool) throws NotFoundException, CannotCompileException {
+		}
+		
+		@Override
+		public void onLoad(ClassPool paramClassPool, String paramString) throws NotFoundException, CannotCompileException {
+		}
+	};
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="jar" name="Wurm Unlimited Mod Launcher">
-	
+
 	<property name="mods" value="spellmod,cropmod,creatureagemod,bagofholding,harvesthelper,serverpacks,inbreedwarning"/>
 	<property name="demo" value="hitchingpost,digtoground,creaturedemo"/>
 
@@ -9,6 +9,17 @@
 			<pathelement location="lib/ant-contrib-1.0b3.jar" />
 		</classpath>
 	</taskdef>
+	
+	<taskdef name="jgit-buildnumber" classname="ru.concerteza.util.buildnumber.JGitBuildNumberAntTask">
+		<classpath>
+			<pathelement location="lib/jgit-buildnumber-ant-task-1.2.10.jar" />
+			<pathelement location="lib/org.eclipse.jgit-2.0.0.jar" />
+		</classpath>
+	</taskdef>
+
+	<target name="git-revision">
+		<jgit-buildnumber />
+	</target>
 
 	<path id="server">
 		<fileset dir="lib">
@@ -22,7 +33,7 @@
 	</target>
 
 
-	<target name="compile-launcher">
+	<target name="compile-launcher" depends="git-revision">
 		<delete dir="bin.ant"/>
 		<mkdir dir="bin.ant"/>
 		<javac srcdir="src/launcher" destdir="bin.ant" debug="true" classpathref="server">
@@ -34,6 +45,7 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.gotti.wurmunlimited.serverlauncher.ServerLauncher" />
 				<attribute name="Class-Path" value="javassist.jar server.jar common.jar lib/activation.jar lib/annotations.jar lib/commons-codec-1.6.jar lib/controlsfx-8.20.8.jar lib/controlsfx-8.20.8-sources.jar lib/httpclient-4.2.5.jar lib/httpcore-4.2.4.jar lib/javaws.jar lib/jsr305.jar lib/jtwitter.jar lib/mail.jar lib/mysql-connector.jar lib/mysql-connector-java-5.1.23-bin.jar lib/servlet.jar lib/signpost-core.jar lib/sqlite-jdbc-3.8.11.2.jar lib/SteamServerJni.jar" />
+				<attribute name="Implementation-Version" value="${git.tag}-${git.shortRevision}"/>
 			</manifest>
 			<fileset dir="bin.ant">
 			</fileset>
@@ -57,12 +69,12 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.gotti.wurmunlimited.patcher.PatchServerJar" />
 				<attribute name="Class-Path" value="javassist.jar" />
+				<attribute name="Implementation-Version" value="${git.tag}-${git.shortRevision}"/>
 			</manifest>
 			<fileset dir="bin.ant.patcher">
 			</fileset>
 		</jar>
 	</target>
-
 
 	<target name="build-mod" depends="build-launcher" if="modname">
 		<delete dir="bin.ant.${modname}"/>
@@ -74,27 +86,30 @@
 			</classpath>
 		</javac>
 		<jar destfile="${mode}/${modname}/${modname}.jar">
+			<manifest>
+				<attribute name="Implementation-Version" value="${git.tag}-${git.shortRevision}"/>
+			</manifest>
 			<fileset dir="bin.ant.${modname}">
 			</fileset>
 		</jar>
 	</target>
-	
+
 	<target name="build-mod-mods">
 		<ant target="build-mod">
 			<property name="mode" value="mods"/>
 		</ant>
 	</target>
-	
+
 	<target name="build-mod-demo">
 		<ant target="build-mod">
 			<property name="mode" value="demo"/>
 		</ant>
 	</target>
-	
+
 	<target name="build-mods">
 		<foreach list="${mods}" param="modname" target="build-mod-mods" inheritall="true"/>
 	</target>
-	
+
 	<target name="build-demo">
 		<foreach list="${demo}" param="modname" target="build-mod-demo" inheritall="true"/>
 	</target>
@@ -107,7 +122,7 @@
 			</zipfileset>
 		</zip>
 	</target>
-	
+
 	<target name="zip-demo" if="modname">
 		<zip destfile="dist/${modname}.zip">
 			<zipfileset dir="demo" prefix="mods">
@@ -116,7 +131,7 @@
 			</zipfileset>
 		</zip>
 	</target>
-	
+
 
 	<target name="zip" depends="clean,jar">
 		<mkdir dir="dist"/>
@@ -133,7 +148,7 @@
 		<foreach list="${mods}" param="modname" target="zip-mod"/>
 		<foreach list="${demo}" param="modname" target="zip-demo"/>
 	</target>
-	
+
 	<target name="clean">
 		<delete dir="bin.ant"/>
 		<delete dir="bin.ant.patcher"/>
@@ -142,7 +157,7 @@
 		<delete file="patcher.jar"/>
 		<foreach list="${mods},${demo}" param="modname" target="clean-mod"/>
 	</target>
-	
+
 	<target name="clean-mod" if="modname">
 		<delete file="mods/${modname}/${modname}.jar"/>
 		<delete file="demo/${modname}/${modname}.jar"/>

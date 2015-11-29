@@ -1,12 +1,20 @@
 package org.gotti.wurmunlimited.modloader.classhooks;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes.Name;
 import java.util.logging.Logger;
 
 import javassist.CannotCompileException;
@@ -35,7 +43,75 @@ public class HookManager {
 
 	private HookManager() {
 		classPool = ClassPool.getDefault();
-		loader = new Loader(classPool);
+		loader = new Loader(classPool) {
+			
+			@Override
+			protected Class findClass(String name) throws ClassNotFoundException {
+				int index = name.lastIndexOf(".");
+				if (index != -1) {
+					try {
+						Package pkg = getPackage(name.substring(0, index));
+						if (pkg == null) {
+							CtClass ctClass = classPool.get(name);
+							String url = ctClass.getURL().toString();
+							if (url.startsWith("jar:") && url.lastIndexOf("!") != -1) {
+								URL manifestURL = new URL(url.substring(0, url.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF");
+								try (InputStream is = manifestURL.openStream()) {
+									Manifest man = new Manifest(is);
+	
+									String specTitle = null, specVersion = null, specVendor = null;
+									String implTitle = null, implVersion = null, implVendor = null;
+									
+									String path = name.replace('.', '/').concat("/");
+	
+									Attributes attr = man.getAttributes(path);
+									if (attr != null) {
+										specTitle = attr.getValue(Name.SPECIFICATION_TITLE);
+										specVersion = attr.getValue(Name.SPECIFICATION_VERSION);
+										specVendor = attr.getValue(Name.SPECIFICATION_VENDOR);
+										implTitle = attr.getValue(Name.IMPLEMENTATION_TITLE);
+										implVersion = attr.getValue(Name.IMPLEMENTATION_VERSION);
+										implVendor = attr.getValue(Name.IMPLEMENTATION_VENDOR);
+									}
+									attr = man.getMainAttributes();
+									if (attr != null) {
+										if (specTitle == null) {
+											specTitle = attr.getValue(Name.SPECIFICATION_TITLE);
+										}
+										if (specVersion == null) {
+											specVersion = attr.getValue(Name.SPECIFICATION_VERSION);
+										}
+										if (specVendor == null) {
+											specVendor = attr.getValue(Name.SPECIFICATION_VENDOR);
+										}
+										if (implTitle == null) {
+											implTitle = attr.getValue(Name.IMPLEMENTATION_TITLE);
+										}
+										if (implVersion == null) {
+											implVersion = attr.getValue(Name.IMPLEMENTATION_VERSION);
+										}
+										if (implVendor == null) {
+											implVendor = attr.getValue(Name.IMPLEMENTATION_VENDOR);
+										}
+									}
+								
+									definePackage(ctClass.getPackageName(), specTitle, specVersion, specVendor, implTitle, implVersion, implVendor, null);
+									
+								} catch (IOException e) {
+								}
+							}
+						}
+					} catch (NotFoundException | MalformedURLException e) {
+					}
+				}
+				
+				
+				
+				return super.findClass(name);
+			}
+			
+			
+		};
 	}
 
 	public static synchronized HookManager getInstance() {
