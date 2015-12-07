@@ -120,14 +120,14 @@ public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
 				ctPollCropTiles.instrument(new ExprEditor() {
 					public void edit(MethodCall methodCall) throws CannotCompileException {
 						if (methodCall.getClassName().equals("com.wurmonline.server.zones.CropTilePoller") && methodCall.getMethodName().equals("checkForFarmGrowth")) {
-							String replaceString = "if (((data >> 4) & 0x7) == 6) {\n";
-							// Now for the removal, and the else clause to call checkForFarmGrowth on younger tiles...
-							replaceString += "	toRemove.add(cTile);\n" + "}\n"
-									+ "else {\n"
-									+ "	checkForFarmGrowth(currTileId, cTile.getX(), cTile.getY(), type, (byte)data, meshToUse, cTile.isOnSurface());\n" 
-									+ "}\n"
-									+ "$_ = null;";
-							methodCall.replace(replaceString);
+							StringBuffer code = new StringBuffer();
+							code.append("if (((data >> 4) & 0x7) == 6) {\n");
+							code.append("	toRemove.add(cTile);\n");
+							code.append("	$_ = null;\n");
+							code.append("} else {\n");
+							code.append("	$_ = $proceed($$);\n");
+							code.append("}\n");
+							methodCall.replace(code.toString());
 						}
 					}
 				});
