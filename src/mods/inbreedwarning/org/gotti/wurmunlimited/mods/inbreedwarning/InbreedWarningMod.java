@@ -58,11 +58,16 @@ public class InbreedWarningMod implements WurmMod, Initable {
 								} else {
 									mother = null;
 									father = null;
-									
 								}
 								
-								if (father != null && mother != null  && father.getFather() == mother.getFather() || father.getMother() == mother.getMother() || father.getWurmId() == mother.getFather() || father.getMother() == mother.getWurmId()) {
-									performer.getCommunicator().sendNormalServerMessage("The " + mother.getName() + " and the " + father.getName() + " look very similar. You think they may be related.");
+								if (father != null && mother != null) {
+									if (father.getFather() != -10 && father.getFather() == mother.getFather()
+											|| father.getMother() != -10 && father.getMother() == mother.getMother()
+											|| father.getWurmId() == mother.getFather()
+											|| father.getMother() == mother.getWurmId())
+									{
+										performer.getCommunicator().sendNormalServerMessage("The " + mother.getName() + " and the " + father.getName() + " look very similar. You think they may be related.");
+									}
 								}
 							}
 							
