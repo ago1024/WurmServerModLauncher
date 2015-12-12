@@ -29,7 +29,7 @@ public class ModSupportDb {
 			Class.forName(LITE_DB_DRIVER);
 			return DriverManager.getConnection(dbConnection);
 		} catch (SQLException | ClassNotFoundException e) {
-			throw new RuntimeException("Failed to initialize modsupport db connection");
+			throw new RuntimeException("Failed to initialize modsupport db connection", e);
 		}
 	}
 

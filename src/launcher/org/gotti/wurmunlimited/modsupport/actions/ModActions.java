@@ -15,6 +15,8 @@ import com.wurmonline.server.behaviours.Actions;
 
 public class ModActions {
 	
+	public static boolean inited = false;
+	
 	public static int getNextActionId() {
 		return Actions.actionEntrys.length;
 	}
@@ -38,10 +40,14 @@ public class ModActions {
 	}
 
 	public static void init() {
+		if (inited)
+			return;
+		
 		try {
 			CtClass ctActions = HookManager.getInstance().getClassPool().get("com.wurmonline.server.behaviours.Actions");
 			CtField ctActionEntrys = ctActions.getField("actionEntrys");
 			ctActionEntrys.setModifiers(Modifier.clear(ctActionEntrys.getModifiers(), Modifier.FINAL));
+			inited = true;
 		} catch (NotFoundException e) {
 			throw new RuntimeException(e);
 		}
