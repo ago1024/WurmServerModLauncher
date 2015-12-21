@@ -3,19 +3,15 @@ package org.gotti.wurmunlimited.modloader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtPrimitiveType;
 import javassist.NotFoundException;
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.Bytecode;
-import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.CodeIterator;
-import javassist.bytecode.ConstPool;
 import javassist.bytecode.Descriptor;
-import javassist.bytecode.LocalVariableAttribute;
-import javassist.bytecode.MethodInfo;
+import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
 
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
@@ -89,56 +85,31 @@ public class ProxyServerHook extends ServerHook {
 			CtClass ctCommunicator = classPool.get("com.wurmonline.server.creatures.Communicator");
 
 			CtClass[] paramTypes = {
-					CtPrimitiveType.intType,
 					classPool.get("java.nio.ByteBuffer")
 			};
 			
-			String descriptor = Descriptor.ofMethod(CtClass.booleanType, new CtClass[] {
-					classPool.get("com.wurmonline.server.creatures.Communicator"),
-					classPool.get(String.class.getName())
-			});
-			
-			CtMethod method = ctCommunicator.getMethod("reallyHandle", Descriptor.ofMethod(CtPrimitiveType.voidType, paramTypes));
-			MethodInfo methodInfo = method.getMethodInfo();
-			CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
-			ConstPool constPool = methodInfo.getConstPool();
-			
-			LocalVariableAttribute attr = (LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag);
-			int messageIndex = -1;
-			for (int i = 0; i < attr.tableLength(); i++) {
-				if ("message".equals(attr.variableName(i))) {
-					messageIndex = attr.index(i);
-				}
+			// com.wurmonline.server.creatures.Communicator.reallyHandle_CMD_MESSAGE(ByteBuffer)
+			CtMethod method;
+			try {
+				method = ctCommunicator.getMethod("reallyHandle_CMD_MESSAGE", Descriptor.ofMethod(CtPrimitiveType.voidType, paramTypes));
+			} catch (NotFoundException e) {
+				// Backward compatible
+				method = ctCommunicator.getMethod("reallyHandle", Descriptor.ofMethod(CtPrimitiveType.voidType, paramTypes));
 			}
 			
-			if (messageIndex == -1) {
-				throw new HookException("Message variable can not be resolved");
-			}
-			
-			CodeIterator codeIterator = codeAttribute.iterator();
-			int lastOp = 0;
-			while (codeIterator.hasNext()) {
-				int pos = codeIterator.next();
-				int op = codeIterator.byteAt(pos);
-				if (op == CodeIterator.PUTSTATIC) {
-					int indexByte1 = codeIterator.byteAt(pos + 1);
-					int indexByte2 = codeIterator.byteAt(pos + 2);
-					int constPoolIndex = indexByte1 << 8 | indexByte2;
-					if ("commandMessage".equals(constPool.getFieldrefName(constPoolIndex)) && lastOp == CodeIterator.ALOAD) {
-						Bytecode bytecode = new Bytecode(constPool);
-						bytecode.add(Bytecode.ALOAD_0);
-						bytecode.addAload(codeIterator.byteAt(pos - 1));
-						bytecode.addInvokestatic(classPool.get(this.getClass().getName()), "communicatorMessageHook", descriptor);
-						bytecode.add(Bytecode.IFEQ, 0, 4, Bytecode.RETURN);
-						codeIterator.insertAt(pos + 3, bytecode.get());
-						break;
+			method.instrument(new ExprEditor() {
+				@Override
+				public void edit(FieldAccess f) throws CannotCompileException {
+					if (f.isWriter() && f.getClassName().equals("com.wurmonline.server.creatures.Communicator") && f.getFieldName().equals("commandMessage")) {
+						StringBuffer code = new StringBuffer();
+						code.append("$proceed($$);\n");
+						code.append(String.format("if (%s#communicatorMessageHook(this, $1)) { return; };\n", ProxyServerHook.class.getName()));
+						f.replace(code.toString());
 					}
 				}
-				lastOp = op;
-			}
+			});
 			
-			methodInfo.rebuildStackMap(classPool);
-		} catch (NotFoundException | BadBytecode e) {
+		} catch (NotFoundException | CannotCompileException e) {
 			throw new HookException(e);
 		}
 	}
