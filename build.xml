@@ -19,6 +19,17 @@
 
 	<target name="git-revision">
 		<jgit-buildnumber />
+		<script language="javascript">
+		var tag = project.getProperty("git.tag")
+		var revision = project.getProperty("git.shortRevision")
+		var buildnumber;
+		if (tag) {
+			buildnumber = tag + "-" + revision
+		} else {
+			buildnumber = project.getProperty("git.branch") + "-" + revision
+		}
+		project.setProperty("git.buildnumber", buildnumber)
+		</script>
 	</target>
 
 	<path id="server">
@@ -45,7 +56,7 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.gotti.wurmunlimited.serverlauncher.ServerLauncher" />
 				<attribute name="Class-Path" value="javassist.jar server.jar common.jar lib/activation.jar lib/annotations.jar lib/commons-codec-1.6.jar lib/controlsfx-8.20.8.jar lib/controlsfx-8.20.8-sources.jar lib/httpclient-4.2.5.jar lib/httpcore-4.2.4.jar lib/javaws.jar lib/jsr305.jar lib/jtwitter.jar lib/mail.jar lib/mysql-connector.jar lib/mysql-connector-java-5.1.23-bin.jar lib/servlet.jar lib/signpost-core.jar lib/sqlite-jdbc-3.8.11.2.jar lib/SteamServerJni.jar" />
-				<attribute name="Implementation-Version" value="${git.tag}-${git.shortRevision}"/>
+				<attribute name="Implementation-Version" value="${git.buildnumber}"/>
 			</manifest>
 			<fileset dir="bin.ant">
 			</fileset>
