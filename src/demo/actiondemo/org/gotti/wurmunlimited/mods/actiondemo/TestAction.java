@@ -12,12 +12,11 @@ import org.gotti.wurmunlimited.modsupport.actions.ModActions;
 
 import com.wurmonline.server.behaviours.Action;
 import com.wurmonline.server.behaviours.ActionEntry;
-import com.wurmonline.server.behaviours.NoSuchActionException;
 import com.wurmonline.server.creatures.Creature;
 import com.wurmonline.server.items.Item;
 import com.wurmonline.server.players.Player;
 
-public class TestAction implements ModAction {
+public class TestAction implements ModAction, BehaviourProvider, ActionPerformer {
 
 	private static Logger logger = Logger.getLogger(TestAction.class.getName());
 
@@ -32,72 +31,67 @@ public class TestAction implements ModAction {
 
 	@Override
 	public BehaviourProvider getBehaviourProvider() {
-
-		return new BehaviourProvider() {
-
-			@Override
-			public List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Creature target) {
-				if (performer instanceof Player) {
-					return Arrays.asList(actionEntry);
-				} else {
-					return null;
-				}
-			}
-
-			@Override
-			public List<ActionEntry> getBehavioursFor(Creature performer, Creature target) {
-				return getBehavioursFor(performer, null, target);
-			}
-
-		};
+		return this;
 	}
 
 	@Override
 	public ActionPerformer getActionPerformer() {
-		return new ActionPerformer() {
-
-			@Override
-			public short getActionId() {
-				return actionId;
-			}
-
-			@Override
-			public boolean action(Action action, Creature performer, Creature target, short num, float counter) {
-				return action(action, performer, null, target, num, counter);
-			}
-
-			@Override
-			public boolean action(Action action, Creature performer, Item source, Creature target, short num, float counter) {
-				try {
-					if (counter == 1.0f) {
-						performer.getCommunicator().sendNormalServerMessage("You start to count. " + (int) counter);
-
-						final int time = 50;
-						performer.getCurrentAction().setTimeLeft(time);
-						performer.sendActionControl("Counting", true, time);
-					} else {
-						int time = 0;
-
-						time = performer.getCurrentAction().getTimeLeft();
-
-						if (counter * 10.0f <= time) {
-							if (action.justTickedSecond()) {
-								performer.getCommunicator().sendNormalServerMessage("" + (int) counter);
-							}
-						} else {
-							performer.getCommunicator().sendNormalServerMessage("" + (int) counter + ".You look pleased as the test works.");
-							return true;
-						}
-					}
-
-					return false;
-				} catch (Exception e) {
-					logger.log(Level.WARNING, e.getMessage(), e);
-					return true;
-
-				}
-			}
-		};
+		return this;
 	}
 
+	@Override
+	public List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Creature target) {
+		if (performer instanceof Player) {
+			return Arrays.asList(actionEntry);
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public List<ActionEntry> getBehavioursFor(Creature performer, Creature target) {
+		return getBehavioursFor(performer, null, target);
+	}
+
+	@Override
+	public short getActionId() {
+		return actionId;
+	}
+
+	@Override
+	public boolean action(Action action, Creature performer, Creature target, short num, float counter) {
+		return action(action, performer, null, target, num, counter);
+	}
+
+	@Override
+	public boolean action(Action action, Creature performer, Item source, Creature target, short num, float counter) {
+		try {
+			if (counter == 1.0f) {
+				performer.getCommunicator().sendNormalServerMessage("You start to count. " + (int) counter);
+
+				final int time = 50;
+				performer.getCurrentAction().setTimeLeft(time);
+				performer.sendActionControl("Counting", true, time);
+			} else {
+				int time = 0;
+
+				time = performer.getCurrentAction().getTimeLeft();
+
+				if (counter * 10.0f <= time) {
+					if (action.justTickedSecond()) {
+						performer.getCommunicator().sendNormalServerMessage("" + (int) counter);
+					}
+				} else {
+					performer.getCommunicator().sendNormalServerMessage("" + (int) counter + ".You look pleased as the test works.");
+					return true;
+				}
+			}
+
+			return false;
+		} catch (Exception e) {
+			logger.log(Level.WARNING, e.getMessage(), e);
+			return true;
+
+		}
+	}
 }
