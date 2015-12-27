@@ -107,7 +107,7 @@ public class ChristmasMod implements WurmMod, PreInitable, Configurable {
 				public void edit(MethodCall m) throws CannotCompileException {
 					// com.wurmonline.server.players.PlayerInfo.setReimbursed(boolean)
 					if (m.getClassName().equals("com.wurmonline.server.players.PlayerInfo") && m.getMethodName().equals("setReimbursed")) {
-						m.replace("{};");
+						m.replace("if (com.wurmonline.server.Servers.localServer.testServer || getPower() >= 4) { $proceed($$); };");
 					}
 				}
 			});
