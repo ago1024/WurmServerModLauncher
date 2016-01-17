@@ -2,7 +2,7 @@
 <project default="jar" name="Wurm Unlimited Mod Launcher">
 
 	<property name="mods" value="spellmod,cropmod,creatureagemod,bagofholding,harvesthelper,serverpacks,inbreedwarning"/>
-	<property name="demo" value="hitchingpost,digtoground,creaturedemo,actiondemo"/>
+	<property name="demo" value="hitchingpost,digtoground,creaturedemo,actiondemo,christmasmod"/>
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
@@ -30,6 +30,7 @@
 		}
 		project.setProperty("git.buildnumber", buildnumber)
 		</script>
+		<echo message=" build ${git.buildnumber} ${git.tag} ${git.shortRevision}"/>
 	</target>
 
 	<path id="server">
@@ -80,7 +81,7 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.gotti.wurmunlimited.patcher.PatchServerJar" />
 				<attribute name="Class-Path" value="javassist.jar" />
-				<attribute name="Implementation-Version" value="${git.tag}-${git.shortRevision}"/>
+				<attribute name="Implementation-Version" value="${git.buildnumber}"/>
 			</manifest>
 			<fileset dir="bin.ant.patcher">
 			</fileset>
@@ -98,7 +99,7 @@
 		</javac>
 		<jar destfile="${mode}/${modname}/${modname}.jar">
 			<manifest>
-				<attribute name="Implementation-Version" value="${git.tag}-${git.shortRevision}"/>
+				<attribute name="Implementation-Version" value="${git.buildnumber}"/>
 			</manifest>
 			<fileset dir="bin.ant.${modname}">
 			</fileset>
