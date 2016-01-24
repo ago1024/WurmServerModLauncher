@@ -154,6 +154,7 @@
 			<zipfileset dir="." includes="patcher.jar"/>
 			<zipfileset dir="." includes="patcher.bat"/>
 			<zipfileset dir="." includes="patcher.sh"/>
+			<zipfileset dir="." includes="logging.properties"/>
 			<zipfileset dir="lib" includes="javassist.jar"/>
 			<zipfileset dir="mods" prefix="mods"/>
 		</zip>

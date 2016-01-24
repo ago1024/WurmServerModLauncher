@@ -2,6 +2,8 @@ package org.gotti.wurmunlimited.serverlauncher;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ModLoader;
 import org.gotti.wurmunlimited.modloader.ServerHook;
@@ -34,6 +36,7 @@ public class DelegatedLauncher {
 			
 			throw new ClassNotFoundException("com.wurmonline.server.gui.WurmServerGuiMain");
 		} catch (Throwable e) {
+			Logger.getLogger(DelegatedLauncher.class.getName()).log(Level.SEVERE, e.getMessage(), e);
 			e.printStackTrace();
 			System.exit(-1);
 		}
