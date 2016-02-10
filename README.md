@@ -4,6 +4,7 @@ Wurm Unlimited Mod Launcher
 
 ModLauncher for WurmUnlimited and a set of mods
 
+* Announcer: Server-wide player login announcement
 * BagOfHolding: magicly increase the size of containers
 * CreatureAgeMod: Animals grow up faster
 * CropMod: Prevent crops from overgrowing
