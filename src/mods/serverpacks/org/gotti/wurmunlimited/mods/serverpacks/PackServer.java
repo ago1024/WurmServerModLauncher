@@ -26,12 +26,17 @@ public abstract class PackServer {
 	private final String publicServerAddress;
 	private final int publicServerPort;
 	
-	public PackServer(int port, String publicServerAddress, int publicServerPort) throws IOException {
+	public PackServer(int port, String publicServerAddress, int publicServerPort, String internalServerAddress) throws IOException {
 		
 		this.publicServerAddress = publicServerAddress;
 		this.publicServerPort = publicServerPort;
-		
-		InetAddress addr = InetAddress.getByAddress(Server.getInstance().getExternalIp());
+
+		InetAddress addr;
+		if (internalServerAddress == null)
+			addr = InetAddress.getByAddress(Server.getInstance().getExternalIp());
+		else
+			addr = InetAddress.getByName(internalServerAddress);
+
 		InetSocketAddress address = new InetSocketAddress(addr, port);
 		httpServer = HttpServer.create(address, 0);
 		httpServer.createContext("/packs/", new HttpHandler() {

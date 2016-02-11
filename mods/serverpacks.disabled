@@ -10,3 +10,6 @@ classpath=serverpacks.jar
 # By default the serverPort or the automaticly choosen port will be used
 # This setting may be required when doing port forwarding in the router
 #publicServerPort=
+# Sets a different address for the HTTP server to bind to. Can be 0.0.0.0 to
+# bind to all interfaces. Default is external ip in server settings.
+#internalServerAddress=
