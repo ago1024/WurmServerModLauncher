@@ -87,6 +87,9 @@ public class BagOfHolding extends ReligiousSpell {
 			return 0;
 
 		SpellEffect eff = effs.getSpellEffect(BUFF_COURIER);
+		if (eff == null)
+			return 0;
+		
 		return eff.getPower();
 	}
 }
