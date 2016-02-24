@@ -34,7 +34,7 @@ public class ModSupportDb {
 	}
 
 	private static void checkSqlite() {
-		if (!DbConnector.isSqlite()) {
+		if (!DbConnector.isUseSqlite()) {
 			throw new RuntimeException("Only Sqlite is currently supported");
 		}
 	}

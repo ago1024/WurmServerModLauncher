@@ -55,7 +55,7 @@ public class ProxyServerHook extends ServerHook {
 		};
 
 		// com.wurmonline.server.ServerLauncher.runServer(boolean)
-		HookManager.getInstance().registerHook("com.wurmonline.server.ServerLauncher", "runServer", "(Z)V", invocationHandlerFactory);
+		HookManager.getInstance().registerHook("com.wurmonline.server.ServerLauncher", "runServer", "(ZZ)V", invocationHandlerFactory);
 	}
 	
 	private void registerItemTemplatesCreatedHook() {
