@@ -134,6 +134,27 @@ public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
 			} catch (NotFoundException | CannotCompileException e) {
 				throw new HookException(e);
 			}
+			
+			try {
+				// com.wurmonline.server.zones.TilePoller.checkForFarmGrowth(int, int, int, byte, byte)
+				CtClass ctTilePoller = HookManager.getInstance().getClassPool().get("com.wurmonline.server.zones.TilePoller");
+				CtMethod ctCheckEffects = ctTilePoller.getDeclaredMethod("checkEffects");
+				// Now to employ a new ExprEditor that skips tiles of age 6. If it's not age 6, continue as normal.
+				ctCheckEffects.instrument(new ExprEditor() {
+					public void edit(MethodCall methodCall) throws CannotCompileException {
+						if (methodCall.getClassName().equals("com.wurmonline.server.zones.TilePoller") && methodCall.getMethodName().equals("checkForFarmGrowth")) {
+							StringBuffer code = new StringBuffer();
+							code.append("if ((($5 >> 4) & 0x7) != 6) {\n");
+							code.append("	$_ = $proceed($$);\n");
+							code.append("}\n");
+							methodCall.replace(code.toString());
+						}
+					}
+				});
+			} catch (NotFoundException | CannotCompileException e) {
+				throw new HookException(e);
+			}
+			
 		}
 	}
 }
