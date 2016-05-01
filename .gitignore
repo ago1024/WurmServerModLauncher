@@ -2,6 +2,7 @@ bin.ant*
 bin
 data
 beta
+steam
 servers
 modlauncher.jar
 patcher.jar
@@ -10,3 +11,4 @@ demo/*/*.jar
 dist/*.zip
 lib
 modlauncher.zip
+build.properties
