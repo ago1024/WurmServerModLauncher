@@ -4,13 +4,14 @@
 
 	<target name="steam-download">
 		<fail message="steamcmd property is not set" unless="steamcmd" />
+		<fail message="steamdir property is not set" unless="steamdir" />
 		<fail message="appid property is not set" unless="appid" />
 
 		<exec executable="${steamcmd}">
 			<arg value="+login" />
 			<arg value="anonymous" />
 			<arg value="+force_install_dir" />
-			<arg value="${basedir}/steam" />
+			<arg value="${steamdir}" />
 			<arg value="+app_update" />
 			<arg value="${appid}" />
 			<arg value="validate" />
@@ -19,7 +20,7 @@
 	</target>
 
 	<target name="create-server-artifacts" depends="steam-download">
-		<loadfile srcfile="steam/steamapps/appmanifest_${appid}.acf"
+		<loadfile srcfile="${steamdir}/steamapps/appmanifest_${appid}.acf"
 			property="steamapps.buildid">
 			<filterchain>
 				<linecontainsregexp>
@@ -35,7 +36,7 @@
 			<arg value="/c" />
 			<arg value="mvn" />
 			<arg value="install:install-file" />
-			<arg value="-Dfile=steam/common.jar" />
+			<arg value="-Dfile=${steamdir}/common.jar" />
 			<arg value="-DgroupId=org.gotti.wurmunlimited" />
 			<arg value="-DartifactId=common" />
 			<arg value="-Dpackaging=jar" />
@@ -45,7 +46,7 @@
 			<arg value="/c" />
 			<arg value="mvn" />
 			<arg value="install:install-file" />
-			<arg value="-Dfile=steam/server.jar" />
+			<arg value="-Dfile=${steamdir}/server.jar" />
 			<arg value="-DgroupId=org.gotti.wurmunlimited" />
 			<arg value="-DartifactId=server" />
 			<arg value="-Dpackaging=jar" />
