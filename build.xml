@@ -1,38 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="jar" name="Wurm Unlimited Mod Launcher">
-	
+
 	<property name="mods" value="spellmod,cropmod,creatureagemod,bagofholding,harvesthelper,serverpacks,inbreedwarning,announcer"/>
 	<property name="demo" value="hitchingpost,digtoground,creaturedemo,actiondemo,christmasmod"/>
-	
+
 	<property file="build.properties"/>
-	
+	<property name="appid" value="402370"/>
+	<import file="steam-helper.xml"/>
+
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
 			<pathelement location="lib/ant-contrib-1.0b3.jar" />
 		</classpath>
 	</taskdef>
-	
+
 	<taskdef name="jgit-buildnumber" classname="ru.concerteza.util.buildnumber.JGitBuildNumberAntTask">
 		<classpath>
 			<pathelement location="lib/jgit-buildnumber-ant-task-1.2.10.jar" />
 			<pathelement location="lib/org.eclipse.jgit-2.0.0.jar" />
 		</classpath>
 	</taskdef>
-	
-	<target name="steam-download">
-		<fail message="steamcmd property is not set" unless="steamcmd"/>
-		<exec executable="${steamcmd}">
-			<arg value="+login"/>
-			<arg value="anonymous"/>
-			<arg value="+force_install_dir"/>
-			<arg value="${basedir}/steam"/>
-			<arg value="+app_update"/>
-			<arg value="402370"/>
-			<arg value="validate"/>
-			<arg value="+exit"/>
-		</exec>
-	</target>
-	
+
 	<target name="git-revision">
 		<jgit-buildnumber />
 		<script language="javascript">
@@ -65,10 +53,10 @@
 	<target name="compile-launcher" depends="git-revision">
 		<available file="steam/server.jar" property="server.jar.present"/>
 		<available file="steam/common.jar" property="common.jar.present"/>
-		
+
 		<fail message="steam/server.jar is missing. Run steam-download target or copy server.jar to steam folder" unless="server.jar.present"/>
 		<fail message="steam/common.jar is missing. Run steam-download target or copy common.jar to steam folder" unless="common.jar.present"/>
-		
+
 		<delete dir="bin.ant"/>
 		<mkdir dir="bin.ant"/>
 		<javac srcdir="src/launcher" destdir="bin.ant" debug="true" classpathref="server">

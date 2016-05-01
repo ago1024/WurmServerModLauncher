@@ -12,3 +12,8 @@ dist/*.zip
 lib
 modlauncher.zip
 build.properties
+target
+.project
+.classpath
+.checkstyle
+.settings
