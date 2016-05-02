@@ -35,9 +35,9 @@ public class ModCreatures {
 	
 	enum CustomTrait {
 		
-		Custom1(23),
-		Custom2(24),
-		Custom3(25),
+		ebonyblack(23),
+		piebaldpinto(24),
+		bloodbay(25),
 		Custom4(26),
 		Custom5(28),
 		Custom6(29),
