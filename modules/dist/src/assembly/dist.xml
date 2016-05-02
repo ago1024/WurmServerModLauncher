@@ -29,7 +29,7 @@
       </includes>
       <useProjectArtifact>false</useProjectArtifact>    
       <useTransitiveDependencies>true</useTransitiveDependencies>
-      <outputFileNameMapping>javassist.jar</outputFileNameMapping>
+      <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
       <unpack>false</unpack>
     </dependencySet>
   </dependencySets>
