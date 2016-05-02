@@ -35,7 +35,7 @@
 					<descriptors>
 						<descriptor>src/assembly/mod-package.xml</descriptor>
 					</descriptors>
-					<finalName>${project.name}</finalName>
+					<finalName>${project.name}-${project.version}</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
