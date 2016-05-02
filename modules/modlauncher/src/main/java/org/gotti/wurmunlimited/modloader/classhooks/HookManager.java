@@ -46,7 +46,7 @@ public class HookManager {
 		loader = new Loader(classPool) {
 			
 			@Override
-			protected Class findClass(String name) throws ClassNotFoundException {
+			protected Class<?> findClass(String name) throws ClassNotFoundException {
 				int index = name.lastIndexOf(".");
 				if (index != -1) {
 					try {
