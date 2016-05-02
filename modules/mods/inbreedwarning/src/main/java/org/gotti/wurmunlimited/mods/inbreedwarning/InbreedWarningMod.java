@@ -12,11 +12,11 @@ import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 import com.wurmonline.server.creatures.Creature;
 
-public class InbreedWarningMod implements WurmMod, Initable {
+public class InbreedWarningMod implements WurmServerMod, Initable {
 	
 	@Override
 	public void init() {

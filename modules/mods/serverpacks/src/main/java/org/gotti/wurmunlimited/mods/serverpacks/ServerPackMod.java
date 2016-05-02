@@ -21,12 +21,12 @@ import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
 import org.gotti.wurmunlimited.modloader.interfaces.ModListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 import com.wurmonline.server.Message;
 import com.wurmonline.server.players.Player;
 
-public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLoginListener, Configurable, ServerStartedListener {
+public class ServerPackMod implements WurmServerMod, ModListener, Initable, PlayerLoginListener, Configurable, ServerStartedListener {
 
 	private Map<String, Path> packs = new HashMap<>();
 

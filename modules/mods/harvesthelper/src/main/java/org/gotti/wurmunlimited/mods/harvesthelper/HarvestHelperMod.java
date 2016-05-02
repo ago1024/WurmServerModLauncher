@@ -24,14 +24,14 @@ import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 import com.wurmonline.server.Server;
 import com.wurmonline.server.WurmCalendar;
 import com.wurmonline.server.creatures.Communicator;
 import com.wurmonline.server.players.Player;
 
-public class HarvestHelperMod implements WurmMod, Configurable, Initable, PreInitable, PlayerLoginListener, PlayerMessageListener {
+public class HarvestHelperMod implements WurmServerMod, Configurable, Initable, PreInitable, PlayerLoginListener, PlayerMessageListener {
 
 	private static Logger logger = Logger.getLogger(HarvestHelperMod.class.getName());
 

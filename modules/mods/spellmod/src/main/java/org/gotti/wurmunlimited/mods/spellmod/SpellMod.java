@@ -23,7 +23,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 import com.wurmonline.server.behaviours.ActionEntry;
 import com.wurmonline.server.behaviours.Actions;
@@ -32,7 +32,7 @@ import com.wurmonline.server.deities.Deity;
 import com.wurmonline.server.players.DbPlayerInfo;
 import com.wurmonline.server.spells.Spell;
 
-public class SpellMod implements WurmMod, Configurable, ServerStartedListener, Initable, PreInitable {
+public class SpellMod implements WurmServerMod, Configurable, ServerStartedListener, Initable, PreInitable {
 
 	private Integer favorLimit = Integer.MAX_VALUE;
 	private boolean removePriestRestrictions = true;

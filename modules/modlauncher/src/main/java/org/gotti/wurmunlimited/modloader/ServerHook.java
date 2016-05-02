@@ -9,24 +9,24 @@ import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 import com.wurmonline.server.creatures.Communicator;
 import com.wurmonline.server.players.Player;
 
 public class ServerHook {
 	
-	private List<WurmMod> mods = new CopyOnWriteArrayList<WurmMod>();
+	private List<WurmServerMod> mods = new CopyOnWriteArrayList<WurmServerMod>();
 	
 	protected ServerHook() {
 	}
 
-	public void addMods(List<WurmMod> wurmMods) {
+	public void addMods(List<WurmServerMod> wurmMods) {
 		mods.addAll(wurmMods);
 	}
 	
 	public void fireOnServerStarted() {
-		for (WurmMod mod : mods) {
+		for (WurmServerMod mod : mods) {
 			try {
 				if (mod instanceof ServerStartedListener) {
 					((ServerStartedListener) mod).onServerStarted();
@@ -38,7 +38,7 @@ public class ServerHook {
 	}
 	
 	public void fireOnItemTemplatesCreated() {
-		for (WurmMod mod : mods) {
+		for (WurmServerMod mod : mods) {
 			try {
 				if (mod instanceof ItemTemplatesCreatedListener) {
 					((ItemTemplatesCreatedListener) mod).onItemTemplatesCreated();
@@ -51,7 +51,7 @@ public class ServerHook {
 
 	public boolean fireOnMessage(Communicator communicator, String message) {
 		boolean state = false;
-		for (WurmMod mod : mods) {
+		for (WurmServerMod mod : mods) {
 			try {
 				if (mod instanceof PlayerMessageListener) {
 					state |= ((PlayerMessageListener) mod).onPlayerMessage(communicator, message);
@@ -64,7 +64,7 @@ public class ServerHook {
 	}
 	
 	public void fireOnPlayerLogin(Player player) {
-		for (WurmMod mod : mods) {
+		for (WurmServerMod mod : mods) {
 			try {
 				if (mod instanceof PlayerLoginListener) {
 					((PlayerLoginListener) mod).onPlayerLogin(player);
