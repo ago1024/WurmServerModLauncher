@@ -25,7 +25,7 @@
     </dependencySet>
     <dependencySet>
       <includes>
-        <include>javassist:javassist:jar</include>
+        <include>org.javassist:javassist:jar</include>
       </includes>
       <useProjectArtifact>false</useProjectArtifact>    
       <useTransitiveDependencies>true</useTransitiveDependencies>
