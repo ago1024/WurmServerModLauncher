@@ -144,7 +144,7 @@ public class CreatureTemplateBuilder {
 		aggressive(aggress);
 	}
 
-	private CreatureTemplateBuilder damages(float handDam2, float kickDam2, float biteDam2, float headDam2, float breathDam2) {
+	public CreatureTemplateBuilder damages(float handDam2, float kickDam2, float biteDam2, float headDam2, float breathDam2) {
 		this.handDam = handDam2;
 		this.kickDam = kickDam2;
 		this.biteDam = biteDam2;
@@ -178,41 +178,41 @@ public class CreatureTemplateBuilder {
 		return this;
 	}
 
-	private CreatureTemplateBuilder naturalArmour(float naturalArmour2) {
+	public CreatureTemplateBuilder naturalArmour(float naturalArmour2) {
 		this.naturalArmour = naturalArmour2;
 		return this;
 	}
 
-	private CreatureTemplateBuilder hitSounds(String hitSndMale2, String hitSndFemale2) {
+	public CreatureTemplateBuilder hitSounds(String hitSndMale2, String hitSndFemale2) {
 		this.hitSndMale = hitSndMale2;
 		this.hitSndFemale = hitSndFemale2;
 		return this;
 	}
 
-	private CreatureTemplateBuilder deathSounds(String deathSndMale, String deathSndFemale) {
+	public CreatureTemplateBuilder deathSounds(String deathSndMale, String deathSndFemale) {
 		this.deathSndMale = deathSndMale;
 		this.deathSndFemale = deathSndFemale;
 		return this;
 	}
 
-	private CreatureTemplateBuilder dimension(short centimetersHigh2, short centimetersLong2, short centimetersWide2) {
+	public CreatureTemplateBuilder dimension(short centimetersHigh2, short centimetersLong2, short centimetersWide2) {
 		this.centimetersHigh = centimetersHigh2;
 		this.centimetersLong = centimetersLong2;
 		this.centimetersWide = centimetersWide2;
 		return this;
 	}
 
-	private CreatureTemplateBuilder sex(byte sex) {
+	public CreatureTemplateBuilder sex(byte sex) {
 		this.sex = sex;
 		return this;
 	}
 
-	private CreatureTemplateBuilder vision(short vision) {
+	public CreatureTemplateBuilder vision(short vision) {
 		this.vision = vision;
 		return this;
 	}
 
-	private CreatureTemplateBuilder bodyType(byte bodyType) {
+	public CreatureTemplateBuilder bodyType(byte bodyType) {
 		this.bodyType = bodyType;
 		return this;
 	}
