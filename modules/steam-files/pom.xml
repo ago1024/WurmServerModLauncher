@@ -106,7 +106,46 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>deploy-server</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.build.directory}/steam/server.jar</file>
+							<groupId>org.gotti.wurmunlimited</groupId>
+							<artifactId>server</artifactId>
+							<packaging>jar</packaging>
+							<version>${steamapps_buildid}</version>
+							<repositoryId>gotti-no-ip-org-ssh-repository</repositoryId>
+							<url>scp://gotti.no-ip.org/srv/maven/repository</url>
+						</configuration>
+					</execution>
+					<execution>
+						<id>deploy-common</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy-file</goal>
+						</goals>
+						<configuration>
+							<file>${project.build.directory}/steam/common.jar</file>
+							<groupId>org.gotti.wurmunlimited</groupId>
+							<artifactId>common</artifactId>
+							<packaging>jar</packaging>
+							<version>${steamapps_buildid}</version>
+							<repositoryId>gotti-no-ip-org-ssh-repository</repositoryId>
+							<url>scp://gotti.no-ip.org/srv/maven/repository</url>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
 		</plugins>
 	</build>
 </project>

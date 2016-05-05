@@ -28,8 +28,28 @@
 		<module>modules/mods/testmod</module>
 		<module>modules/dist</module>
 	</modules>
-	
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>gotti-no-ip-org-ssh-repository</id>
+			<url>scp://gotti.no-ip.org/srv/maven/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>gotti-no-ip-org-ssh-repository</id>
+			<url>scp://gotti.no-ip.org/srv/maven/repository</url>
+		</repository>
+	</distributionManagement>
+
 	<build>
+		<extensions>
+			<!-- Enabling the use of SSH -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.10</version>
+			</extension>
+		</extensions>
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
