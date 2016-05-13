@@ -24,6 +24,7 @@ import javassist.Loader;
 import javassist.NotFoundException;
 import javassist.Translator;
 
+import org.gotti.wurmunlimited.modcomm.ModComm;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
@@ -83,6 +84,10 @@ public class ModLoader {
 				((Configurable) modEntry.mod).configure(modEntry.properties);
 				}
 			});
+
+		try (EarlyLoadingChecker c = initEarlyLoadingChecker("ModComm", "init")) {
+			ModComm.init();
+		}
 
 		mods.stream().filter(modEntry -> modEntry.mod instanceof PreInitable).forEach(modEntry -> {
 			try (EarlyLoadingChecker c = initEarlyLoadingChecker(modEntry.name, "preinit")) {
