@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,11 +25,14 @@ import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modcomm.Channel;
 import org.gotti.wurmunlimited.modcomm.IChannelListener;
 import org.gotti.wurmunlimited.modcomm.ModComm;
+import org.gotti.wurmunlimited.modcomm.PacketReader;
 import org.gotti.wurmunlimited.modcomm.PacketWriter;
 
 import com.wurmonline.server.players.Player;
 
 public class ServerPackMod implements WurmServerMod, ModListener, Initable, Configurable, ServerStartedListener {
+
+	private static final byte CMD_REFRESH = 0x01;
 
 	private Map<String, Path> packs = new HashMap<>();
 
@@ -66,7 +70,32 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 					logger.log(Level.WARNING, e.getMessage(), e);
 				}
 			}
+
+			@Override
+			public void handleMessage(Player player, ByteBuffer message) {
+				try (PacketReader reader = new PacketReader(message)) {
+					byte cmd = reader.readByte();
+					switch (cmd) {
+					case CMD_REFRESH:
+						sendModelRefresh(player);
+						break;
+					default:
+						logger.log(Level.WARNING, String.format("Unknown channel command 0x%02x", 128 + cmd));
+						break;
+					}
+				} catch (IOException e) {
+					logger.log(Level.WARNING, e.getMessage(), e);
+				}
+			}
 		});
+	}
+
+	private void sendModelRefresh(Player player) {
+		try {
+			player.createVisionArea();
+		} catch (Exception e) {
+			logger.log(Level.WARNING, e.getMessage(), e);
+		}
 	}
 
 	@Override
