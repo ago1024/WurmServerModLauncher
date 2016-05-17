@@ -5,6 +5,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gotti.wurmunlimited.modcomm.ModComm;
 import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
@@ -26,6 +27,7 @@ public class ServerHook {
 	}
 	
 	public void fireOnServerStarted() {
+		ModComm.serverStarted();
 		for (WurmServerMod mod : mods) {
 			try {
 				if (mod instanceof ServerStartedListener) {
@@ -64,6 +66,7 @@ public class ServerHook {
 	}
 	
 	public void fireOnPlayerLogin(Player player) {
+		ModComm.playerConnected(player);
 		for (WurmServerMod mod : mods) {
 			try {
 				if (mod instanceof PlayerLoginListener) {

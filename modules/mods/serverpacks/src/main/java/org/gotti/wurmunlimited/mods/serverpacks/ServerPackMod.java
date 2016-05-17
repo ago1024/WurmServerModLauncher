@@ -19,14 +19,16 @@ import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
 import org.gotti.wurmunlimited.modloader.interfaces.ModListener;
-import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
+import org.gotti.wurmunlimited.modcomm.Channel;
+import org.gotti.wurmunlimited.modcomm.IChannelListener;
+import org.gotti.wurmunlimited.modcomm.ModComm;
+import org.gotti.wurmunlimited.modcomm.PacketWriter;
 
-import com.wurmonline.server.Message;
 import com.wurmonline.server.players.Player;
 
-public class ServerPackMod implements WurmServerMod, ModListener, Initable, PlayerLoginListener, Configurable, ServerStartedListener {
+public class ServerPackMod implements WurmServerMod, ModListener, Initable, Configurable, ServerStartedListener {
 
 	private Map<String, Path> packs = new HashMap<>();
 
@@ -38,9 +40,33 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Play
 	private int publicServerPort = 0;
 
 	private PackServer packServer;
+	private Channel channel;
 
 	@Override
 	public void init() {
+		channel = ModComm.registerChannel("ago.serverpacks", new IChannelListener() {
+			@Override
+			public void onPlayerConnected(Player player) {
+				if (packServer == null) {
+					logger.log(Level.WARNING, "HTTP server did not start properly. No server packs will be delivered.");
+					return;
+				}
+				try {
+					URI uri = packServer.getUri();
+					try (PacketWriter writer = new PacketWriter()) {
+						writer.writeInt(packs.size());
+						for (String packId : packs.keySet()) {
+							URI packUri = uri.resolve(packId);
+							writer.writeUTF(packId);
+							writer.writeUTF(packUri.toString());
+						}
+						channel.sendMessage(player, writer.getBytes());
+					}
+				} catch (URISyntaxException | IOException e) {
+					logger.log(Level.WARNING, e.getMessage(), e);
+				}
+			}
+		});
 	}
 
 	@Override
@@ -104,31 +130,6 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Play
 		String sha1Sum = getSha1Sum(packPath);
 		packs.put(sha1Sum, packPath);
 		logger.info("Added pack " + sha1Sum + " for pack " + packPath);
-	}
-
-	@Override
-	public void onPlayerLogin(final Player player) {
-
-		new Runnable() {
-			public void run() {
-				try {
-					if (packServer == null) {
-						logger.log(Level.WARNING, "HTTP server did not start properly. No server packs will be delivered.");
-						return;
-					}
-					URI uri = packServer.getUri();
-					if (player != null) {
-						for (String packId : packs.keySet()) {
-							URI packUri = uri.resolve(packId);
-							final Message message = new Message(player, (byte) 10, ":mod:serverpacks", packId + ":" + packUri.toString());
-							player.getCommunicator().sendMessage(message);
-						}
-					}
-				} catch (URISyntaxException e) {
-					logger.log(Level.WARNING, e.getMessage(), e);
-				}
-			}
-		}.run();
 	}
 
 	@Override
