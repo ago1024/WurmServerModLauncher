@@ -85,7 +85,7 @@ public class ModComm {
     }
 
     /**
-     * Internal late initialization, called from {@link org.gotti.wurmunlimited.modloader.ServerHook#fireOnServerStarted}
+     * Internal late initialization, called from {@link org.gotti.wurmunlimited.modloader.server.ServerHook#fireOnServerStarted}
      */
     public static void serverStarted() {
         try {
@@ -96,7 +96,7 @@ public class ModComm {
     }
 
     /**
-     * Player connected handler, called from {@link org.gotti.wurmunlimited.modloader.ServerHook#fireOnPlayerLogin}
+     * Player connected handler, called from {@link org.gotti.wurmunlimited.modloader.server.ServerHook#fireOnPlayerLogin}
      */
     public static void playerConnected(Player player) {
         if (!channels.isEmpty())

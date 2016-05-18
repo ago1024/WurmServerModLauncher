@@ -1,4 +1,4 @@
-package org.gotti.wurmunlimited.modloader;
+package org.gotti.wurmunlimited.modloader.server;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

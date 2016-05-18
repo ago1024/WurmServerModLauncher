@@ -6,9 +6,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ModLoader;
-import org.gotti.wurmunlimited.modloader.ServerHook;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
+import org.gotti.wurmunlimited.modloader.server.ServerHook;
 
 public class DelegatedLauncher {
 	
