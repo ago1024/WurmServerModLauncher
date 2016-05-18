@@ -17,6 +17,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.gotti.wurmunlimited</groupId>
+			<artifactId>modloader-shared</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.gotti.wurmunlimited</groupId>
 			<artifactId>common</artifactId>
 			<version>LATEST</version>
 		</dependency>
@@ -59,6 +64,26 @@
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<artifactSet>
+								<includes>
+									<include>org.gotti.wurmunlimited:modloader-shared</include>
+								</includes>
+							</artifactSet>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
