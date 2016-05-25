@@ -104,7 +104,7 @@ public class ProxyServerHook extends ServerHook {
 					if (f.isWriter() && f.getClassName().equals("com.wurmonline.server.creatures.Communicator") && f.getFieldName().equals("commandMessage")) {
 						StringBuffer code = new StringBuffer();
 						code.append("$proceed($$);\n");
-						code.append(String.format("if (%s#communicatorMessageHook(this, $1)) { return; };\n", ProxyServerHook.class.getName()));
+						code.append(String.format("if (%s#communicatorMessageHook(this, $1, title)) { return; };\n", ProxyServerHook.class.getName()));
 						f.replace(code.toString());
 					}
 				}
@@ -143,8 +143,8 @@ public class ProxyServerHook extends ServerHook {
 	}
 	
 	
-	public static boolean communicatorMessageHook(Communicator communicator, String message) {
-		return getInstance().fireOnMessage(communicator, message);
+	public static boolean communicatorMessageHook(Communicator communicator, String message, String title) {
+		return getInstance().fireOnMessage(communicator, message, title);
 	}
 
 	public static synchronized ProxyServerHook getInstance() {

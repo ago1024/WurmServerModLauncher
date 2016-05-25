@@ -51,12 +51,12 @@ public class ServerHook {
 		}
 	}
 
-	public boolean fireOnMessage(Communicator communicator, String message) {
+	public boolean fireOnMessage(Communicator communicator, String message, String title) {
 		boolean state = false;
 		for (WurmServerMod mod : mods) {
 			try {
 				if (mod instanceof PlayerMessageListener) {
-					state |= ((PlayerMessageListener) mod).onPlayerMessage(communicator, message);
+					state |= ((PlayerMessageListener) mod).onPlayerMessage(communicator, message, title);
 				}
 			} catch (Exception e) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onPlayerMessage handler for mod " + mod.getClass().getSimpleName() + " failed", e);
