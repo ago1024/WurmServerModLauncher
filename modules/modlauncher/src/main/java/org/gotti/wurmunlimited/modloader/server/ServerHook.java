@@ -78,6 +78,19 @@ public class ServerHook {
 		}
 	}
 	
+	public void fireOnPlayerLogout(Player player) {
+		for (WurmServerMod mod : mods) {
+			try {
+				if (mod instanceof PlayerLoginListener) {
+					((PlayerLoginListener) mod).onPlayerLogout(player);
+				}
+			} catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onPlayerLogout handler for mod " + mod.getClass().getSimpleName() + " failed", e);
+			}
+		}
+	}
+	
+	
 	public static ServerHook createServerHook() {
 		return ProxyServerHook.getInstance();
 	}

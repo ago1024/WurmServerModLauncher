@@ -137,10 +137,31 @@ public class ProxyServerHook extends ServerHook {
 					};
 				}
 			});
+			
+			//com.wurmonline.server.players.Player.logout()
+			HookManager.getInstance().registerHook("com.wurmonline.server.players.Player", "logout", "()V", new InvocationHandlerFactory() {
+				
+				@Override
+				public InvocationHandler createInvocationHandler() {
+					return new InvocationHandler() {
+						
+						@Override
+						public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+							Object result = method.invoke(proxy, args);
+							fireOnPlayerLogout((Player)proxy);
+							return result;
+						}
+					};
+				}
+			});
+
 		} catch (NotFoundException e) {
 			throw new HookException(e);
 		}
+		
 	}
+	
+	
 	
 	
 	public static boolean communicatorMessageHook(Communicator communicator, String message, String title) {

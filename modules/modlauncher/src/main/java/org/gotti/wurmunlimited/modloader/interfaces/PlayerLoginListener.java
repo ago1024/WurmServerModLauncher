@@ -6,4 +6,7 @@ public interface PlayerLoginListener {
 
 	void onPlayerLogin(Player player);
 
+	default void onPlayerLogout(Player player) {
+	}
+
 }
