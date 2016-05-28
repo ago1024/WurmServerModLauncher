@@ -6,6 +6,7 @@ import java.util.List;
 import org.gotti.wurmunlimited.modcomm.ModComm;
 import org.gotti.wurmunlimited.modloader.interfaces.ChannelMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
+import org.gotti.wurmunlimited.modloader.interfaces.MessagePolicy;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerPollListener;
@@ -22,10 +23,10 @@ public class ServerHook {
 	
 	Listeners<ServerStartedListener, Void> serverStarted = new Listeners<>(ServerStartedListener.class);
 	Listeners<ItemTemplatesCreatedListener, Void> itemTemplatesCreated = new Listeners<>(ItemTemplatesCreatedListener.class);
-	Listeners<PlayerMessageListener, Boolean> playerMessage = new Listeners<>(PlayerMessageListener.class);
+	Listeners<PlayerMessageListener, MessagePolicy> playerMessage = new Listeners<>(PlayerMessageListener.class);
 	Listeners<PlayerLoginListener, Void> playerLogin = new Listeners<>(PlayerLoginListener.class);
 	Listeners<ServerPollListener, Void> serverPoll = new Listeners<>(ServerPollListener.class);
-	Listeners<ChannelMessageListener, Void> channelMessage = new Listeners<>(ChannelMessageListener.class);
+	Listeners<ChannelMessageListener, MessagePolicy> channelMessage = new Listeners<>(ChannelMessageListener.class);
 	
 	List<Listeners<?, ?>> handlers = Arrays.asList(serverStarted, itemTemplatesCreated, playerMessage, playerLogin, serverPoll, channelMessage);
 	
@@ -49,7 +50,7 @@ public class ServerHook {
 	}
 
 	public boolean fireOnMessage(Communicator communicator, String message, String title) {
-		return playerMessage.fire(listener -> listener.onPlayerMessage(communicator, message, title), () -> false, (a, b) -> a | b ).orElse(false);
+		return playerMessage.fire(listener -> listener.onPlayerMessage(communicator, message, title), () -> MessagePolicy.PASS, MessagePolicy.ANY_DISCARDED).orElse(MessagePolicy.PASS) == MessagePolicy.DISCARD;
 	}
 	
 	public void fireOnPlayerLogin(Player player) {
@@ -65,16 +66,16 @@ public class ServerHook {
 		serverPoll.fire(listener -> listener.onServerPoll());
 	}
 	
-	public void fireOnKingdomMessage(Message message) {
-		channelMessage.fire(listener -> listener.onKingdomMessage(message));
+	public boolean fireOnKingdomMessage(Message message) {
+		return channelMessage.fire(listener -> listener.onKingdomMessage(message), () -> MessagePolicy.PASS, MessagePolicy.ANY_DISCARDED).orElse(MessagePolicy.PASS) == MessagePolicy.DISCARD;
 	}
 	
-	public void fireOnVillageMessage(Village village, Message message) {
-		channelMessage.fire(listener -> listener.onVillageMessage(village, message));
+	public boolean fireOnVillageMessage(Village village, Message message) {
+		return channelMessage.fire(listener -> listener.onVillageMessage(village, message), () -> MessagePolicy.PASS, MessagePolicy.ANY_DISCARDED).orElse(MessagePolicy.PASS) == MessagePolicy.DISCARD;
 	}
 	
-	public void fireOnAllianceMessage(PvPAlliance alliance, Message message) {
-		channelMessage.fire(listener -> listener.onAllianceMessage(alliance, message));
+	public boolean fireOnAllianceMessage(PvPAlliance alliance, Message message) {
+		return channelMessage.fire(listener -> listener.onAllianceMessage(alliance, message), () -> MessagePolicy.PASS, MessagePolicy.ANY_DISCARDED).orElse(MessagePolicy.PASS) == MessagePolicy.DISCARD;
 	}
 	
 	public static ServerHook createServerHook() {

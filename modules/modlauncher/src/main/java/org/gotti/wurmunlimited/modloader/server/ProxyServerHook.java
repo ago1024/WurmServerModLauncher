@@ -221,19 +221,19 @@ public class ProxyServerHook extends ServerHook {
 		return getInstance().fireOnMessage(communicator, message, title);
 	}
 	
-	public static void communicatorChannelHook(Message message) {
-		getInstance().fireOnKingdomMessage(message);
+	public static boolean communicatorChannelHook(Message message) {
+		return getInstance().fireOnKingdomMessage(message);
 	}
 	
-	public static void communicatorChannelHook(Village village, Message message) {
+	public static boolean communicatorChannelHook(Village village, Message message) {
 		if ("Alliance".equals(message.getWindow())) {
-			return;
+			return false;
 		}
-		getInstance().fireOnVillageMessage(village, message);
+		return getInstance().fireOnVillageMessage(village, message);
 	}
 	
-	public static void communicatorChannelHook(PvPAlliance alliance, Message message) {
-		getInstance().fireOnAllianceMessage(alliance, message);
+	public static boolean communicatorChannelHook(PvPAlliance alliance, Message message) {
+		return getInstance().fireOnAllianceMessage(alliance, message);
 	}
 	
 	public static synchronized ProxyServerHook getInstance() {

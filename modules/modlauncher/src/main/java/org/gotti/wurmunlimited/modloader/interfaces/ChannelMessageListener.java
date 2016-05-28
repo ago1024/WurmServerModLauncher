@@ -5,11 +5,17 @@ import com.wurmonline.server.villages.PvPAlliance;
 import com.wurmonline.server.villages.Village;
 
 public interface ChannelMessageListener {
-	
-	default void onKingdomMessage(Message message) {};
-	
-	default void onVillageMessage(Village village, Message message) {};
-	
-	default void onAllianceMessage(PvPAlliance alliance, Message message) {};
+
+	default MessagePolicy onKingdomMessage(Message message) {
+		return MessagePolicy.PASS;
+	};
+
+	default MessagePolicy onVillageMessage(Village village, Message message) {
+		return MessagePolicy.PASS;
+	};
+
+	default MessagePolicy onAllianceMessage(PvPAlliance alliance, Message message) {
+		return MessagePolicy.PASS;
+	};
 
 }
