@@ -3,6 +3,13 @@ package org.gotti.wurmunlimited.modloader.server;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+import org.gotti.wurmunlimited.modloader.classhooks.HookException;
+import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
+import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
+
+import com.wurmonline.server.creatures.Communicator;
+import com.wurmonline.server.players.Player;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -12,13 +19,6 @@ import javassist.NotFoundException;
 import javassist.bytecode.Descriptor;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
-
-import org.gotti.wurmunlimited.modloader.classhooks.HookException;
-import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
-import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
-
-import com.wurmonline.server.creatures.Communicator;
-import com.wurmonline.server.players.Player;
 
 /**
  * Hook into com.wurmonline.server.Server.startRunning()
@@ -34,6 +34,7 @@ public class ProxyServerHook extends ServerHook {
 		registerItemTemplatesCreatedHook();
 		registerOnMessageHook();
 		registerOnPlayerLoginHook();
+		registerOnServerPollHook();
 	}
 	
 	private void registerStartRunningHook() {
@@ -161,8 +162,22 @@ public class ProxyServerHook extends ServerHook {
 		
 	}
 	
-	
-	
+	private void registerOnServerPollHook() {
+		
+		HookManager.getInstance().registerHook("com.wurmonline.server.Players", "pollPlayers", "()V", new InvocationHandlerFactory() {
+			@Override
+			public InvocationHandler createInvocationHandler() {
+				return new InvocationHandler() {
+					
+					@Override
+					public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+						fireOnServerPoll();
+						return method.invoke(proxy, args);
+					}
+				};
+			}
+		});
+	}
 	
 	public static boolean communicatorMessageHook(Communicator communicator, String message, String title) {
 		return getInstance().fireOnMessage(communicator, message, title);

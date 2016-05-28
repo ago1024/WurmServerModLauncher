@@ -9,6 +9,7 @@ import org.gotti.wurmunlimited.modcomm.ModComm;
 import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
+import org.gotti.wurmunlimited.modloader.interfaces.ServerPollListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
@@ -86,6 +87,18 @@ public class ServerHook {
 				}
 			} catch (Exception e) {
 				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onPlayerLogout handler for mod " + mod.getClass().getSimpleName() + " failed", e);
+			}
+		}
+	}
+	
+	public void fireOnServerPoll() {
+		for (WurmServerMod mod : mods) {
+			try {
+				if (mod instanceof ServerPollListener) {
+					((ServerPollListener) mod).onServerPoll();
+				}
+			} catch (Exception e) {
+				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onServerPoll handler for mod " + mod.getClass().getSimpleName() + " failed", e);
 			}
 		}
 	}
