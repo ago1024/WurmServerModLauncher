@@ -1,11 +1,10 @@
 package org.gotti.wurmunlimited.modloader.server;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modcomm.ModComm;
+import org.gotti.wurmunlimited.modloader.interfaces.ChannelMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
@@ -13,96 +12,70 @@ import org.gotti.wurmunlimited.modloader.interfaces.ServerPollListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
+import com.wurmonline.server.Message;
 import com.wurmonline.server.creatures.Communicator;
 import com.wurmonline.server.players.Player;
+import com.wurmonline.server.villages.PvPAlliance;
+import com.wurmonline.server.villages.Village;
 
 public class ServerHook {
 	
-	private List<WurmServerMod> mods = new CopyOnWriteArrayList<WurmServerMod>();
+	Listeners<ServerStartedListener, Void> serverStarted = new Listeners<>(ServerStartedListener.class);
+	Listeners<ItemTemplatesCreatedListener, Void> itemTemplatesCreated = new Listeners<>(ItemTemplatesCreatedListener.class);
+	Listeners<PlayerMessageListener, Boolean> playerMessage = new Listeners<>(PlayerMessageListener.class);
+	Listeners<PlayerLoginListener, Void> playerLogin = new Listeners<>(PlayerLoginListener.class);
+	Listeners<ServerPollListener, Void> serverPoll = new Listeners<>(ServerPollListener.class);
+	Listeners<ChannelMessageListener, Void> channelMessage = new Listeners<>(ChannelMessageListener.class);
+	
+	List<Listeners<?, ?>> handlers = Arrays.asList(serverStarted, itemTemplatesCreated, playerMessage, playerLogin, serverPoll, channelMessage);
+	
 	
 	protected ServerHook() {
 	}
 
 	public void addMods(List<WurmServerMod> wurmMods) {
-		mods.addAll(wurmMods);
+		wurmMods.forEach(mod -> {
+			handlers.forEach(handler -> handler.add(mod));
+		});
 	}
 	
 	public void fireOnServerStarted() {
 		ModComm.serverStarted();
-		for (WurmServerMod mod : mods) {
-			try {
-				if (mod instanceof ServerStartedListener) {
-					((ServerStartedListener) mod).onServerStarted();
-				}
-			} catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onServerStarted handler for mod " + mod.getClass().getSimpleName() + " failed", e);
-			}
-		}
+		serverStarted.fire(listener -> listener.onServerStarted());
 	}
 	
 	public void fireOnItemTemplatesCreated() {
-		for (WurmServerMod mod : mods) {
-			try {
-				if (mod instanceof ItemTemplatesCreatedListener) {
-					((ItemTemplatesCreatedListener) mod).onItemTemplatesCreated();
-				}
-			} catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onItemTemplatesCreated handler for mod " + mod.getClass().getSimpleName() + " failed", e);
-			}
-		}
+		itemTemplatesCreated.fire(listener -> listener.onItemTemplatesCreated());
 	}
 
 	public boolean fireOnMessage(Communicator communicator, String message, String title) {
-		boolean state = false;
-		for (WurmServerMod mod : mods) {
-			try {
-				if (mod instanceof PlayerMessageListener) {
-					state |= ((PlayerMessageListener) mod).onPlayerMessage(communicator, message, title);
-				}
-			} catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onPlayerMessage handler for mod " + mod.getClass().getSimpleName() + " failed", e);
-			}
-		}
-		return state;
+		return playerMessage.fire(listener -> listener.onPlayerMessage(communicator, message, title), () -> false, (a, b) -> a | b ).orElse(false);
 	}
 	
 	public void fireOnPlayerLogin(Player player) {
 		ModComm.playerConnected(player);
-		for (WurmServerMod mod : mods) {
-			try {
-				if (mod instanceof PlayerLoginListener) {
-					((PlayerLoginListener) mod).onPlayerLogin(player);
-				}
-			} catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onPlayerLogin handler for mod " + mod.getClass().getSimpleName() + " failed", e);
-			}
-		}
+		playerLogin.fire(listener -> listener.onPlayerLogin(player));
 	}
 	
 	public void fireOnPlayerLogout(Player player) {
-		for (WurmServerMod mod : mods) {
-			try {
-				if (mod instanceof PlayerLoginListener) {
-					((PlayerLoginListener) mod).onPlayerLogout(player);
-				}
-			} catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onPlayerLogout handler for mod " + mod.getClass().getSimpleName() + " failed", e);
-			}
-		}
+		playerLogin.fire(listener -> listener.onPlayerLogout(player));
 	}
 	
 	public void fireOnServerPoll() {
-		for (WurmServerMod mod : mods) {
-			try {
-				if (mod instanceof ServerPollListener) {
-					((ServerPollListener) mod).onServerPoll();
-				}
-			} catch (Exception e) {
-				Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "onServerPoll handler for mod " + mod.getClass().getSimpleName() + " failed", e);
-			}
-		}
+		serverPoll.fire(listener -> listener.onServerPoll());
 	}
 	
+	public void fireOnKingdomMessage(Message message) {
+		channelMessage.fire(listener -> listener.onKingdomMessage(message));
+	}
+	
+	public void fireOnVillageMessage(Village village, Message message) {
+		channelMessage.fire(listener -> listener.onVillageMessage(village, message));
+	}
+	
+	public void fireOnAllianceMessage(PvPAlliance alliance, Message message) {
+		channelMessage.fire(listener -> listener.onAllianceMessage(alliance, message));
+	}
 	
 	public static ServerHook createServerHook() {
 		return ProxyServerHook.getInstance();
