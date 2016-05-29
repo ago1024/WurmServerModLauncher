@@ -112,7 +112,7 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 	}
 
 	@Override
-	public void modInitialized(ModEntry entry) {
+	public void modInitialized(ModEntry<?> entry) {
 		if (entry == null || entry.getProperties() == null)
 			return;
 
