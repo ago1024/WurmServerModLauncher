@@ -1,10 +1,18 @@
 package org.gotti.wurmunlimited.modsupport.actions;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
+
+import com.wurmonline.server.behaviours.Action;
+import com.wurmonline.server.behaviours.ActionEntry;
+import com.wurmonline.server.behaviours.Actions;
+import com.wurmonline.server.behaviours.Behaviour;
+import com.wurmonline.server.behaviours.WrappedBehaviourProvider;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -16,21 +24,12 @@ import javassist.NotFoundException;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
-import org.gotti.wurmunlimited.modloader.ReflectionUtil;
-import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
-
-import com.wurmonline.server.behaviours.Action;
-import com.wurmonline.server.behaviours.ActionEntry;
-import com.wurmonline.server.behaviours.Actions;
-import com.wurmonline.server.behaviours.Behaviour;
-import com.wurmonline.server.behaviours.WrappedBehaviourProvider;
-
 public class ModActions {
 	
 	private static boolean inited = false;
 	
 	private static List<BehaviourProvider> behaviourProviders = new LinkedList<>();
-	private static Map<Short, ActionPerformer> actionPerformers = new HashMap<>();
+	private static ConcurrentHashMap<Short, ActionPerformerChain> actionPerformers = new ConcurrentHashMap<>();
 	
 	public static int getNextActionId() {
 		return Actions.actionEntrys.length;
@@ -55,10 +54,10 @@ public class ModActions {
 	}
 	
 	public static void registerAction(ModAction testAction) {
-		ActionPerformer actionperformer = testAction.getActionPerformer();
-		if (actionperformer != null) {
-			short actionId = actionperformer.getActionId();
-			actionPerformers.put(actionId, actionperformer);
+		ActionPerformer actionPerformer = testAction.getActionPerformer();
+		if (actionPerformer != null) {
+			short actionId = actionPerformer.getActionId();
+			actionPerformers.computeIfAbsent(actionId, num -> new ActionPerformerChain(num)).addActionPerformer(actionPerformer);
 		}
 		
 		BehaviourProvider behaviourProvider = testAction.getBehaviourProvider();
