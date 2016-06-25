@@ -141,7 +141,7 @@ class WrappedBehaviour extends Behaviour {
 	}
 
 	private boolean action(Action action, Predicate<Behaviour> code) {
-		if (!isServerBehaviour()) {
+		if (!actionPerformers.isEmpty()) {
 			Behaviour actionBehaviour = action.getBehaviour();
 			try {
 				setActionBehaviour(action, new WrappedBehaviour(behaviour, actionPerformers.subList(1, actionPerformers.size())));
@@ -170,10 +170,6 @@ class WrappedBehaviour extends Behaviour {
 		return behaviour;
 	}
 	
-	public boolean isServerBehaviour() {
-		return actionPerformers.isEmpty();
-	}
-	
 	public boolean isServerPropagation() {
 		return serverPropagation;
 	}
@@ -189,11 +185,11 @@ class WrappedBehaviour extends Behaviour {
 		return behaviour;
 	}
 	
-	public static boolean isWrapped(Behaviour behaviour) {
+	public static boolean isServerBehaviour(Behaviour behaviour) {
 		if (behaviour instanceof WrappedBehaviour) {
-			return !((WrappedBehaviour)behaviour).isServerBehaviour();
+			return ((WrappedBehaviour)behaviour).actionPerformers.isEmpty();
 		}
-		return false;
+		return true;
 	}
 
 	public static void setServerPropagation(Behaviour behaviour, boolean propagate) {

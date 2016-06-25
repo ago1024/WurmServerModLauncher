@@ -134,7 +134,7 @@ public interface ActionPerformer extends ActionPerformerBase {
 	 * @return true if the behaviour object not wrapped or directly wraps a servers Behaviour object
 	 */
 	public static boolean isServerBehaviour(Action action) {
-		return !WrappedBehaviour.isWrapped(action.getBehaviour());
+		return WrappedBehaviour.isServerBehaviour(action.getBehaviour());
 	}
 
 	/**
