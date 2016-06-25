@@ -1,10 +1,10 @@
-package com.wurmonline.server.behaviours;
+package org.gotti.wurmunlimited.modsupport.actions;
 
 import java.util.List;
 
-import org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider;
-
 import com.wurmonline.mesh.Tiles.TileBorderDirection;
+import com.wurmonline.server.behaviours.ActionEntry;
+import com.wurmonline.server.behaviours.Behaviour;
 import com.wurmonline.server.bodys.Wound;
 import com.wurmonline.server.creatures.Creature;
 import com.wurmonline.server.items.Item;

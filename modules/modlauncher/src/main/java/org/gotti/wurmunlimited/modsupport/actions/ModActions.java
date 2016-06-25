@@ -12,7 +12,6 @@ import com.wurmonline.server.behaviours.Action;
 import com.wurmonline.server.behaviours.ActionEntry;
 import com.wurmonline.server.behaviours.Actions;
 import com.wurmonline.server.behaviours.Behaviour;
-import com.wurmonline.server.behaviours.WrappedBehaviourProvider;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
