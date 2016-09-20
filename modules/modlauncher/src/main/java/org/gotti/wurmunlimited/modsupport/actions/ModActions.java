@@ -78,7 +78,7 @@ public class ModActions {
 			ctActionEntrys.setModifiers(Modifier.clear(ctActionEntrys.getModifiers(), Modifier.FINAL));
 			
 			CtClass ctBehaviourDispatcher  = classPool.get("com.wurmonline.server.behaviours.BehaviourDispatcher");
-			for (CtMethod method : ctBehaviourDispatcher.getMethods()) {
+			for (CtMethod method : ctBehaviourDispatcher.getDeclaredMethods()) {
 				method.instrument(new ExprEditor() {
 					@Override
 					public void edit(MethodCall m) throws CannotCompileException {
