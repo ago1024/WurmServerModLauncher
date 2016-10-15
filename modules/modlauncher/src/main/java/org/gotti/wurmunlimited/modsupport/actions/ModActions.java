@@ -53,17 +53,22 @@ public class ModActions {
 	}
 	
 	public static void registerAction(ModAction testAction) {
-		ActionPerformer actionPerformer = testAction.getActionPerformer();
+		registerActionPerformer(testAction.getActionPerformer());
+		
+		registerBehaviourProvider(testAction.getBehaviourProvider());
+	}
+	
+	public static void registerActionPerformer(ActionPerformer actionPerformer) {
 		if (actionPerformer != null) {
 			short actionId = actionPerformer.getActionId();
 			actionPerformers.computeIfAbsent(actionId, num -> new ActionPerformerChain(num)).addActionPerformer(actionPerformer);
 		}
-		
-		BehaviourProvider behaviourProvider = testAction.getBehaviourProvider();
-		if (!behaviourProviders.contains(behaviourProvider)) {
+	}
+	
+	public static void registerBehaviourProvider(BehaviourProvider behaviourProvider) {
+		if (behaviourProvider != null && !behaviourProviders.contains(behaviourProvider)) {
 			behaviourProviders.add(behaviourProvider);
 		}
-		
 	}
 
 	public static void init() {
