@@ -24,7 +24,7 @@ public class PandaBear implements ModCreature, CreatureTypes {
 		int[] types = { C_TYPE_MOVE_GLOBAL, C_TYPE_VEHICLE, C_TYPE_ANIMAL, C_TYPE_AGG_HUMAN, C_TYPE_SWIMMING, C_TYPE_HUNTING, C_TYPE_DOMINATABLE, C_TYPE_CARNIVORE, C_TYPE_NON_NEWBIE };
 
 		CreatureTemplateBuilder builder = new CreatureTemplateBuilder("mod.creature.panda", "Panda bear", "The panda bear has large, distinctive black patches around its eyes, over the ears, and across its round body.", "model.creature.quadraped.bear.panda", types, (byte) 2, (short) 5, (byte) 0, (short) 230, (short) 50,
-				(short) 50, "sound.death.bear", "sound.death.bear", "sound.combat.hit.bear", "sound.combat.hit.bear", 0.75f, 7.0f, 0.0f, 10.0f, 0.0f, 0.0f, 1.2f, 1500, new int[] { 92, 303, 302 }, 10, 70);
+				(short) 50, "sound.death.bear", "sound.death.bear", "sound.combat.hit.bear", "sound.combat.hit.bear", 0.75f, 7.0f, 0.0f, 10.0f, 0.0f, 0.0f, 1.2f, 1500, new int[] { 92, 303, 302 }, 10, 70, (byte) 72);
 
 		this.templateId = builder.getTemplateId();
 
