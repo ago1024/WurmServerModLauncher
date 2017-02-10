@@ -17,7 +17,7 @@ public class Ocelot implements ModCreature, CreatureTypes {
 		final int[] types = { C_TYPE_MOVE_LOCAL, C_TYPE_ANIMAL, C_TYPE_AGG_HUMAN, C_TYPE_HUNTING, C_TYPE_CLIMBER, C_TYPE_DOMINATABLE, C_TYPE_CARNIVORE };
 
 		CreatureTemplateBuilder builder = new CreatureTemplateBuilder(MOD_CREATURE_OCELOT, "Ocelot", "Looking like a huge cat, with a dappled coat.", "model.creature.quadraped.lion.ocelot", types, (byte) 3, (short) 5, (byte) 0, (short) 60, (short) 30, (short) 90, "sound.death.lion",
-				"sound.death.lion", "sound.combat.hit.lion", "sound.combat.hit.lion", 0.95f, 3.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 1200, new int[] { 92, 305, 313 }, 10, 40);
+				"sound.death.lion", "sound.combat.hit.lion", "sound.combat.hit.lion", 0.95f, 3.0f, 0.0f, 5.0f, 0.0f, 0.0f, 1.0f, 1200, new int[] { 92, 305, 313 }, 10, 40, (byte) 75);
 		
 		this.templateId = builder.getTemplateId();
 
