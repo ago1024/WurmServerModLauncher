@@ -79,7 +79,7 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable {
 			bytecode.add(844 >> 8, 844 & 0xff);
 			bytecode.add(Bytecode.ISTORE, 13);
 			bytecode.add(Bytecode.LDC_W);
-			bytecode.add(631 >> 8, 631 & 0xff); // const value 99.0
+			bytecode.add(673 >> 8, 673 & 0xff); // const value 99.0
 			bytecode.add(Bytecode.FSTORE, 12);
 			byte[] search = bytecode.get();
 			
@@ -96,7 +96,7 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable {
 			bytecode.add(present2016 >> 8, present2016 & 0xff);
 			bytecode.add(Bytecode.ISTORE, 13);
 			bytecode.add(Bytecode.LDC_W);
-			bytecode.add(631 >> 8, 631 & 0xff); // const value 99.0
+			bytecode.add(673 >> 8, 673 & 0xff); // const value 99.0
 			bytecode.add(Bytecode.FSTORE, 12);
 			byte[] replace = bytecode.get();
 			
@@ -111,12 +111,12 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable {
 			bytecode.add(Bytecode.BIPUSH);
 			bytecode.add(8);
 			bytecode.add(Bytecode.IF_ICMPNE);
-			bytecode.add(0, 13);
+			bytecode.add(0, 16);
 			bytecode.add(Bytecode.SIPUSH);
 			bytecode.add(1032 >> 8, 1032 & 0xff);
 			bytecode.add(Bytecode.ISTORE, 13);
 			bytecode.add(Bytecode.LDC_W);
-			bytecode.add(631 >> 8, 631 & 0xff); // const value 99.0
+			bytecode.add(673 >> 8, 673 & 0xff); // const value 99.0
 			bytecode.add(Bytecode.FSTORE, 12);
 			search = bytecode.get();
 			
@@ -128,12 +128,12 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable {
 			bytecode.add(Bytecode.BIPUSH);
 			bytecode.add(8);
 			bytecode.add(Bytecode.IF_ICMPNE);
-			bytecode.add(0, 13);
+			bytecode.add(0, 16);
 			bytecode.add(Bytecode.SIPUSH);
 			bytecode.add(present2015 >> 8, present2015 & 0xff);
 			bytecode.add(Bytecode.ISTORE, 13);
 			bytecode.add(Bytecode.LDC_W);
-			bytecode.add(631 >> 8, 631 & 0xff); // const value 99.0
+			bytecode.add(673 >> 8, 673 & 0xff); // const value 99.0
 			bytecode.add(Bytecode.FSTORE, 12);
 			replace = bytecode.get();
 			
