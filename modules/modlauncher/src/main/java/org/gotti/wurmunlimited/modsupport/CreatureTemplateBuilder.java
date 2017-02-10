@@ -15,6 +15,7 @@ import com.wurmonline.server.creatures.CreatureTemplate;
 import com.wurmonline.server.creatures.CreatureTemplateFactory;
 import com.wurmonline.server.skills.Skills;
 import com.wurmonline.server.skills.SkillsFactory;
+import com.wurmonline.shared.constants.ItemMaterials;
 
 public class CreatureTemplateBuilder {
 
@@ -121,6 +122,12 @@ public class CreatureTemplateBuilder {
 	
 	public CreatureTemplateBuilder(String identifier) {
 		this(IdFactory.getIdFor(identifier, IdType.CREATURETEMPLATE));
+	}
+
+	public CreatureTemplateBuilder(final String identifier, final String name, final String description, final String modelName, final int[] types, final byte bodyType, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong, final short centimetersWide,
+			final String deathSndMale, final String deathSndFemale, final String hitSndMale, final String hitSndFemale, final float naturalArmour, final float handDam, final float kickDam, final float biteDam, final float headDam, final float breathDam, final float speed, final int moveRate,
+			final int[] itemsButchered, final int maxHuntDist, final int aggress) {
+		this(identifier, name, description, modelName, types, bodyType, vision, sex, centimetersHigh, centimetersLong, centimetersWide, deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam, headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggress, ItemMaterials.MATERIAL_MEAT);
 	}
 
 	public CreatureTemplateBuilder(final String identifier, final String name, final String description, final String modelName, final int[] types, final byte bodyType, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong, final short centimetersWide,
