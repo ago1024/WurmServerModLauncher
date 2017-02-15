@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
 		<artifactId>server-modlauncher-parent</artifactId>
-		<version>0.21.1-alpha4</version>
+		<version>0.21.1-alpha5</version>
 		<relativePath>../../..</relativePath>
 	</parent>
 
@@ -18,12 +18,7 @@
 		<dependency>
 			<groupId>org.gotti.wurmunlimited</groupId>
 			<artifactId>server-modlauncher</artifactId>
-			<version>0.21.1-alpha4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>1.3</version>
+			<version>0.21.1-alpha5</version>
 		</dependency>
 	</dependencies>
 

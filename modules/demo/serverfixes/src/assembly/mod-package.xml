@@ -19,15 +19,4 @@
       <destName>${project.name}.jar</destName>
     </file>
   </files>
-  <dependencySets>
-    <dependencySet>
-      <excludes>
-        <exclude>org.gotti.wurmunlimited:server-modlauncher</exclude>
-        <exclude>org.gotti.wurmunlimited:server</exclude>
-        <exclude>org.gotti.wurmunlimited:common</exclude>
-        <exclude>org.javassist:javassist</exclude>
-      </excludes>
-      <outputFileNameMapping>mods/${project.name}/libs/${artifact.artifactId}-${artifact.version}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
-    </dependencySet>
-  </dependencySets>
 </assembly>
