@@ -17,6 +17,7 @@
 		<module>modules/demo/creaturedemo</module>
 		<module>modules/demo/digtoground</module>
 		<module>modules/demo/hitchingpost</module>
+		<module>modules/demo/serverfixes</module>
 		<module>modules/mods/announcer</module>
 		<module>modules/mods/bagofholding</module>
 		<module>modules/mods/creatureagemod</module>
