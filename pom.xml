@@ -4,7 +4,7 @@
 
 	<groupId>org.gotti.wurmunlimited</groupId>
 	<artifactId>server-modlauncher-parent</artifactId>
-	<version>0.21.1-alpha5</version>
+	<version>0.22-alpha6</version>
 	<packaging>pom</packaging>
 
 	<name>server modlauncher parent</name>
