@@ -1,0 +1,10 @@
+//
+// Greet the player with a personal message
+//
+
+var ProtoConstants = Packages.com.wurmonline.shared.constants.ProtoConstants;
+
+function onPlayerLogin(player) {
+	var message = "Welcome to Wurm, " + player.getName() + "!";
+	player.getCommunicator().sendSafeServerMessage(message, ProtoConstants.M_SYSTEM);
+}

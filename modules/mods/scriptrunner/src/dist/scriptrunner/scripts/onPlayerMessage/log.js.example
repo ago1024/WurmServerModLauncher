@@ -1,0 +1,11 @@
+//
+// log all player messages to player.playername.channel
+//
+
+var Logger = Packages.java.util.logging.Logger;
+var Level = Packages.java.util.logging.Level;
+
+function onPlayerMessage(communicator, message, title) {
+	var logger = "players." + communicator.getPlayer().getName().toLowerCase() + "." + title.replace(/^:/,"").toLowerCase();
+	Logger.getLogger(logger).log(Level.INFO, message);
+}
