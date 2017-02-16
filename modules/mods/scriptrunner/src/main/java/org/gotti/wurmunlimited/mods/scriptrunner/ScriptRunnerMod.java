@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
@@ -19,6 +18,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.MessagePolicy;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
+import org.gotti.wurmunlimited.modloader.interfaces.ServerPollListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
@@ -27,26 +27,32 @@ import com.wurmonline.server.creatures.Communicator;
 import com.wurmonline.server.items.ItemTypes;
 import com.wurmonline.server.players.Player;
 
-public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, PreInitable, ServerStartedListener, ItemTemplatesCreatedListener, PlayerLoginListener, PlayerMessageListener, ItemTypes, MiscConstants {
+public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, PreInitable, ServerStartedListener, ItemTemplatesCreatedListener, PlayerLoginListener, PlayerMessageListener, ItemTypes, MiscConstants, ServerPollListener {
 	
+	private static final Logger LOGGER = Logger.getLogger(ScriptRunnerMod.class.getName());
 	private Map<String, ScriptRunner> scriptRunners = new HashMap<>();
 	private Path scriptsPath;
+	private Properties properties;
 	
 	@Override
 	public void configure(Properties properties) {
 		String scriptsFolder = properties.getProperty("scriptsFolder", "scriptrunner/scripts");
-		Logger.getLogger(ScriptRunnerMod.class.getName()).log(Level.INFO, "scriptsFolder: " + scriptsFolder);
+		LOGGER.info("scriptsFolder: " + scriptsFolder);
 		
 		this.scriptsPath = Paths.get("mods").resolve(scriptsFolder);
 		if (!Files.isDirectory(this.scriptsPath)) {
 			throw new IllegalArgumentException("ScriptsPath does not exist: " + scriptsPath);
 		}
 		
+		this.properties = properties;
 		
-		initRunner("onServerStarted", true);
-		initRunner("onPlayerLogin", true);
-		initRunner("onPlayerLogout", true);
-		initRunner("onPlayerMessage", true);
+		initRunner("onServerStarted");
+		initRunner("onPlayerLogin");
+		initRunner("onPlayerLogout");
+		initRunner("onPlayerMessage");
+		initRunner("onItemTemplatesCreated");
+		initRunner("onServerPoll");
+		
 	}
 
 	@Override
@@ -58,8 +64,13 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 		
 	}
 	
-	private void initRunner(String name, boolean refresh) {
-		scriptRunners.put(name, new ScriptRunner(scriptsPath.resolve(name), name, refresh));
+	private void initRunner(String name) {
+		boolean refresh = Boolean.parseBoolean(properties.getProperty(name + ".refresh", "false"));
+		final Path path = scriptsPath.resolve(name);
+		
+		LOGGER.info(String.format("script runner %s, path: %s, refresh: %s", name, path, refresh));
+		
+		scriptRunners.put(name, new ScriptRunner(path, name, refresh));
 	}
 	
 	private List<Object> run(ScriptRunner runner, Object... args) {
@@ -77,6 +88,7 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 	
 	@Override
 	public void onItemTemplatesCreated() {
+		run(scriptRunners.get("onItemTemplatesCreated"));
 	}
 	
 	@Override
@@ -101,5 +113,10 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 	@Override
 	public boolean onPlayerMessage(Communicator communicator, String message) {
 		return false;
+	}
+	
+	@Override
+	public void onServerPoll() {
+		run(scriptRunners.get("onServerPoll"));
 	}
 }
