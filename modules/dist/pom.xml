@@ -65,6 +65,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>scriptrunner</artifactId>
+			<type>zip</type>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>serverpacks</artifactId>
 			<type>zip</type>
 			<version>${project.version}</version>

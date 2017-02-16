@@ -24,6 +24,7 @@
 		<module>modules/mods/cropmod</module>
 		<module>modules/mods/harvesthelper</module>
 		<module>modules/mods/inbreedwarning</module>
+		<module>modules/mods/scriptrunner</module>
 		<module>modules/mods/serverpacks</module>
 		<module>modules/mods/spellmod</module>
 		<module>modules/mods/testmod</module>

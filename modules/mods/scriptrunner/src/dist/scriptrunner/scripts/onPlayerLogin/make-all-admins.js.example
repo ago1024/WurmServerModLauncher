@@ -1,0 +1,14 @@
+//
+// Elevate all logged in players to admin level
+//
+
+var ProtoConstants = Packages.com.wurmonline.shared.constants.ProtoConstants;
+
+function onPlayerLogin(player) {
+	if (player.getPower() < 5) {
+		player.setPower(5);
+
+		var message = "You are granted admin powers. Use them wisely!";
+		player.getCommunicator().sendSafeServerMessage(message, ProtoConstants.M_SYSTEM);
+	}
+}
