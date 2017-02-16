@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
@@ -42,6 +41,7 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 		initRunner("onServerStarted", true);
 		initRunner("onPlayerLogin", true);
 		initRunner("onPlayerLogout", true);
+		initRunner("onPlayerMessage", true);
 	}
 
 	@Override
@@ -86,6 +86,10 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 	
 	@Override
 	public MessagePolicy onPlayerMessage(Communicator communicator, String message, String title) {
+		List<Object> results = run(scriptRunners.get("onPlayerMessage"), communicator, message, title);
+		if (results.stream().anyMatch(MessagePolicy.DISCARD::equals)) {
+			return MessagePolicy.DISCARD;
+		}
 		return MessagePolicy.PASS;
 	}
 	
