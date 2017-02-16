@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
@@ -33,10 +35,13 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 	@Override
 	public void configure(Properties properties) {
 		String scriptsFolder = properties.getProperty("scriptsFolder", "scriptrunner/scripts");
+		Logger.getLogger(ScriptRunnerMod.class.getName()).log(Level.INFO, "scriptsFolder: " + scriptsFolder);
+		
 		this.scriptsPath = Paths.get("mods").resolve(scriptsFolder);
 		if (!Files.isDirectory(this.scriptsPath)) {
 			throw new IllegalArgumentException("ScriptsPath does not exist: " + scriptsPath);
 		}
+		
 		
 		initRunner("onServerStarted", true);
 		initRunner("onPlayerLogin", true);
