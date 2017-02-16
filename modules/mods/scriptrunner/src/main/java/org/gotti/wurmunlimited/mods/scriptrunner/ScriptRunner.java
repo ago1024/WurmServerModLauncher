@@ -29,7 +29,7 @@ public class ScriptRunner {
 		}
 		
 		public boolean check() throws IOException {
-			if (checked && size == Files.size(file) && this.mtime == Files.getLastModifiedTime(file)) {
+			if (checked && size == Files.size(file) && this.mtime.equals(Files.getLastModifiedTime(file))) {
 				return true;
 			}
 			this.checked = true;
@@ -65,12 +65,12 @@ public class ScriptRunner {
 		}
 	}
 	
-	private Object runScript(Path file, Object... args) {
+	private Object runScript(Path file, Map<String, Object> context, Object... args) {
 		try {
 			if (refresh && !states.computeIfAbsent(file, f -> new ScriptState(f)).check()) {
 				ScriptManager.getInstance().refresh(file);
 			}
-			return ScriptManager.getInstance().invoke(file, methodName, args);
+			return ScriptManager.getInstance().invoke(file, methodName, context, args);
 		} catch (IOException | ScriptException e) {
 			String logger = String.format("%s.%s.%s", ScriptRunner.class.getName(), methodName, file.getFileName());
 			Logger.getLogger(logger).log(Level.SEVERE, e.getMessage(), e);
@@ -82,7 +82,8 @@ public class ScriptRunner {
 		if (refresh) {
 			refreshScriptNames();
 		}
-		return scripts.stream().map(path -> runScript(path, args)).collect(Collectors.toList());
+		Map<String, Object> context = new HashMap<>();
+		return scripts.stream().map(path -> runScript(path, context, args)).collect(Collectors.toList());
 	}
 
 }

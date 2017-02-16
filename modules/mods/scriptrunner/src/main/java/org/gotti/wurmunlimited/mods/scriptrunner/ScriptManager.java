@@ -42,17 +42,21 @@ public class ScriptManager {
 		return engine;
 	}
 	
-	public Object invoke(Path scriptPath, String methodName, Object... args) throws IOException, ScriptException {
+	public Object invoke(Path scriptPath, String methodName, Map<String, Object> context, Object... args) throws IOException, ScriptException {
 		ScriptEngine engine = engines.get(scriptPath);
 		if (engine == null) {
 			engine = refresh(scriptPath);
 		}
-		
-		Invocable invocable = (Invocable) engine;
-		try {
-			return invocable.invokeFunction(methodName, args);
-		} catch (NoSuchMethodException e) {
-			throw new ScriptException(e);
+	
+		synchronized (engine) {
+			engine.put("context", context);
+			
+			Invocable invocable = (Invocable) engine;
+			try {
+				return invocable.invokeFunction(methodName, args);
+			} catch (NoSuchMethodException e) {
+				throw new ScriptException(e);
+			}
 		}
 	}
 }
