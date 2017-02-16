@@ -56,6 +56,10 @@ public class ScriptRunner {
 	}
 	
 	public void refreshScriptNames() {
+		if (!Files.exists(folder)) {
+			scripts = Collections.emptyList();
+			return;
+		}
 		try (DirectoryStream<Path> stream = Files.newDirectoryStream(folder, "*.js")) {
 			scripts = StreamSupport.stream(stream.spliterator(), false)
 				.filter(Files::isRegularFile)

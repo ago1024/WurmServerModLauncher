@@ -69,6 +69,9 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 		final Path path = scriptsPath.resolve(name);
 		
 		LOGGER.info(String.format("script runner %s, path: %s, refresh: %s", name, path, refresh));
+		if (!Files.exists(path)) {
+			LOGGER.warning(String.format("script path %s does not exist", path));
+		}
 		
 		scriptRunners.put(name, new ScriptRunner(path, name, refresh));
 	}
