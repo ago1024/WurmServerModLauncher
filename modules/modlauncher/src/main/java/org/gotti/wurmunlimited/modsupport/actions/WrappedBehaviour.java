@@ -1,8 +1,11 @@
 package org.gotti.wurmunlimited.modsupport.actions;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
@@ -19,6 +22,12 @@ import com.wurmonline.server.structures.Fence;
 import com.wurmonline.server.structures.Floor;
 import com.wurmonline.server.structures.Wall;
 
+/**
+ * Calls multiple {@link ActionPerformer}s and the original {@link Behaviour} unless prevented by setServerPropagation(action, false).
+ * <p>
+ * The {@link WrappedBehaviour} is called by the {@link ActionPerformerChain}.
+ * 
+ */
 class WrappedBehaviour extends Behaviour {
 	
 	private boolean serverPropagation;
@@ -140,21 +149,41 @@ class WrappedBehaviour extends Behaviour {
 		return action(action, actionPerformer -> actionPerformer.action(action, performer, item, onSurface, bridgePart, encodedTile, num, counter));
 	}
 
+	/**
+	 * Call the ActionPerformer
+	 * @param action Action
+	 * @param code Lambda with call to correct action method on the ActionPerformer
+	 * @return true if the action is done, false if it should continue
+	 */
 	private boolean action(Action action, Predicate<Behaviour> code) {
-		if (!actionPerformers.isEmpty()) {
+		boolean result = false;
+		boolean propagate = this.serverPropagation;
+		for (ActionPerformer actionPerformer : actionPerformers) {
 			Behaviour actionBehaviour = action.getBehaviour();
 			try {
-				setActionBehaviour(action, new WrappedBehaviour(behaviour, actionPerformers.subList(1, actionPerformers.size())));
-				return code.test(new ActionPerformerBehaviour(actionPerformers.get(0)));
+				// Create a behaviour without any ActionPerformes. This behaviour will call the server action
+				// if called recursively
+				WrappedBehaviour wrapped = new WrappedBehaviour(actionBehaviour, Collections.emptyList());
+				setActionBehaviour(action, wrapped);
+				wrapped.serverPropagation = false;
+				// Call the actionPerformer
+				result |= code.test(new ActionPerformerBehaviour(actionPerformer));
+				// Check if serverPropation was reset to true. This is done in the ActionPerformer default methods
+				propagate &= wrapped.serverPropagation;
+			} catch (Exception e) {
+				// Log the error and remove the faulty action performer
+				Logger.getLogger(WrappedBehaviour.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+				actionPerformers.remove(actionPerformer);
 			} finally {
 				setActionBehaviour(action, actionBehaviour);
 			}
-		} else if (isServerPropagation()) {
+		}
+		if (propagate) {
 			// Propagate the action to the server Behavior classes
-			return code.test(this.behaviour);
+			return code.test(this.behaviour) || result;
 		} else {
 			// Don't propagate the action
-			return true;
+			return result;
 		}
 	}
 

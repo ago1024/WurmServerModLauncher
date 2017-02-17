@@ -21,6 +21,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerPollListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
+import org.gotti.wurmunlimited.modsupport.actions.ModActions;
 
 import com.wurmonline.server.MiscConstants;
 import com.wurmonline.server.creatures.Communicator;
@@ -57,11 +58,11 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 
 	@Override
 	public void preInit() {
+		ModActions.init();
 	}
 	
 	@Override
 	public void init() {
-		
 	}
 	
 	private void initRunner(String name) {
