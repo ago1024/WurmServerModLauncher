@@ -1,0 +1,33 @@
+
+var Actions = com.wurmonline.server.behaviours.Actions;
+var Logger = java.util.logging.Logger;
+var ModActions = org.gotti.wurmunlimited.modsupport.actions.ModActions;
+var ActionPerformer = org.gotti.wurmunlimited.modsupport.actions.ActionPerformer;
+var WrappedBehaviour = org.gotti.wurmunlimited.modsupport.actions.WrappedBehaviour;
+
+function log(message) {
+	Logger.getLogger("script.action").info(message && message.toString() || "null");
+}
+
+var actionPerformer = {
+
+	action : function(action, performer) {
+		performer.getCommunicator().sendNormalServerMessage("Examine script test");
+		log([].slice.call(arguments));
+		log(arguments.caller);
+		log(arguments.callee);
+	},
+
+	getActionId : function() {
+		return Actions.EXAMINE;
+	}
+}
+
+function onPlayerMessage(communicator, message, title) {
+
+	if (message === "/add-action") {
+		log("Adding action");
+		ModActions.registerActionPerformer(new ActionPerformer(actionPerformer));
+		
+	}
+}
