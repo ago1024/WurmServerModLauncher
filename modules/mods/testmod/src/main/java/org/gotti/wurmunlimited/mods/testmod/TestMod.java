@@ -55,7 +55,7 @@ public class TestMod implements WurmServerMod, Initable, PreInitable, ServerStar
 				public void sendQuestion(Question question) {
 					final StringBuilder buf = new StringBuilder(ModQuestions.getBmlHeader(question));
 					buf.append("label{text=\"Test.\"}");
-					buf.append(ModQuestions.createAnswerButton2(question, "Send");
+					buf.append(ModQuestions.createAnswerButton2(question, "Send"));
 					question.getResponder().getCommunicator().sendBml(300, 300, true, true, buf.toString(), 200, 200, 200, question.getTitle());
 				}
 				
