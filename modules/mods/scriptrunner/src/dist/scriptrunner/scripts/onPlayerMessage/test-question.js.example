@@ -1,0 +1,32 @@
+var Logger = java.util.logging.Logger;
+var ModQuestion = org.gotti.wurmunlimited.modsupport.questions.ModQuestion;
+var ModQuestions = org.gotti.wurmunlimited.modsupport.questions.ModQuestions;
+var ModQuestion = org.gotti.wurmunlimited.modsupport.questions.ModQuestion;
+
+function log(message) {
+	Logger.getLogger("script.question").info(message && message.toString() || "null");
+}
+
+var question = {
+
+	answer : function(question, answers) {
+		log(answers);
+	},
+
+	sendQuestion : function(question) {
+		var buf = ModQuestions.getBmlHeader(question);
+		buf += "label{text=\"Test.\"}";
+		buf += ModQuestions.createAnswerButton2(question, "Foo");
+
+		log(buf);
+		question.getResponder().getCommunicator().sendBml(300, 300, true, true, buf, 200, 200, 200, question.getTitle());
+	}
+}
+
+function onPlayerMessage(communicator, message, title) {
+
+	if (message === "/question") {
+		log("Adding question");
+		ModQuestions.createQuestion(communicator.getPlayer(), "Test", "Test", -10, new ModQuestion(question)).sendQuestion();
+	}
+}
