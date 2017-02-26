@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.wurmonline.mesh.Tiles.TileBorderDirection;
 import com.wurmonline.server.behaviours.ActionEntry;
@@ -18,8 +21,10 @@ import com.wurmonline.server.structures.Wall;
 
 public class ChainedBehaviourProvider implements BehaviourProvider {
 	private Iterable<BehaviourProvider> behaviourProviders;
+	private List<BehaviourProvider> prov;
 
-	public ChainedBehaviourProvider(BehaviourProvider wrapped, Collection<BehaviourProvider> behaviourProviders) {
+	public ChainedBehaviourProvider(BehaviourProvider wrapped, List<BehaviourProvider> behaviourProviders) {
+		this.prov = behaviourProviders;
 		this.behaviourProviders = new ChainedBehaviourProviders(wrapped, behaviourProviders);
 	}
 
@@ -33,248 +38,153 @@ public class ChainedBehaviourProvider implements BehaviourProvider {
 			return list;
 		}
 	}
+	
+	private List<ActionEntry> call(Function<BehaviourProvider, List<ActionEntry>> code) {
+		List<ActionEntry> list = null;
+		for (BehaviourProvider behaviourProvider : behaviourProviders) {
+			try {
+				list = merge(list, code.apply(behaviourProvider));
+			} catch (Exception e) {
+				Logger.getLogger(ChainedBehaviourProvider.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+				prov.remove(behaviourProvider);
+			}
+		}
+		return list;
+	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature aPerformer, boolean aOnSurface, BridgePart aBridgePart) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(aPerformer, aOnSurface, aBridgePart));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(aPerformer, aOnSurface, aBridgePart));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature aPerformer, Item item, boolean aOnSurface, BridgePart aBridgePart) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(aPerformer, item, aOnSurface, aBridgePart));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(aPerformer, item, aOnSurface, aBridgePart));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature creature, Item item, boolean onSurface, Floor floor) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(creature, item, onSurface, floor));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(creature, item, onSurface, floor));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, boolean onSurface, Floor floor) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, onSurface, floor));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, onSurface, floor));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Creature target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Fence target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, int planetId) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, planetId));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, planetId));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, corner, tile));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, corner, tile));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, int tilex, int tiley, boolean onSurface, int tile) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, tile));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, tile));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, int tilex, int tiley, boolean onSurface, int tile, int dir) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, tile, dir));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, tile, dir));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, int tilex, int tiley, boolean onSurface, TileBorderDirection dir, boolean border, int heightOffset) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, dir, border, heightOffset));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, dir, border, heightOffset));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item object, int planetId) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, object, planetId));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, object, planetId));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, boolean corner, int tile) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, corner, tile));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, corner, tile));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, int tile) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, tile));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, tile));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, int tile, int dir) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, tile, dir));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, tile, dir));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, TileBorderDirection dir, boolean border, int heightOffset) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, dir, border, heightOffset));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, dir, border, heightOffset));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Creature target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, subject, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, subject, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Fence target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, subject, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, subject, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Item target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, subject, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, subject, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Skill skill) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, subject, skill));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, subject, skill));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Wall target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, subject, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, subject, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Wound target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, subject, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, subject, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, long target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Skill skill) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, skill));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, skill));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Wall target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, target));
 	}
 
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Wound target) {
-		List<ActionEntry> list = null;
-		for (BehaviourProvider behaviourProvider : behaviourProviders) {
-			list = merge(list, behaviourProvider.getBehavioursFor(performer, target));
-		}
-		return list;
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, target));
 	}
 
 	private static class ChainedBehaviourProviders implements Iterable<BehaviourProvider> {
