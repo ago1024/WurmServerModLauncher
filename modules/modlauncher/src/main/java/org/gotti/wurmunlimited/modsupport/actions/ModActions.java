@@ -1,9 +1,9 @@
 package org.gotti.wurmunlimited.modsupport.actions;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
@@ -27,7 +27,7 @@ public class ModActions {
 	
 	private static boolean inited = false;
 	
-	private static List<BehaviourProvider> behaviourProviders = new LinkedList<>();
+	private static List<BehaviourProvider> behaviourProviders = new CopyOnWriteArrayList<>();
 	private static ConcurrentHashMap<Short, ActionPerformerChain> actionPerformers = new ConcurrentHashMap<>();
 	
 	public static int getNextActionId() {
