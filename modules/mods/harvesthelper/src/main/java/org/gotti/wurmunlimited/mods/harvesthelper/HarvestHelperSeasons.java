@@ -65,7 +65,38 @@ public enum HarvestHelperSeasons {
 		public long getStartGrowth() {
 			return WurmCalendar.getStartWalnutGrowth();
 		}
-	};
+	},
+	PINE {
+		@Override
+		public long getStartGrowth() {
+			return WurmCalendar.getStartPineGrowth();
+		}
+	},
+	HAZEL {
+		@Override
+		public long getStartGrowth() {
+			return WurmCalendar.getStartHazelGrowth();
+		}
+	},
+	HOPS {
+		@Override
+		public long getStartGrowth() {
+			return WurmCalendar.getStartHopsGrowth();
+		}
+	},
+	OAK {
+		@Override
+		public long getStartGrowth() {
+			return WurmCalendar.getStartOakGrowth();
+		}
+	},
+	ORANGE {
+		@Override
+		public long getStartGrowth() {
+			return WurmCalendar.getStartOrangeGrowth();
+		}
+	},
+	;
 
 	public abstract long getStartGrowth();
 
