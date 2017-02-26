@@ -61,9 +61,7 @@
 						<argument>+app_update</argument>
 						<argument>402370</argument>
 						<argument>-beta</argument>
-						<argument>alpha</argument>
-						<argument>-betapassword</argument>
-						<argument>${betapassword}</argument>
+						<argument>beta</argument>
 						<argument>+exit</argument>
 					</arguments>
 				</configuration>
