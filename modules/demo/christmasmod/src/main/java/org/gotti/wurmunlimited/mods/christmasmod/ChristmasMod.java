@@ -1,5 +1,7 @@
 package org.gotti.wurmunlimited.mods.christmasmod;
 
+import java.time.Year;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +14,10 @@ import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.mods.christmasmod.OpenPresentActionPerformer.GiftData;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
+import org.gotti.wurmunlimited.modsupport.properties.ModPlayerProperties;
+import org.gotti.wurmunlimited.modsupport.properties.Property;
+
+import com.wurmonline.server.players.Player;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -23,16 +29,32 @@ import javassist.expr.MethodCall;
 
 public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, ServerStartedListener {
 
+	private static final String PROPERTY_NAME = "christmasmod.present";
+
+	private static final Logger LOGGER = Logger.getLogger(ChristmasMod.class.getName());
+	
 	int present2015 = 972;
 	int present2016 = 972;
+	int present2017 = 972;
+	int present2018 = 972;
+	int present2019 = 972;
+	int present2020 = 972;
 
 	@Override
 	public void configure(Properties properties) {
 		present2015 = Integer.valueOf(properties.getProperty("present2015", String.valueOf(present2015)));
 		present2016 = Integer.valueOf(properties.getProperty("present2016", String.valueOf(present2016)));
+		present2017 = Integer.valueOf(properties.getProperty("present2017", String.valueOf(present2017)));
+		present2018 = Integer.valueOf(properties.getProperty("present2018", String.valueOf(present2018)));
+		present2019 = Integer.valueOf(properties.getProperty("present2019", String.valueOf(present2019)));
+		present2020 = Integer.valueOf(properties.getProperty("present2020", String.valueOf(present2020)));
 
-		Logger.getLogger(ChristmasMod.class.getName()).log(Level.INFO, "present2015: " + present2015);
-		Logger.getLogger(ChristmasMod.class.getName()).log(Level.INFO, "present2016: " + present2016);
+		LOGGER.log(Level.INFO, "present2015: " + present2015);
+		LOGGER.log(Level.INFO, "present2016: " + present2016);
+		LOGGER.log(Level.INFO, "present2017: " + present2017);
+		LOGGER.log(Level.INFO, "present2018: " + present2018);
+		LOGGER.log(Level.INFO, "present2019: " + present2019);
+		LOGGER.log(Level.INFO, "present2020: " + present2020);
 	}
 
 	@Override
@@ -67,19 +89,48 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 						code.append("    $_ = $proceed($$);\n");
 						code.append("}");
 						m.replace(code.toString());
+					} else if (m.getClassName().equals("com.wurmonline.server.players.PlayerInfo") && m.getMethodName().equals("setReimbursed")) {
+						String code = String.format("%s.setPlayerReceivedPresent((com.wurmonline.server.players.Player)performer);", ChristmasMod.class.getName());
+						m.replace(code);
 					}
 				}
 			});
 
-			classPool.get("com.wurmonline.server.players.Player").getMethod("reimburse", "()V").instrument(new ExprEditor() {
+			// boolean com.wurmonline.server.behaviours.ItemBehaviour.action(final Action act, final Creature performer, final Item target, final short action, final float counter)
+			final String descriptor = Descriptor.ofMethod(CtClass.booleanType, new CtClass[] {
+					classPool.get("com.wurmonline.server.behaviours.Action"),
+					classPool.get("com.wurmonline.server.creatures.Creature"),
+					classPool.get("com.wurmonline.server.items.Item"),
+					CtClass.shortType,
+					CtClass.floatType
+					});
+			classPool.get("com.wurmonline.server.behaviours.ItemBehaviour").getMethod("action", descriptor).instrument(new ExprEditor() {
 				@Override
 				public void edit(MethodCall m) throws CannotCompileException {
-					// com.wurmonline.server.players.PlayerInfo.setReimbursed(boolean)
-					if (m.getClassName().equals("com.wurmonline.server.players.PlayerInfo") && m.getMethodName().equals("setReimbursed")) {
-						m.replace("if (com.wurmonline.server.Servers.localServer.testServer || getPower() >= 4) { $proceed($$); };");
+					// com.wurmonline.server.items.Item.setAuxData(byte)
+					if (m.getClassName().equals("com.wurmonline.server.players.Player") && m.getMethodName().equals("isReimbursed")) {
+						String code = String.format("$_ = %s.hasPlayerReceivedPresent($0);", ChristmasMod.class.getName());
+						m.replace(code);
 					}
 				}
 			});
+			
+			// void com.wurmonline.server.behaviours.CreatureBehaviour.handle_ASK_GIFT(Creature, Creature)
+			final String descriptor2 = Descriptor.ofMethod(CtClass.voidType, new CtClass[] {
+					classPool.get("com.wurmonline.server.creatures.Creature"),
+					classPool.get("com.wurmonline.server.creatures.Creature")
+					});
+			classPool.get("com.wurmonline.server.behaviours.CreatureBehaviour").getMethod("handle_ASK_GIFT", descriptor2).instrument(new ExprEditor() {
+				@Override
+				public void edit(MethodCall m) throws CannotCompileException {
+					// com.wurmonline.server.items.Item.setAuxData(byte)
+					if (m.getClassName().equals("com.wurmonline.server.players.Player") && m.getMethodName().equals("isReimbursed")) {
+						String code = String.format("$_ = %s.hasPlayerReceivedPresent($0);", ChristmasMod.class.getName());
+						m.replace(code);
+					}
+				}
+			});
+			
 
 		} catch (NotFoundException | CannotCompileException e) {
 			throw new HookException(e);
@@ -88,7 +139,7 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 
 	@Override
 	public void onServerStarted() {
-		Logger.getLogger(ChristmasMod.class.getName()).log(Level.INFO, "registering actions");
+		LOGGER.log(Level.INFO, "registering actions");
 		ModActions.registerActionPerformer(new OpenPresentActionPerformer(this::createGiftData));
 	}
 	
@@ -98,9 +149,26 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 			return new GiftData(present2015);
 		case 9:
 			return new GiftData(present2016);
+		case 10:
+			return new GiftData(present2017);
+		case 11:
+			return new GiftData(present2018);
+		case 12:
+			return new GiftData(present2019);
+		case 13:
+			return new GiftData(present2020);
 		default:
 			return OpenPresentActionPerformer.getDefaultPresentData(auxdata);
 		}
 	}
-
+	
+	public static boolean hasPlayerReceivedPresent(Player player) {
+		List<Property> properties = ModPlayerProperties.getInstance().getPlayerProperties(PROPERTY_NAME, player.getWurmId());
+		Long currentYear = Long.valueOf(Year.now().getValue());
+		return properties.stream().map(Property::getIntValue).anyMatch(currentYear::equals);
+	}
+	
+	public static void setPlayerReceivedPresent(Player player) {
+		ModPlayerProperties.getInstance().setPlayerProperty(PROPERTY_NAME, player.getWurmId(), Year.now().getValue());
+	}
 }
