@@ -36,7 +36,28 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>			
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>clean-decompiler-dir</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>clean</goal>
+						</goals>
+						<configuration>
+							<excludeDefaultDirectories>true</excludeDefaultDirectories>
+							<filesets>
+								<fileset>
+									<directory>${project.build.directory}/procyon</directory>
+								</fileset>
+							</filesets>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
@@ -49,20 +70,95 @@
 						<goals>
 							<goal>exec</goal>
 						</goals>
+						<configuration>
+							<executable>${steamcmd}</executable>
+							<arguments>
+								<argument>+login</argument>
+								<argument>anonymous</argument>
+								<argument>+force_install_dir</argument>
+								<argument>${project.build.directory}/steam</argument>
+								<argument>+app_update</argument>
+								<argument>402370</argument>
+								<argument>+exit</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>decompile-common</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>com.strobel.decompiler.DecompilerDriver</mainClass>
+							<additionalClasspathElements>
+								<additionalClasspathElement>${project.basedir}/procyon-decompiler-0.5.31.jar</additionalClasspathElement>
+							</additionalClasspathElements>
+							<arguments>
+								<argument>${project.build.directory}/steam/common.jar</argument>
+								<argument>-o</argument>
+								<argument>${project.build.directory}/procyon/common</argument>
+								<argument>-ln</argument>
+								<argument>-sl</argument>
+								<argument>-dl</argument>
+								<argument>-ci</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>decompile-server</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>java</goal>
+						</goals>
+						<configuration>
+							<mainClass>com.strobel.decompiler.DecompilerDriver</mainClass>
+							<additionalClasspathElements>
+								<additionalClasspathElement>${project.basedir}/procyon-decompiler-0.5.31.jar</additionalClasspathElement>
+							</additionalClasspathElements>
+							<arguments>
+								<argument>${project.build.directory}/steam/server.jar</argument>
+								<argument>-o</argument>
+								<argument>${project.build.directory}/procyon/server</argument>
+								<argument>-ln</argument>
+								<argument>-sl</argument>
+								<argument>-dl</argument>
+								<argument>-ci</argument>
+							</arguments>
+						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<executable>${steamcmd}</executable>
-					<arguments>
-						<argument>+login</argument>
-						<argument>anonymous</argument>
-						<argument>+force_install_dir</argument>
-						<argument>${project.build.directory}/steam</argument>
-						<argument>+app_update</argument>
-						<argument>402370</argument>
-						<argument>+exit</argument>
-					</arguments>
-				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>source-jar-common</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classesDirectory>${project.build.directory}/procyon/common</classesDirectory>
+							<classifier>common</classifier>
+							<outputDirectory>${project.build.directory}/procyon</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>source-jar-server</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classesDirectory>${project.build.directory}/procyon/server</classesDirectory>
+							<classifier>server</classifier>
+							<outputDirectory>${project.build.directory}/procyon</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -78,6 +174,7 @@
 						</goals>
 						<configuration>
 							<file>${project.build.directory}/steam/common.jar</file>
+							<sources>${project.build.directory}/procyon/${project.build.finalName}-common.jar</sources>
 							<groupId>org.gotti.wurmunlimited</groupId>
 							<artifactId>common</artifactId>
 							<packaging>jar</packaging>
@@ -92,6 +189,7 @@
 						</goals>
 						<configuration>
 							<file>${project.build.directory}/steam/server.jar</file>
+							<sources>${project.build.directory}/procyon/${project.build.finalName}-server.jar</sources>
 							<groupId>org.gotti.wurmunlimited</groupId>
 							<artifactId>server</artifactId>
 							<packaging>jar</packaging>
@@ -138,6 +236,7 @@
 						</goals>
 						<configuration>
 							<file>${project.build.directory}/steam/server.jar</file>
+							<sources>${project.build.directory}/procyon/${project.build.finalName}-server.jar</sources>
 							<groupId>org.gotti.wurmunlimited</groupId>
 							<artifactId>server</artifactId>
 							<packaging>jar</packaging>
@@ -154,6 +253,7 @@
 						</goals>
 						<configuration>
 							<file>${project.build.directory}/steam/common.jar</file>
+							<sources>${project.build.directory}/procyon/${project.build.finalName}-common.jar</sources>
 							<groupId>org.gotti.wurmunlimited</groupId>
 							<artifactId>common</artifactId>
 							<packaging>jar</packaging>
