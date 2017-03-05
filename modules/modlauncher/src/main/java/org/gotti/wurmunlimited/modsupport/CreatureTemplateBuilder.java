@@ -115,6 +115,25 @@ public class CreatureTemplateBuilder {
 
 	private byte meatMaterial;
 
+	private int colorRed = 255;
+
+	private int colorGreen = 255;
+
+	private int colorBlue = 255;
+
+	private int sizeModX = 64;
+
+	private int sizeModY = 64;
+
+	private int sizeModZ = 64;
+
+	private byte fireRadius;
+
+	private boolean onFire;
+
+	private boolean glowing;
+
+
 	public CreatureTemplateBuilder(int id) {
 		this.templateId = id;
 		defaultSkills();
@@ -337,6 +356,20 @@ public class CreatureTemplateBuilder {
 				temp.addSecondaryAttack(attackAction);
 			}
 
+			temp.setColorRed(colorRed);
+			temp.setColorGreen(colorGreen);
+			temp.setColorBlue(colorBlue);
+
+			temp.setSizeModX(sizeModX);
+			temp.setSizeModY(sizeModY);
+			temp.setSizeModZ(sizeModZ);
+
+			temp.setGlowing(glowing);
+			if (onFire) {
+				temp.setOnFire(onFire);
+				temp.setFireRadius(fireRadius);
+			}
+
 			return temp;
 		} catch (IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | ClassCastException | NoSuchFieldException e) {
 			throw new RuntimeException(e);
@@ -423,6 +456,58 @@ public class CreatureTemplateBuilder {
 
 	public CreatureTemplateBuilder isHorse(boolean b) {
 		isHorse = b;
+		return this;
+	}
+	
+	/**
+	 * Set size modifier. The default value is 64 for all values.
+	 * 
+	 * @param sizeModX size modifier
+	 * @param sizeModY size modifier
+	 * @param sizeModZ size modifier
+	 * @return builder
+	 */
+	public CreatureTemplateBuilder sizeModifier(int sizeModX, int sizeModY, int sizeModZ) {
+		this.sizeModX = sizeModX;
+		this.sizeModY = sizeModY;
+		this.sizeModZ = sizeModZ;
+		return this;
+	}
+	
+	/**
+	 * Set a custom color.
+	 * 
+	 * @param red
+	 * @param green
+	 * @param blue
+	 * @return
+	 */
+	public CreatureTemplateBuilder color(int red, int green, int blue) {
+		this.colorRed = red;
+		this.colorGreen = green;
+		this.colorBlue = blue;
+		return this;
+	}
+	
+	/**
+	 * Set glowing status.
+	 * @param glowing
+	 * @return
+	 */
+	public CreatureTemplateBuilder glowing(boolean glowing) {
+		this.glowing = glowing;
+		return this;
+	}
+	
+	/**
+	 * Set fire status
+	 * @param onFire onFire flag
+	 * @param fireRadius fire radius to use if onFire is set
+	 * @return
+	 */
+	public CreatureTemplateBuilder onFire(boolean onFire, byte fireRadius) {
+		this.onFire = onFire;
+		this.fireRadius = fireRadius;
 		return this;
 	}
 
