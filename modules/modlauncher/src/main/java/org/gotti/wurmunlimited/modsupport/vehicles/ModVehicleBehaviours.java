@@ -2,13 +2,10 @@ package org.gotti.wurmunlimited.modsupport.vehicles;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.NotFoundException;
-import javassist.bytecode.Descriptor;
 
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
@@ -17,10 +14,15 @@ import com.wurmonline.server.behaviours.Vehicle;
 import com.wurmonline.server.creatures.Creature;
 import com.wurmonline.server.items.Item;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.NotFoundException;
+import javassist.bytecode.Descriptor;
+
 public class ModVehicleBehaviours {
 
-	private static Map<Integer, ModVehicleBehaviour> itemVehicles = null;
-	private static Map<Integer, ModVehicleBehaviour> creatureVehicles = null;
+	private static Map<Integer, List<ModVehicleBehaviour>> itemVehicles = null;
+	private static Map<Integer, List<ModVehicleBehaviour>> creatureVehicles = null;
 	private static boolean inited = false;
 
 	public static void init() {
@@ -45,9 +47,11 @@ public class ModVehicleBehaviours {
 							Object result = method.invoke(proxy, args);
 
 							Creature creature = (Creature) args[0];
-							ModVehicleBehaviour vehicle = creatureVehicles.get(creature.getTemplate().getTemplateId());
-							if (vehicle != null) {
-								vehicle.setSettingsForVehicle(creature, (Vehicle) args[1]);
+							List<ModVehicleBehaviour> vehicles = creatureVehicles.get(creature.getTemplate().getTemplateId());
+							if (vehicles != null) {
+								for (ModVehicleBehaviour vehicle : vehicles) {
+									vehicle.setSettingsForVehicle(creature, (Vehicle) args[1]);
+								}
 							}
 
 							return result;
@@ -68,9 +72,11 @@ public class ModVehicleBehaviours {
 							Object result = method.invoke(proxy, args);
 
 							Item item = (Item) args[0];
-							ModVehicleBehaviour vehicle = itemVehicles.get(item.getTemplate().getTemplateId());
-							if (vehicle != null) {
-								vehicle.setSettingsForVehicle(item, (Vehicle) args[1]);
+							List<ModVehicleBehaviour> vehicles = itemVehicles.get(item.getTemplate().getTemplateId());
+							if (vehicles != null) {
+								for (ModVehicleBehaviour vehicle : vehicles) {
+									vehicle.setSettingsForVehicle(item, (Vehicle) args[1]);
+								}
 							}
 
 							return result;
@@ -90,13 +96,13 @@ public class ModVehicleBehaviours {
 		if (!inited) {
 			throw new RuntimeException("ModVehicles was not initialized");
 		}
-		creatureVehicles.put(creatureTemplateId, vehicle);
+		creatureVehicles.computeIfAbsent(creatureTemplateId, key -> new ArrayList<>()).add(vehicle);
 	}
 
 	public static void addItemVehicle(int itemTemplateId, ModVehicleBehaviour vehicle) {
 		if (!inited) {
 			throw new RuntimeException("ModVehicles was not initialized");
 		}
-		itemVehicles.put(itemTemplateId, vehicle);
+		itemVehicles.computeIfAbsent(itemTemplateId, key -> new ArrayList<>()).add(vehicle);
 	}
 }

@@ -15,6 +15,7 @@ import com.wurmonline.server.creatures.CreatureTemplate;
 import com.wurmonline.server.creatures.CreatureTemplateFactory;
 import com.wurmonline.server.skills.Skills;
 import com.wurmonline.server.skills.SkillsFactory;
+import com.wurmonline.shared.constants.ItemMaterials;
 
 public class CreatureTemplateBuilder {
 
@@ -112,6 +113,27 @@ public class CreatureTemplateBuilder {
 
 	private boolean isHorse;
 
+	private byte meatMaterial;
+
+	private int colorRed = 255;
+
+	private int colorGreen = 255;
+
+	private int colorBlue = 255;
+
+	private int sizeModX = 64;
+
+	private int sizeModY = 64;
+
+	private int sizeModZ = 64;
+
+	private byte fireRadius;
+
+	private boolean onFire;
+
+	private boolean glowing;
+
+
 	public CreatureTemplateBuilder(int id) {
 		this.templateId = id;
 		defaultSkills();
@@ -124,6 +146,12 @@ public class CreatureTemplateBuilder {
 	public CreatureTemplateBuilder(final String identifier, final String name, final String description, final String modelName, final int[] types, final byte bodyType, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong, final short centimetersWide,
 			final String deathSndMale, final String deathSndFemale, final String hitSndMale, final String hitSndFemale, final float naturalArmour, final float handDam, final float kickDam, final float biteDam, final float headDam, final float breathDam, final float speed, final int moveRate,
 			final int[] itemsButchered, final int maxHuntDist, final int aggress) {
+		this(identifier, name, description, modelName, types, bodyType, vision, sex, centimetersHigh, centimetersLong, centimetersWide, deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam, headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggress, ItemMaterials.MATERIAL_MEAT);
+	}
+
+	public CreatureTemplateBuilder(final String identifier, final String name, final String description, final String modelName, final int[] types, final byte bodyType, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong, final short centimetersWide,
+			final String deathSndMale, final String deathSndFemale, final String hitSndMale, final String hitSndFemale, final float naturalArmour, final float handDam, final float kickDam, final float biteDam, final float headDam, final float breathDam, final float speed, final int moveRate,
+			final int[] itemsButchered, final int maxHuntDist, final int aggress, final byte meatMaterial) {
 		this(identifier);
 		name(name);
 		description(description);
@@ -142,6 +170,7 @@ public class CreatureTemplateBuilder {
 		itemsButchered(itemsButchered);
 		maxHuntDist(maxHuntDist);
 		aggressive(aggress);
+		meatMaterial(meatMaterial);
 	}
 
 	public CreatureTemplateBuilder damages(float handDam2, float kickDam2, float biteDam2, float headDam2, float breathDam2) {
@@ -175,6 +204,11 @@ public class CreatureTemplateBuilder {
 
 	public CreatureTemplateBuilder aggressive(int aggress) {
 		this.aggressive = aggress;
+		return this;
+	}
+
+	public CreatureTemplateBuilder meatMaterial(byte meatMaterial) {
+		this.meatMaterial = meatMaterial;
 		return this;
 	}
 
@@ -271,7 +305,7 @@ public class CreatureTemplateBuilder {
 			}
 
 			final CreatureTemplate temp = createCreatureTemplate(templateId, name, description, modelName, types, bodyType, skills, vision, sex, centimetersHigh, centimetersLong, centimetersWide, deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam,
-					headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggressive);
+					headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggressive, meatMaterial);
 
 			if (hasBounds)
 				temp.setBoundsValues(minX, minY, maxX, maxY);
@@ -322,18 +356,32 @@ public class CreatureTemplateBuilder {
 				temp.addSecondaryAttack(attackAction);
 			}
 
+			temp.setColorRed(colorRed);
+			temp.setColorGreen(colorGreen);
+			temp.setColorBlue(colorBlue);
+
+			temp.setSizeModX(sizeModX);
+			temp.setSizeModY(sizeModY);
+			temp.setSizeModZ(sizeModZ);
+
+			temp.setGlowing(glowing);
+			if (onFire) {
+				temp.setOnFire(onFire);
+				temp.setFireRadius(fireRadius);
+			}
+
 			return temp;
 		} catch (IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | ClassCastException | NoSuchFieldException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	private CreatureTemplate createCreatureTemplate(final int id, final String name, final String longDesc, final String modelName, final int[] types, final byte bodyType, final Skills skills, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong,
+	private static CreatureTemplate createCreatureTemplate(final int id, final String name, final String longDesc, final String modelName, final int[] types, final byte bodyType, final Skills skills, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong,
 			final short centimetersWide, final String deathSndMale, final String deathSndFemale, final String hitSndMale, final String hitSndFemale, final float naturalArmour, final float handDam, final float kickDam, final float biteDam, final float headDam, final float breathDam,
-			final float speed, final int moveRate, final int[] itemsButchered, final int maxHuntDist, final int aggress) throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+			final float speed, final int moveRate, final int[] itemsButchered, final int maxHuntDist, final int aggress, final byte meatMaterial) throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 
 		return ReflectionUtil.callPrivateMethod(CreatureTemplateFactory.getInstance(), ReflectionUtil.getMethod(CreatureTemplateFactory.class, "createCreatureTemplate"), id, name, longDesc, modelName, types, bodyType, skills, vision, sex, centimetersHigh, centimetersLong, centimetersWide,
-				deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam, headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggress);
+				deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam, headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggress, meatMaterial);
 	}
 
 	public CreatureTemplateBuilder boundsValues(final float minX, final float minY, final float maxX, final float maxY) {
@@ -408,6 +456,58 @@ public class CreatureTemplateBuilder {
 
 	public CreatureTemplateBuilder isHorse(boolean b) {
 		isHorse = b;
+		return this;
+	}
+	
+	/**
+	 * Set size modifier. The default value is 64 for all values.
+	 * 
+	 * @param sizeModX size modifier
+	 * @param sizeModY size modifier
+	 * @param sizeModZ size modifier
+	 * @return builder
+	 */
+	public CreatureTemplateBuilder sizeModifier(int sizeModX, int sizeModY, int sizeModZ) {
+		this.sizeModX = sizeModX;
+		this.sizeModY = sizeModY;
+		this.sizeModZ = sizeModZ;
+		return this;
+	}
+	
+	/**
+	 * Set a custom color.
+	 * 
+	 * @param red
+	 * @param green
+	 * @param blue
+	 * @return
+	 */
+	public CreatureTemplateBuilder color(int red, int green, int blue) {
+		this.colorRed = red;
+		this.colorGreen = green;
+		this.colorBlue = blue;
+		return this;
+	}
+	
+	/**
+	 * Set glowing status.
+	 * @param glowing
+	 * @return
+	 */
+	public CreatureTemplateBuilder glowing(boolean glowing) {
+		this.glowing = glowing;
+		return this;
+	}
+	
+	/**
+	 * Set fire status
+	 * @param onFire onFire flag
+	 * @param fireRadius fire radius to use if onFire is set
+	 * @return
+	 */
+	public CreatureTemplateBuilder onFire(boolean onFire, byte fireRadius) {
+		this.onFire = onFire;
+		this.fireRadius = fireRadius;
 		return this;
 	}
 

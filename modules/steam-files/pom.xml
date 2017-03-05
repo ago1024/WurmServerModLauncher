@@ -4,13 +4,13 @@
 
 	<groupId>org.gotti.wurmunlimited</groupId>
 	<artifactId>steam-files</artifactId>
-	<version>0.18-SNAPSHOT</version>
+	<version>0.22</version>
 	<packaging>pom</packaging>
 	
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
 		<artifactId>server-modlauncher-parent</artifactId>
-		<version>0.18-SNAPSHOT</version>
+		<version>0.22</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
@@ -79,6 +79,8 @@
 								<argument>${project.build.directory}/steam</argument>
 								<argument>+app_update</argument>
 								<argument>402370</argument>
+								<argument>-beta</argument>
+								<argument>beta</argument>
 								<argument>+exit</argument>
 							</arguments>
 						</configuration>

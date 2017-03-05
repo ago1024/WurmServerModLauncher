@@ -1,5 +1,6 @@
 package org.gotti.wurmunlimited.mods.creaturedemo.creatures;
 
+import com.wurmonline.shared.constants.ItemMaterials;
 import org.gotti.wurmunlimited.modsupport.CreatureTemplateBuilder;
 import org.gotti.wurmunlimited.modsupport.creatures.EncounterBuilder;
 import org.gotti.wurmunlimited.modsupport.creatures.ModCreature;
@@ -21,7 +22,7 @@ public class Zebra implements ModCreature, CreatureTypes {
 		final int[] types = { C_TYPE_MOVE_LOCAL, C_TYPE_SWIMMING, C_TYPE_VEHICLE, C_TYPE_DOMESTIC, C_TYPE_ANIMAL, C_TYPE_LEADABLE, C_TYPE_GRAZER, C_TYPE_HERBIVORE, C_TYPE_DOMINATABLE };
 
 		CreatureTemplateBuilder builder = new CreatureTemplateBuilder("mod.creature.zebra", "Zebra", "Zebras like this one have many stripes.", "model.creature.quadraped.horse.zebra", types, (byte) 1, (short) 3, (byte) 0, (short) 180, (short) 50, (short) 250, "sound.death.horse",
-				"sound.death.horse", "sound.combat.hit.horse", "sound.combat.hit.horse", 1.0f, 1.0f, 2.5f, 1.5f, 2.0f, 0.0f, 1.5f, 100, new int[] { 307, 306, 140, 71, 309, 308 }, 5, 0);
+				"sound.death.horse", "sound.combat.hit.horse", "sound.combat.hit.horse", 1.0f, 1.0f, 2.5f, 1.5f, 2.0f, 0.0f, 1.5f, 100, new int[] { 307, 306, 140, 71, 309, 308 }, 5, 0, (byte) 79);
 
 		this.templateId = builder.getTemplateId();
 
