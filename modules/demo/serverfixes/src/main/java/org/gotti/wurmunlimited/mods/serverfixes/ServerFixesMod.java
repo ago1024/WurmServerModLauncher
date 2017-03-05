@@ -8,7 +8,6 @@ import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
-import org.gotti.wurmunlimited.modsupport.actions.ModActions;
 
 import com.wurmonline.server.MiscConstants;
 import com.wurmonline.server.items.ItemTypes;
@@ -31,10 +30,7 @@ public class ServerFixesMod implements WurmServerMod, Initable, PreInitable, Ser
 
 	@Override
 	public void preInit() {
-		ModActions.init();
-		
 		logger.log(Level.INFO, "Registering server fixes");
-		
 	}
 
 }
