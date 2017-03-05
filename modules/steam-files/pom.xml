@@ -79,8 +79,6 @@
 								<argument>${project.build.directory}/steam</argument>
 								<argument>+app_update</argument>
 								<argument>402370</argument>
-								<argument>-beta</argument>
-								<argument>beta</argument>
 								<argument>+exit</argument>
 							</arguments>
 						</configuration>
