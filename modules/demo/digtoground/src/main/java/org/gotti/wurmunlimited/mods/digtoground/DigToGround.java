@@ -17,10 +17,10 @@ import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 
-public class DigToGround implements WurmMod, PreInitable, Initable, Configurable {
+public class DigToGround implements WurmServerMod, PreInitable, Initable, Configurable {
 
 	private static Logger logger = Logger.getLogger(DigToGround.class.getName());
 	

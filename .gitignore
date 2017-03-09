@@ -17,3 +17,6 @@ target
 .classpath
 .checkstyle
 .settings
+pom.xml.versionsBackup
+*~
+.*.swp

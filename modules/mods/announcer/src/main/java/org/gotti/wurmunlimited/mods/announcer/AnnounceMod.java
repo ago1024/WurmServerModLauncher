@@ -8,20 +8,23 @@ import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 import com.wurmonline.server.MessageServer;
 import com.wurmonline.server.players.Player;
 
-public class AnnounceMod implements WurmMod, Initable, PreInitable, Configurable, PlayerLoginListener {
+public class AnnounceMod implements WurmServerMod, Initable, PreInitable, Configurable, PlayerLoginListener {
 
 	boolean announcePlayers = true;
+	int announceMaxPower = 0;
 
 	@Override
 	public void configure(Properties properties) {
-		announcePlayers = Boolean.valueOf(properties.getProperty("announcePlayrs", String.valueOf(announcePlayers)));
+		announcePlayers = Boolean.valueOf(properties.getProperty("announcePlayers", String.valueOf(announcePlayers)));
+		announceMaxPower = Integer.valueOf(properties.getProperty("announceMaxPower", String.valueOf(announceMaxPower)));
 
 		Logger.getLogger(AnnounceMod.class.getName()).log(Level.INFO, "announcePlayers: " + announcePlayers);
+		Logger.getLogger(AnnounceMod.class.getName()).log(Level.INFO, "announceMaxPower: " + announceMaxPower);
 	}
 
 	@Override
@@ -34,7 +37,7 @@ public class AnnounceMod implements WurmMod, Initable, PreInitable, Configurable
 
 	@Override
 	public void onPlayerLogin(Player player) {
-		if (announcePlayers) {
+		if (announcePlayers && player.getPower() <= announceMaxPower) {
 			MessageServer.broadCastSafe("Player " + player.getName() + " has logged in.", (byte) 1);
 		}
 	}

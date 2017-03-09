@@ -21,9 +21,9 @@ import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
-public class ChristmasMod implements WurmMod, PreInitable, Configurable {
+public class ChristmasMod implements WurmServerMod, PreInitable, Configurable {
 	
 	int present2015 = 972;
 	

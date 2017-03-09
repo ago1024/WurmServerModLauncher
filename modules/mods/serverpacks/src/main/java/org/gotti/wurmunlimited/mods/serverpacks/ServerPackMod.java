@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,14 +20,19 @@ import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
 import org.gotti.wurmunlimited.modloader.interfaces.ModListener;
-import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
+import org.gotti.wurmunlimited.modcomm.Channel;
+import org.gotti.wurmunlimited.modcomm.IChannelListener;
+import org.gotti.wurmunlimited.modcomm.ModComm;
+import org.gotti.wurmunlimited.modcomm.PacketReader;
+import org.gotti.wurmunlimited.modcomm.PacketWriter;
 
-import com.wurmonline.server.Message;
 import com.wurmonline.server.players.Player;
 
-public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLoginListener, Configurable, ServerStartedListener {
+public class ServerPackMod implements WurmServerMod, ModListener, Initable, Configurable, ServerStartedListener {
+
+	private static final byte CMD_REFRESH = 0x01;
 
 	private Map<String, Path> packs = new HashMap<>();
 
@@ -38,9 +44,58 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 	private int publicServerPort = 0;
 
 	private PackServer packServer;
+	private Channel channel;
 
 	@Override
 	public void init() {
+		channel = ModComm.registerChannel("ago.serverpacks", new IChannelListener() {
+			@Override
+			public void onPlayerConnected(Player player) {
+				if (packServer == null) {
+					logger.log(Level.WARNING, "HTTP server did not start properly. No server packs will be delivered.");
+					return;
+				}
+				try {
+					URI uri = packServer.getUri();
+					try (PacketWriter writer = new PacketWriter()) {
+						writer.writeInt(packs.size());
+						for (String packId : packs.keySet()) {
+							URI packUri = uri.resolve(packId);
+							writer.writeUTF(packId);
+							writer.writeUTF(packUri.toString());
+						}
+						channel.sendMessage(player, writer.getBytes());
+					}
+				} catch (URISyntaxException | IOException e) {
+					logger.log(Level.WARNING, e.getMessage(), e);
+				}
+			}
+
+			@Override
+			public void handleMessage(Player player, ByteBuffer message) {
+				try (PacketReader reader = new PacketReader(message)) {
+					byte cmd = reader.readByte();
+					switch (cmd) {
+					case CMD_REFRESH:
+						sendModelRefresh(player);
+						break;
+					default:
+						logger.log(Level.WARNING, String.format("Unknown channel command 0x%02x", 128 + cmd));
+						break;
+					}
+				} catch (IOException e) {
+					logger.log(Level.WARNING, e.getMessage(), e);
+				}
+			}
+		});
+	}
+
+	private void sendModelRefresh(Player player) {
+		try {
+			player.createVisionArea();
+		} catch (Exception e) {
+			logger.log(Level.WARNING, e.getMessage(), e);
+		}
 	}
 
 	@Override
@@ -57,7 +112,7 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 	}
 
 	@Override
-	public void modInitialized(ModEntry entry) {
+	public void modInitialized(ModEntry<?> entry) {
 		if (entry == null || entry.getProperties() == null)
 			return;
 
@@ -104,31 +159,6 @@ public class ServerPackMod implements WurmMod, ModListener, Initable, PlayerLogi
 		String sha1Sum = getSha1Sum(packPath);
 		packs.put(sha1Sum, packPath);
 		logger.info("Added pack " + sha1Sum + " for pack " + packPath);
-	}
-
-	@Override
-	public void onPlayerLogin(final Player player) {
-
-		new Runnable() {
-			public void run() {
-				try {
-					if (packServer == null) {
-						logger.log(Level.WARNING, "HTTP server did not start properly. No server packs will be delivered.");
-						return;
-					}
-					URI uri = packServer.getUri();
-					if (player != null) {
-						for (String packId : packs.keySet()) {
-							URI packUri = uri.resolve(packId);
-							final Message message = new Message(player, (byte) 10, ":mod:serverpacks", packId + ":" + packUri.toString());
-							player.getCommunicator().sendMessage(message);
-						}
-					}
-				} catch (URISyntaxException e) {
-					logger.log(Level.WARNING, e.getMessage(), e);
-				}
-			}
-		}.run();
 	}
 
 	@Override

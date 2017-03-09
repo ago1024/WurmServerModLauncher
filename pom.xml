@@ -4,7 +4,7 @@
 
 	<groupId>org.gotti.wurmunlimited</groupId>
 	<artifactId>server-modlauncher-parent</artifactId>
-	<version>0.17.0-SNAPSHOT</version>
+	<version>0.21</version>
 	<packaging>pom</packaging>
 
 	<name>server modlauncher parent</name>
@@ -28,9 +28,46 @@
 		<module>modules/mods/testmod</module>
 		<module>modules/dist</module>
 	</modules>
-	
+
+	<repositories>
+		<repository>
+			<id>gotti-no-ip-org-ssh-repository</id>
+			<url>http://gotti.no-ip.org/maven/repository</url>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>gotti-no-ip-org-ssh-repository</id>
+			<url>scp://gotti.no-ip.org/srv/maven/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>gotti-no-ip-org-ssh-repository</id>
+			<url>scp://gotti.no-ip.org/srv/maven/repository</url>
+		</repository>
+	</distributionManagement>
+
 	<build>
+		<extensions>
+			<!-- Enabling the use of SSH -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh</artifactId>
+				<version>2.10</version>
+			</extension>
+		</extensions>
+
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<inherited>true</inherited>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>ru.concerteza.buildnumber</groupId>
 				<artifactId>maven-jgit-buildnumber-plugin</artifactId>
@@ -52,94 +89,18 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.4.0</version>
-				<inherited>false</inherited>
-				<executions>
-					<execution>
-						<id>download-steam</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-					</execution>
-				</executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<inherited>true</inherited>
 				<configuration>
-					<executable>${steamcmd}</executable>
-					<arguments>
-						<argument>+login</argument>
-						<argument>anonymous</argument>
-						<argument>+force_install_dir</argument>
-						<argument>${project.build.directory}/steam</argument>
-						<argument>+app_update</argument>
-						<argument>402370</argument>
-						<argument>+exit</argument>
-					</arguments>
+					<archive>
+						<manifestEntries>
+							<Implementation-Version>${git.buildnumber}</Implementation-Version>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>2.5.2</version>
-				<inherited>false</inherited>
-				<executions>
-					<execution>
-						<id>install-common</id>
-						<phase>install</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<file>${project.build.directory}/steam/common.jar</file>
-							<groupId>org.gotti.wurmunlimited</groupId>
-							<artifactId>common</artifactId>
-							<packaging>jar</packaging>
-							<version>${steamapps_buildid}</version>
-						</configuration>
-					</execution>
-					<execution>
-						<id>install-server</id>
-						<phase>install</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<file>${project.build.directory}/steam/server.jar</file>
-							<groupId>org.gotti.wurmunlimited</groupId>
-							<artifactId>server</artifactId>
-							<packaging>jar</packaging>
-							<version>${steamapps_buildid}</version>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.gmaven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<version>1.4</version>
-				<inherited>false</inherited>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<properties>
-								<appmanifest_file>${project.build.directory}/steam/steamapps/appmanifest_402370.acf</appmanifest_file>
-							</properties>
-							<source>
-								def file = new File(project.properties.appmanifest_file)
-								file
-									.readLines()
-									.grep(~/^\s*&quot;buildid&quot;\s+&quot;(\d*)&quot;\s*$/)
-									.each({x -> x.replaceAll(~/\s*&quot;buildid&quot;\s+&quot;(\d*)&quot;\s*/) { all, buildid -> System.out.println(buildid); project.properties.steamapps_buildid = buildid; buildid } })
-							</source>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>			
 		</plugins>
 	</build>
 </project>

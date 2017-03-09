@@ -2,9 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<groupId>org.gotti.wurmunlimited</groupId>
 	<artifactId>server-modlauncher-dist</artifactId>
-	<version>0.17.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>server modlauncher distribution</name>
@@ -12,7 +10,7 @@
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
 		<artifactId>server-modlauncher-parent</artifactId>
-		<version>${project.version}</version>
+		<version>0.21</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
@@ -77,6 +75,30 @@
 			<type>zip</type>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>actiondemo</artifactId>
+			<type>zip</type>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>christmasmod</artifactId>
+			<type>zip</type>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>digtoground</artifactId>
+			<type>zip</type>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>hitchingpost</artifactId>
+			<type>zip</type>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<properties>
@@ -88,12 +110,6 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/dist.xml</descriptor>
-					</descriptors>
-					<appendAssemblyId>false</appendAssemblyId>
-				</configuration>
 				<executions>
 					<execution>
 						<id>make-assembly</id>
@@ -101,6 +117,27 @@
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/modlauncher.xml</descriptor>
+							</descriptors>
+							<finalName>server-modlauncher-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
+					</execution>
+					<execution>
+						<id>make-dist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/dist.xml</descriptor>
+							</descriptors>
+							<finalName>dist-${project.version}</finalName>
+							<appendAssemblyId>false</appendAssemblyId>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

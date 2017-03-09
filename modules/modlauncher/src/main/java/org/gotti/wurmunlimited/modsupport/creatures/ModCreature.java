@@ -3,6 +3,8 @@ package org.gotti.wurmunlimited.modsupport.creatures;
 import org.gotti.wurmunlimited.modsupport.CreatureTemplateBuilder;
 import org.gotti.wurmunlimited.modsupport.vehicles.ModVehicleBehaviour;
 
+import com.wurmonline.server.creatures.Traits;
+
 public interface ModCreature {
 
 	CreatureTemplateBuilder createCreateTemplateBuilder();
@@ -23,5 +25,9 @@ public interface ModCreature {
 
 	default boolean hasTraits() {
 		return false;
+	}
+
+	default long calcNewTraits(double breederSkill, boolean inbred, long mothertraits, long fathertraits) {
+		return Traits.calcNewTraits(breederSkill, inbred, mothertraits, fathertraits);
 	}
 }

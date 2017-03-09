@@ -7,7 +7,7 @@ import java.util.logging.Logger;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modsupport.ItemTemplateBuilder;
 import org.gotti.wurmunlimited.modsupport.vehicles.ModVehicleBehaviours;
 
@@ -30,7 +30,7 @@ import com.wurmonline.server.skills.SkillList;
  * 3. Register a custom vehicle behaviour
  * 
  */
-public class HitchingPostMod implements WurmMod, Initable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants {
+public class HitchingPostMod implements WurmServerMod, Initable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants {
 
 	private static Logger logger = Logger.getLogger(HitchingPostMod.class.getName());
 	private int hitchingPostId;

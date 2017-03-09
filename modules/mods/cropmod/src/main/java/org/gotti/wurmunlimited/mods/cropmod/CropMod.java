@@ -25,9 +25,9 @@ import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
-import org.gotti.wurmunlimited.modloader.interfaces.WurmMod;
+import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
-public class CropMod implements WurmMod, Configurable, Initable, PreInitable {
+public class CropMod implements WurmServerMod, Configurable, Initable, PreInitable {
 
 	private boolean disableWeeds = true;
 	private int extraHarvest = 0;
