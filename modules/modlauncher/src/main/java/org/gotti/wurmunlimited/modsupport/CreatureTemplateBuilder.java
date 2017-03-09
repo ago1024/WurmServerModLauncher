@@ -133,6 +133,8 @@ public class CreatureTemplateBuilder {
 
 	private boolean glowing;
 
+	private int[] combatMoves;
+
 
 	public CreatureTemplateBuilder(int id) {
 		this.templateId = id;
@@ -369,6 +371,7 @@ public class CreatureTemplateBuilder {
 				temp.setOnFire(onFire);
 				temp.setFireRadius(fireRadius);
 			}
+			temp.setCombatMoves(combatMoves);
 
 			return temp;
 		} catch (IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | ClassCastException | NoSuchFieldException e) {
@@ -508,6 +511,11 @@ public class CreatureTemplateBuilder {
 	public CreatureTemplateBuilder onFire(boolean onFire, byte fireRadius) {
 		this.onFire = onFire;
 		this.fireRadius = fireRadius;
+		return this;
+	}
+	
+	public CreatureTemplateBuilder setCombatMoves(int[] aCombatMoves) {
+		this.combatMoves = aCombatMoves;
 		return this;
 	}
 
