@@ -10,15 +10,23 @@ import java.util.logging.Logger;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.NotFoundException;
+import javassist.bytecode.BadBytecode;
+import javassist.bytecode.Bytecode;
+import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.Descriptor;
+import javassist.bytecode.LocalVariableAttribute;
+import javassist.bytecode.MethodInfo;
 import javassist.expr.ExprEditor;
 import javassist.expr.MethodCall;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import org.gotti.wurmunlimited.modloader.classhooks.CodeReplacer;
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
+import org.gotti.wurmunlimited.modloader.classhooks.LocalNameLookup;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
@@ -101,15 +109,41 @@ public class BagOfHoldingMod implements WurmServerMod, Initable, PreInitable, Co
 					}
 				}
 			};
-			
+
+			CtClass ctItem = classPool.get("com.wurmonline.server.items.Item");
+
 			String descriptor = Descriptor.ofMethod(CtClass.booleanType, new CtClass[] { classPool.get("com.wurmonline.server.items.Item"), CtClass.booleanType });
-			classPool.get("com.wurmonline.server.items.Item").getMethod("insertItem", descriptor).instrument(exprEditor);
+			ctItem.getMethod("insertItem", descriptor).instrument(exprEditor);
 			
 			descriptor = Descriptor.ofMethod(CtClass.booleanType, new CtClass[] { classPool.get("com.wurmonline.server.items.Item"), CtClass.booleanType });
-			classPool.get("com.wurmonline.server.items.Item").getMethod("testInsertHollowItem", descriptor).instrument(exprEditor);
-			
-		
-		} catch (NotFoundException | CannotCompileException e) {
+			ctItem.getMethod("testInsertHollowItem", descriptor).instrument(exprEditor);
+
+			descriptor = Descriptor.ofMethod(CtClass.booleanType, new CtClass[] { classPool.get("com.wurmonline.server.creatures.Creature"), CtClass.longType, CtClass.booleanType });
+			CtMethod method = ctItem.getMethod("moveToItem", descriptor);
+
+			ctItem.getClassFile().compact();
+
+			MethodInfo methodInfo = method.getMethodInfo();
+			CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
+			LocalNameLookup localNames = new LocalNameLookup((LocalVariableAttribute) codeAttribute.getAttribute(LocalVariableAttribute.tag));
+
+			Bytecode bytecode = new Bytecode(methodInfo.getConstPool());
+			bytecode.addAload(localNames.get("target"));
+			bytecode.addInvokevirtual("com/wurmonline/server/items/Item", "getVolume", "()I");
+			bytecode.addIload(localNames.get("volAvail"));
+			bytecode.add(Bytecode.ISUB);
+			byte[] search = bytecode.get();
+
+			bytecode = new Bytecode(methodInfo.getConstPool());
+			bytecode.addAload(localNames.get("target"));
+			bytecode.addInvokevirtual("com/wurmonline/server/items/Item", "getContainerVolume", "()I");
+			bytecode.addIload(localNames.get("volAvail"));
+			bytecode.add(Bytecode.ISUB);
+			byte[] replace = bytecode.get();
+
+			new CodeReplacer(codeAttribute).replaceCode(search, replace);
+
+		} catch (NotFoundException | CannotCompileException | BadBytecode e) {
 			throw new HookException(e);
 		}
 	}
