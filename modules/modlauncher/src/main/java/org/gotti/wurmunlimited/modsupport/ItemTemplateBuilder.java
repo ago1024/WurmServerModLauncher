@@ -34,6 +34,7 @@ public class ItemTemplateBuilder {
 	private int value = 0;
 	private boolean isTraded = false;
 	private int armourType = -1;
+	private int dyeAmountOverrideGrams = 0;
 
 	public ItemTemplateBuilder(String identifier) {
 		this.templateId = IdFactory.getIdFor(identifier, IdType.ITEMTEMPLATE);
@@ -136,6 +137,11 @@ public class ItemTemplateBuilder {
 		return this;
 	}
 
+	public ItemTemplateBuilder dyeAmountOverrideGrams(short dyeAmountOverrideGrams) {
+		this.dyeAmountOverrideGrams = dyeAmountOverrideGrams;
+		return this;
+	}
+
 	public ItemTemplate build(final String name, int size, final String plural, final String itemDescriptionSuperb, final String itemDescriptionNormal, final String itemDescriptionBad, final String itemDescriptionRotten, final String itemDescriptionLong, final short[] itemTypes, final short imageNumber,
 			final short behaviourType, final int combatDamage, final long decayTime, final int centimetersX, final int centimetersY, final int centimetersZ, final int primarySkill, final byte[] bodySpaces, final String modelName, final float difficulty, final int weightGrams, final byte material, int value, boolean isTraded, int armourType)
 			throws IOException {
@@ -165,7 +171,7 @@ public class ItemTemplateBuilder {
 
 	public ItemTemplate build() throws IOException {
 		return ItemTemplateFactory.getInstance().createItemTemplate(templateId, size, name, plural, itemDescriptionSuperb, itemDescriptionNormal, itemDescriptionBad, itemDescriptionRotten, itemDescriptionLong, itemTypes, imageNumber, behaviourType, combatDamage, decayTime, centimetersX,
-				centimetersY, centimetersZ, primarySkill, bodySpaces, modelName, difficulty, weightGrams, material, value, isTraded, armourType);
+				centimetersY, centimetersZ, primarySkill, bodySpaces, modelName, difficulty, weightGrams, material, value, isTraded, armourType, dyeAmountOverrideGrams);
 
 	}
 
