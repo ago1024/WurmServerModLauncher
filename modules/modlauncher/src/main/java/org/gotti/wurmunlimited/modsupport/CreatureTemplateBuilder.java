@@ -371,7 +371,9 @@ public class CreatureTemplateBuilder {
 				temp.setOnFire(onFire);
 				temp.setFireRadius(fireRadius);
 			}
-			temp.setCombatMoves(combatMoves);
+			if (combatMoves != null) {
+				temp.setCombatMoves(combatMoves);
+			}
 
 			return temp;
 		} catch (IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | ClassCastException | NoSuchFieldException e) {
