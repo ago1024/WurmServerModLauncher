@@ -95,6 +95,7 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 			//private static final void getDirt(final Creature performer, final int x, final int y, final int maxDiff, final int preferredHeight, final boolean quickLevel) {
 			descriptor = Descriptor.ofMethod(CtClass.voidType, new CtClass[] {
 					classpool.get("com.wurmonline.server.creatures.Creature"),
+					classpool.get("com.wurmonline.server.items.Item"),
 					CtClass.intType,
 					CtClass.intType,
 					CtClass.intType,
