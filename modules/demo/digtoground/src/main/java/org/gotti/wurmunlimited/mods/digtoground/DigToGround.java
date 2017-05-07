@@ -28,7 +28,7 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 	
 	@Override
 	public void configure(Properties properties) {
-		this.dredgeToShip = Boolean.parseBoolean(properties.getProperty("dregeToShip", String.valueOf(this.dredgeToShip)));
+		this.dredgeToShip = Boolean.parseBoolean(properties.getProperty("dredgeToShip", String.valueOf(this.dredgeToShip)));
 		
 		logger.log(Level.INFO, "dredgeToShip: " + dredgeToShip);
 	}
@@ -51,36 +51,32 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 			});
 			classpool.get("com.wurmonline.server.behaviours.Terraforming").getMethod("dig", descriptor).instrument(new ExprEditor() {
 				
-				int i = 0;
-				
 				@Override
 				public void edit(MethodCall m) throws CannotCompileException {
-					if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("insertItem")) {
-						/* Only replace the first two occurances of insert item */
-						if (i >= 2)
-							return;
-						i++;
+					if (!dredgeToShip && "com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("testInsertItem")) {
+						
+						// dredgeToShip = false disables dredging into the ship by always returning false from testInsertItem on the boat object
 						
 						StringBuffer buffer = new StringBuffer();
-						if (dredgeToShip) {
-							buffer.append("{");
-							buffer.append("	com.wurmonline.server.items.Item v = dredging && performer.getVehicle() != -10 ? com.wurmonline.server.Items.getItem(performer.getVehicle()) : null;");
-							buffer.append("	if (v != null && v.isHollow() && v.getNumItemsNotCoins() < 100 && v.getFreeVolume() >= created.getVolume()) {");
-							buffer.append("		v.insertItem(created, true);");
-							buffer.append("	} else if (v != null && v.isHollow()) {");
-							buffer.append("		created.putItemInfrontof(performer);");
-							buffer.append("		performer.getCommunicator().sendNormalServerMessage(\"The \" + v.getName() + \" is full and the \" + created.getName() + \" flows to the ground.\");");
-							buffer.append("	} else {");
-							buffer.append("		created.putItemInfrontof(performer);");
-							buffer.append("	}");
-							buffer.append("	$_ = true;");
-							buffer.append("}");
-						} else {
-							buffer.append("{");
-							buffer.append("	created.putItemInfrontof(performer);");
-							buffer.append("	$_ = true;");
-							buffer.append("}");
-						}
+						buffer.append("if ($0.isBoat()) {\n");
+						buffer.append("  $_ = false;");
+						buffer.append("} else {\n");
+						buffer.append("  $_ = $proceed($$);\n");
+						buffer.append("}\n");
+						m.replace(buffer.toString());
+					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("insertItem")) {
+						
+						// We check if the item to be inserted is the dug up item (dirt, clay, sand...)
+						// and if we are not inserting the item into a boat. Dredging into the boat is either
+						// allowed anyway or prevented by overwriting testInsertItem above
+						
+						StringBuffer buffer = new StringBuffer();
+						buffer.append("if ($1 == created && !$0.isBoat()) {\n");
+						buffer.append("  created.putItemInfrontof(performer);");
+						buffer.append("  $_ = true;");
+						buffer.append("} else {\n");
+						buffer.append("  $_ = $proceed($$);\n");
+						buffer.append("}\n");
 						m.replace(buffer.toString());
 					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("getNumItemsNotCoins")) {
 						m.replace("$_ = 0;");
@@ -119,6 +115,4 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 	@Override
 	public void init() {
 	}
-	
-
 }
