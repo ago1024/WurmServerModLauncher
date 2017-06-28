@@ -15,15 +15,18 @@ import com.wurmonline.server.players.Player;
 
 public class AnnounceMod implements WurmServerMod, Initable, PreInitable, Configurable, PlayerLoginListener {
 
-	boolean announcePlayers = true;
-	int announceMaxPower = 0;
+	private boolean announcePlayers = true;
+	private boolean announcePlayerLogout = true;
+	private int announceMaxPower = 0;
 
 	@Override
 	public void configure(Properties properties) {
 		announcePlayers = Boolean.valueOf(properties.getProperty("announcePlayers", String.valueOf(announcePlayers)));
+		announcePlayerLogout = Boolean.valueOf(properties.getProperty("announcePlayerLogout", String.valueOf(announcePlayerLogout)));
 		announceMaxPower = Integer.valueOf(properties.getProperty("announceMaxPower", String.valueOf(announceMaxPower)));
 
 		Logger.getLogger(AnnounceMod.class.getName()).log(Level.INFO, "announcePlayers: " + announcePlayers);
+		Logger.getLogger(AnnounceMod.class.getName()).log(Level.INFO, "announcePlayerLogout: " + announcePlayerLogout);
 		Logger.getLogger(AnnounceMod.class.getName()).log(Level.INFO, "announceMaxPower: " + announceMaxPower);
 	}
 
@@ -39,6 +42,12 @@ public class AnnounceMod implements WurmServerMod, Initable, PreInitable, Config
 	public void onPlayerLogin(Player player) {
 		if (announcePlayers && player.getPower() <= announceMaxPower) {
 			MessageServer.broadCastSafe("Player " + player.getName() + " has logged in.", (byte) 1);
+		}
+	}
+	
+	public void onPlayerLogout(Player player) {
+		if (this.announcePlayerLogout && player.getPower() <= this.announceMaxPower) {
+			MessageServer.broadCastSafe("Player " + player.getName() + " has logged out.", (byte) 1);
 		}
 	}
 
