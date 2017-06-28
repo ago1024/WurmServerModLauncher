@@ -15,7 +15,11 @@ public interface ActionPerformerBase {
 
 	boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, short num, float counter);
 
+	boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter);
+
 	boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, short num, float counter);
+
+	boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter);
 
 	boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, short num, float counter);
 
