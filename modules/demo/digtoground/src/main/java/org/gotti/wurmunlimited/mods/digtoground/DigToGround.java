@@ -47,6 +47,7 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 					CtClass.intType,
 					CtClass.intType,
 					CtClass.floatType,
+					CtClass.booleanType,
 					classpool.get("com.wurmonline.mesh.MeshIO")
 			});
 			classpool.get("com.wurmonline.server.behaviours.Terraforming").getMethod("dig", descriptor).instrument(new ExprEditor() {
@@ -96,7 +97,8 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 					CtClass.intType,
 					CtClass.intType,
 					CtClass.intType,
-					CtClass.booleanType
+					CtClass.booleanType,
+					classpool.get("com.wurmonline.server.behaviours.Action")
 			});
 			classpool.get("com.wurmonline.server.behaviours.Flattening").getMethod("getDirt", descriptor).instrument(new ExprEditor() {
 				@Override
