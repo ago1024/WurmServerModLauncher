@@ -93,6 +93,11 @@ public class ChainedBehaviourProvider implements BehaviourProvider {
 	}
 
 	@Override
+	public List<ActionEntry> getBehavioursFor(Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset) {
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, corner, tile, heightOffset));
+	}
+
+	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, int tilex, int tiley, boolean onSurface, int tile) {
 		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, tilex, tiley, onSurface, tile));
 	}
@@ -115,6 +120,11 @@ public class ChainedBehaviourProvider implements BehaviourProvider {
 	@Override
 	public List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, boolean corner, int tile) {
 		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, corner, tile));
+	}
+
+	@Override
+	public List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset) {
+		return call(behaviourProvider -> behaviourProvider.getBehavioursFor(performer, object, tilex, tiley, onSurface, corner, tile, heightOffset));
 	}
 
 	@Override
