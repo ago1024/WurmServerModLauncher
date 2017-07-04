@@ -43,12 +43,22 @@ public interface BehaviourProvider {
 		return null;
 	}
 
+	@Deprecated
 	public default List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, boolean corner, int tile) {
 		return null;
 	}
 
+	public default List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset) {
+		return getBehavioursFor(performer, object, tilex, tiley, onSurface, corner, tile);
+	}
+
+	@Deprecated
 	public default List<ActionEntry> getBehavioursFor(Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile) {
 		return null;
+	}
+
+	public default List<ActionEntry> getBehavioursFor(Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset) {
+		return getBehavioursFor(performer, tilex, tiley, onSurface, corner, tile);
 	}
 
 	public default List<ActionEntry> getBehavioursFor(Creature performer, Item subject, Skill skill) {

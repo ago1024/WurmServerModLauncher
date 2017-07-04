@@ -28,6 +28,16 @@ ActionBehaviourParameters.prototype.getTile = function() {
 			tile : args[3],
 			dir : args[4]
 		};
+	} else if (args.length === 6 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'number' && types[4] === 'number' && types[5] === 'number') {
+		// Behaviour on a corner of a tile
+		return {
+			tilex : args[0],
+			tiley : args[1],
+			onSurface : args[2],
+			tile : args[3],
+			dir : args[4],
+			heightOffset : args[5]
+		};
 	}
 }
 
