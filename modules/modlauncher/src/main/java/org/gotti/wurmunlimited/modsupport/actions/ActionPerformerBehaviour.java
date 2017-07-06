@@ -20,102 +20,137 @@ public class ActionPerformerBehaviour extends Behaviour implements ActionPerform
 		this.actionPerformer = actionPerformer;
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, short num, float counter) {
 		return actionPerformer.action(action, performer, source, tilex, tiley, onSurface, corner, tile, num, counter);
 	}
 
+	@Override
+	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter) {
+		return actionPerformer.action(action, performer, tilex, tiley, onSurface, corner, tile, heightOffset, num, counter);
+	}
+
+	@Override
 	public boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, short num, float counter) {
 		return actionPerformer.action(action, performer, tilex, tiley, onSurface, corner, tile, num, counter);
 	}
 
+	@Override
+	public boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter) {
+		return actionPerformer.action(action, performer, tilex, tiley, onSurface, corner, tile, heightOffset, num, counter);
+	}
+
+	@Override
 	public boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, short num, float counter) {
 		return actionPerformer.action(action, performer, tilex, tiley, onSurface, tile, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, short num, float counter) {
 		return actionPerformer.action(action, performer, source, tilex, tiley, onSurface, heightOffset, tile, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, int planetId, short num, float counter) {
 		return actionPerformer.action(action, performer, planetId, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, int planetId, short num, float counter) {
 		return actionPerformer.action(action, performer, source, planetId, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, Item target, short num, float counter) {
 		return actionPerformer.action(action, performer, source, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Wound target, short num, float counter) {
 		return actionPerformer.action(action, performer, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, Wound target, short num, float counter) {
 		return actionPerformer.action(action, performer, source, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item target, short num, float counter) {
 		return actionPerformer.action(action, performer, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, Creature target, short num, float counter) {
 		return actionPerformer.action(action, performer, source, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Creature target, short num, float counter) {
 		return actionPerformer.action(action, performer, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, Wall target, short num, float counter) {
 		return actionPerformer.action(action, performer, source, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Wall target, short num, float counter) {
 		return actionPerformer.action(action, performer, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, boolean onSurface, Fence target, short num, float counter) {
 		return actionPerformer.action(action, performer, source, onSurface, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, boolean onSurface, Fence target, short num, float counter) {
 		return actionPerformer.action(action, performer, onSurface, target, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, Skill skill, short num, float counter) {
 		return actionPerformer.action(action, performer, source, skill, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Skill skill, short num, float counter) {
 		return actionPerformer.action(action, performer, skill, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, boolean onSurface, Floor target, int encodedTile, short num, float counter) {
 		return actionPerformer.action(action, performer, source, onSurface, target, encodedTile, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, boolean onSurface, Floor floor, int encodedTile, short num, float counter) {
 		return actionPerformer.action(action, performer, onSurface, floor, encodedTile, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, Tiles.TileBorderDirection dir, long borderId, short num, float counter) {
 		return actionPerformer.action(action, performer, source, tilex, tiley, onSurface, heightOffset, dir, borderId, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, Tiles.TileBorderDirection dir, long borderId, short num, float counter) {
 		return actionPerformer.action(action, performer, tilex, tiley, onSurface, dir, borderId, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item[] targets, short num, float counter) {
 		return actionPerformer.action(action, performer, targets, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, boolean onSurface, BridgePart bridgePart, int encodedTile, short num, float counter) {
 		return actionPerformer.action(action, performer, onSurface, bridgePart, encodedTile, num, counter);
 	}
 
+	@Override
 	public boolean action(Action action, Creature performer, Item item, boolean onSurface, BridgePart bridgePart, int encodedTile, short num, float counter) {
 		return actionPerformer.action(action, performer, item, onSurface, bridgePart, encodedTile, num, counter);
 	}
