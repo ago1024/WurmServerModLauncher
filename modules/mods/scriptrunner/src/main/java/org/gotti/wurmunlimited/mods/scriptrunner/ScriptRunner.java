@@ -45,12 +45,14 @@ public class ScriptRunner {
 	
 	private List<Path> scripts = Collections.emptyList();
 	private String methodName;
+	private List<Path> importPaths;
 
-	public ScriptRunner(Path folder, String methodName, boolean refresh) {
+	public ScriptRunner(Path folder, String methodName, boolean refresh, List<Path> importDirs) {
 		this.refresh = refresh;
 		this.folder = folder;
 		this.methodName = methodName;
 		this.states = new HashMap<>(); 
+		this.importPaths = importDirs;
 		
 		refreshScriptNames();
 	}
@@ -72,9 +74,9 @@ public class ScriptRunner {
 	private Object runScript(Path file, Map<String, Object> context, Object... args) {
 		try {
 			if (refresh && !states.computeIfAbsent(file, f -> new ScriptState(f)).check()) {
-				ScriptManager.getInstance().refresh(file);
+				ScriptManager.getInstance().refresh(file, importPaths);
 			}
-			return ScriptManager.getInstance().invoke(file, methodName, context, args);
+			return ScriptManager.getInstance().invoke(file, methodName, context, importPaths, args);
 		} catch (IOException | ScriptException e) {
 			String logger = String.format("%s.%s.%s", ScriptRunner.class.getName(), methodName, file.getFileName());
 			Logger.getLogger(logger).log(Level.SEVERE, e.getMessage(), e);

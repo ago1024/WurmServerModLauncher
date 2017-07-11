@@ -1,0 +1,1 @@
+module.exports = { depend2 : 'depend2' };
