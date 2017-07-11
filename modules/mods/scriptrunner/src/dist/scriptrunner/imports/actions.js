@@ -4,7 +4,7 @@ function ActionBehaviourParameters(a) {
 	}
 	
 	this.args = [].slice.call(a);
-	log(this.args);
+	//log(this.args);
 }
 
 ActionBehaviourParameters.prototype.getTile = function() {
@@ -60,16 +60,16 @@ ActionBehaviourParameters.prototype.getTile = function() {
 			tile : args[4],
 			heightOffset : args[5]
 		};
-	} else if (args.length === 6 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'number' && args[4] === instanceof com.wurmonline.mesh.Tiles.TileBorderDirection && types[5] === 'number') {
+	} else if (args.length === 6 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'number' && args[4] instanceof com.wurmonline.mesh.Tiles.TileBorderDirection && types[5] === 'number') {
 		return {
 			tilex : args[0],
 			tiley : args[1],
 			onSurface : args[2],
-			heightOffset : args[3]
+			heightOffset : args[3],
 			dir: args[4],
 			borderId: args[5]
 		};
-	} else if (args.length === 5 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && args[3] === instanceof com.wurmonline.mesh.Tiles.TileBorderDirection && types[4] === 'number') {
+	} else if (args.length === 5 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && args[3] instanceof com.wurmonline.mesh.Tiles.TileBorderDirection && types[4] === 'number') {
 		return {
 			tilex : args[0],
 			tiley : args[1],
@@ -77,7 +77,7 @@ ActionBehaviourParameters.prototype.getTile = function() {
 			dir: args[3],
 			borderId: args[4]
 		};
-	} else if (args.length === 6 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && args[3] === instanceof com.wurmonline.mesh.Tiles.TileBorderDirection && types[4] === 'boolean' && types[5] === 'number') {
+	} else if (args.length === 6 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && args[3] instanceof com.wurmonline.mesh.Tiles.TileBorderDirection && types[4] === 'boolean' && types[5] === 'number') {
 		return {
 			tilex : args[0],
 			tiley : args[1],
@@ -210,7 +210,7 @@ function BehaviourParameters(a) {
 	}
 	
 	this.types = args.map(function(arg) { return typeof arg; });
-	log(this.types);
+	//log(this.types);
 }
 BehaviourParameters.prototype = Object.create(ActionBehaviourParameters.prototype);
 BehaviourParameters.prototype.constructor = BehaviourParameters;
@@ -233,8 +233,14 @@ function ActionParameters(a) {
 	}
 	
 	this.types = args.map(function(arg) { return typeof arg; });
-	log(this.types);
+	//log(this.types);
 }
 ActionParameters.prototype = Object.create(ActionBehaviourParameters.prototype);
 ActionParameters.prototype.constructor = ActionParameters;
+
+module = (typeof module === 'undefined') ? {} : module;
+module.exports = {
+		ActionParameters : ActionParameters,
+		BehaviourParameters : BehaviourParameters
+};
 
