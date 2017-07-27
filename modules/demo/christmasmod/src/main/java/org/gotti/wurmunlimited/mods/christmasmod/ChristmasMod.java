@@ -6,6 +6,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gotti.wurmunlimited.modloader.callbacks.CallbackApi;
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
@@ -65,6 +66,9 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 		try {
 			ClassPool classPool = HookManager.getInstance().getClassPool();
 
+			HookManager.getInstance().addCallback(classPool.get("com.wurmonline.server.behaviours.ItemBehaviour"), "christmasmod", this);
+			HookManager.getInstance().addCallback(classPool.get("com.wurmonline.server.behaviours.CreatureBehaviour"), "christmasmod", this);
+
 			CtClass ctWurmCalendar = classPool.get("com.wurmonline.server.WurmCalendar");
 
 			// com.wurmonline.server.WurmCalendar.isChristmas()
@@ -90,8 +94,7 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 						code.append("}");
 						m.replace(code.toString());
 					} else if (m.getClassName().equals("com.wurmonline.server.players.PlayerInfo") && m.getMethodName().equals("setReimbursed")) {
-						String code = String.format("%s.setPlayerReceivedPresent((com.wurmonline.server.players.Player)performer);", ChristmasMod.class.getName());
-						m.replace(code);
+						m.replace("christmasmod.setPlayerReceivedPresent((com.wurmonline.server.players.Player)performer);");
 					}
 				}
 			});
@@ -109,8 +112,7 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 				public void edit(MethodCall m) throws CannotCompileException {
 					// com.wurmonline.server.items.Item.setAuxData(byte)
 					if (m.getClassName().equals("com.wurmonline.server.players.Player") && m.getMethodName().equals("isReimbursed")) {
-						String code = String.format("$_ = %s.hasPlayerReceivedPresent($0);", ChristmasMod.class.getName());
-						m.replace(code);
+						m.replace("$_ = christmasmod.hasPlayerReceivedPresent($0);");
 					}
 				}
 			});
@@ -125,8 +127,7 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 				public void edit(MethodCall m) throws CannotCompileException {
 					// com.wurmonline.server.items.Item.setAuxData(byte)
 					if (m.getClassName().equals("com.wurmonline.server.players.Player") && m.getMethodName().equals("isReimbursed")) {
-						String code = String.format("$_ = %s.hasPlayerReceivedPresent($0);", ChristmasMod.class.getName());
-						m.replace(code);
+						m.replace("$_ = christmasmod.hasPlayerReceivedPresent($0);");
 					}
 				}
 			});
@@ -162,13 +163,15 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 		}
 	}
 	
-	public static boolean hasPlayerReceivedPresent(Player player) {
+	@CallbackApi
+	public boolean hasPlayerReceivedPresent(Player player) {
 		List<Property> properties = ModPlayerProperties.getInstance().getPlayerProperties(PROPERTY_NAME, player.getWurmId());
 		Long currentYear = Long.valueOf(Year.now().getValue());
 		return properties.stream().map(Property::getIntValue).anyMatch(currentYear::equals);
 	}
 	
-	public static void setPlayerReceivedPresent(Player player) {
+	@CallbackApi
+	public void setPlayerReceivedPresent(Player player) {
 		ModPlayerProperties.getInstance().setPlayerProperty(PROPERTY_NAME, player.getWurmId(), Year.now().getValue());
 	}
 }
