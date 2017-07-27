@@ -17,7 +17,7 @@ public class DelegatedLauncher {
 		try {
 			List<WurmServerMod> wurmMods = new ModLoader().loadModsFromModDir(Paths.get("mods"));
 			ServerHook.createServerHook().addMods(wurmMods);
-			
+			HookManager.getInstance().initCallbacks();
 			
 			String[] classes = {
 					"com.wurmonline.server.gui.WurmServerGuiMainDeferred",
