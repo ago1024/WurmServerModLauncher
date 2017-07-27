@@ -17,6 +17,7 @@ import javassist.NotFoundException;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
+import org.gotti.wurmunlimited.modloader.callbacks.CallbackApi;
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
@@ -94,7 +95,8 @@ public class CreatureAgeMod implements WurmServerMod, Configurable, Initable, Pr
 		logger.log(Level.INFO, "excludedTemplates: " + String.join(",", iterable));
 	}
 	
-	public static long getAdjustedLastPolledAge(CreatureStatus creatureStatus, boolean reborn) {
+	@CallbackApi
+	public long getAdjustedLastPolledAge(CreatureStatus creatureStatus, boolean reborn) {
 
 		int age = creatureStatus.age;
 		int templateId = creatureStatus.getTemplate().getTemplateId();
@@ -109,8 +111,10 @@ public class CreatureAgeMod implements WurmServerMod, Configurable, Initable, Pr
 	@Override
 	public void preInit() {
 		try {
-		
-			CtClass ctCreatureStatus = HookManager.getInstance().getClassPool().get("com.wurmonline.server.creatures.CreatureStatus");
+			
+			final CtClass ctCreatureStatus = HookManager.getInstance().getClassPool().get("com.wurmonline.server.creatures.CreatureStatus");
+			HookManager.getInstance().addCallback(ctCreatureStatus, "creatureagemod", this);
+			
 			CtMethod method = ctCreatureStatus.getMethod("pollAge", "(I)Z");
 			method.instrument(new ExprEditor() {
 				
@@ -119,7 +123,7 @@ public class CreatureAgeMod implements WurmServerMod, Configurable, Initable, Pr
 					if ("lastPolledAge".equals(f.getFieldName())) {
 						StringBuilder replacement = new StringBuilder();
 						
-						replacement.append(String.format("$_ = %s#getAdjustedLastPolledAge(this, reborn);", CreatureAgeMod.class.getName()));
+						replacement.append("$_ = creatureagemod.getAdjustedLastPolledAge(this, reborn);");
 						f.replace(replacement.toString());
 					}
 				}
