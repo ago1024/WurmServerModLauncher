@@ -85,6 +85,7 @@ public class HarvestHelperMod implements WurmServerMod, Configurable, Initable, 
 	}
 	
 	private List<Harvestable> getSortedHarvestables() {
+		final Comparator<Harvestable> comparator = Comparator.comparing(Harvestable::getSeasonStart);
 		return Arrays.stream(Harvestable.values()).sorted(comparator.reversed()).collect(Collectors.toList());
 	}
 
@@ -127,7 +128,4 @@ public class HarvestHelperMod implements WurmServerMod, Configurable, Initable, 
 		}
 		return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
 	}
-	
-	private static Comparator<Harvestable> comparator = Comparator.comparing(Harvestable::getSeasonStart);
-	
 }
