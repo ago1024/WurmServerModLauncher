@@ -1,8 +1,10 @@
 package org.gotti.wurmunlimited.mods.testmod;
 
-import java.util.Properties;
 import java.util.logging.Logger;
 
+import org.gotti.wurmunlimited.modloader.callbacks.CallbackApi;
+import org.gotti.wurmunlimited.modloader.classhooks.HookException;
+import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.MessagePolicy;
@@ -11,19 +13,20 @@ import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
-import org.gotti.wurmunlimited.modsupport.questions.ModQuestion;
-import org.gotti.wurmunlimited.modsupport.questions.ModQuestions;
 
 import com.wurmonline.server.MiscConstants;
+import com.wurmonline.server.behaviours.Action;
 import com.wurmonline.server.creatures.Communicator;
-import com.wurmonline.server.creatures.Creature;
-import com.wurmonline.server.items.Item;
 import com.wurmonline.server.items.ItemTypes;
-import com.wurmonline.server.questions.Question;
+
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
+import javassist.bytecode.Descriptor;
 
 public class TestMod implements WurmServerMod, Initable, PreInitable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants, PlayerMessageListener {
 
-	private static Logger logger = Logger.getLogger(TestMod.class.getName());
+	static Logger logger = Logger.getLogger(TestMod.class.getName());
 
 	@Override
 	public void onItemTemplatesCreated() {
@@ -37,34 +40,33 @@ public class TestMod implements WurmServerMod, Initable, PreInitable, ServerStar
 	public void init() {
 	}
 
-	public static boolean willMineSlope(Creature performer, Item source) {
-		return true;
+	@CallbackApi
+	public void pollAction(Action action) {
+		logger.info("Poll action " + ((Action)action).getActionString());
 	}
-
+	
 	@Override
 	public void preInit() {
 		ModActions.init();
+		
+		try {
+			ClassPool classPool = HookManager.getInstance().getClassPool();
+			CtClass ctAction = classPool.get("com.wurmonline.server.behaviours.Action");
+			
+			HookManager.getInstance().addCallback(ctAction, "testModApi", this);
+			
+			CtMethod ctPoll = ctAction.getMethod("poll", Descriptor.ofMethod(CtClass.booleanType, new CtClass[0]));
+			ctPoll.insertBefore("testModApi.pollAction(this);");
+		
+		} catch (Exception e) {
+			throw new HookException(e);
+		}
 	}
 	
 	@Override
 	public MessagePolicy onPlayerMessage(Communicator communicator, String message, String title) {
 		if ("/question".equals(message)) {
-			ModQuestions.createQuestion(communicator.getPlayer(), "Test", "Test", -10, new ModQuestion() {
-				
-				@Override
-				public void sendQuestion(Question question) {
-					final StringBuilder buf = new StringBuilder(ModQuestions.getBmlHeader(question));
-					buf.append("label{text=\"Test.\"}");
-					buf.append(ModQuestions.createAnswerButton2(question, "Send"));
-					question.getResponder().getCommunicator().sendBml(300, 300, true, true, buf.toString(), 200, 200, 200, question.getTitle());
-				}
-				
-				@Override
-				public void answer(Question question, Properties answers) {
-					logger.info(String.valueOf(answers));
-				}
-			}).sendQuestion();
-			
+			TestQuestion.create(communicator.getPlayer());
 			return MessagePolicy.DISCARD;
 		}
 		return MessagePolicy.PASS;
