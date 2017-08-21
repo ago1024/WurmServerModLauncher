@@ -1,5 +1,9 @@
 package org.gotti.wurmunlimited.mods.christmasmod;
 
+import static org.gotti.wurmunlimited.modsupport.actions.ActionPropagation.FINISH_ACTION;
+import static org.gotti.wurmunlimited.modsupport.actions.ActionPropagation.NO_ACTION_PERFORMER_PROPAGATION;
+import static org.gotti.wurmunlimited.modsupport.actions.ActionPropagation.NO_SERVER_PROPAGATION;
+
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.logging.Level;
@@ -165,10 +169,8 @@ public class OpenPresentActionPerformer implements ActionPerformer {
 	@Override
 	public boolean action(Action action, Creature performer, Item target, short num, float counter) {
 		if (target.getTemplateId() == ItemList.present) {
-			ActionPerformer.setServerPropagation(action, false);
-
 			if (!performer.isWithinDistanceTo(target, 4.0f)) {
-				return true;
+				return propagate(action, FINISH_ACTION, NO_SERVER_PROPAGATION);
 			}
 
 			Communicator comm = performer.getCommunicator();
@@ -194,8 +196,9 @@ public class OpenPresentActionPerformer implements ActionPerformer {
 			} catch (FailedException fe) {
 				LOGGER.log(Level.WARNING, performer.getName() + " receives no Christmas present: " + fe.getMessage(), (Throwable) fe);
 			}
-
-			return true;
+			
+			// The item is destroyed. Do not propagate the action to the server or any other mods
+			return propagate(action, FINISH_ACTION, NO_SERVER_PROPAGATION, NO_ACTION_PERFORMER_PROPAGATION);
 		}
 		return ActionPerformer.super.action(action, performer, target, num, counter);
 	}

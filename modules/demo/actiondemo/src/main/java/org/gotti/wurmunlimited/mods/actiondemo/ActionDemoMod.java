@@ -28,6 +28,7 @@ public class ActionDemoMod implements WurmServerMod, Initable, PreInitable, Serv
 		ModActions.registerAction(new TestAction());
 		ModActions.registerAction(new ExamineAction(1));
 		ModActions.registerAction(new ExamineAction(2));
+		ModActions.registerAction(new MineAction());
 	}
 
 	@Override

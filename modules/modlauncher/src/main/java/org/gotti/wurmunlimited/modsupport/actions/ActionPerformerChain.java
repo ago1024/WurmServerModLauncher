@@ -138,6 +138,6 @@ class ActionPerformerChain implements ActionPerformer {
 	}
 	
 	private WrappedBehaviour wrap(Action action) {
-		return new WrappedBehaviour(action.getBehaviour(), actionPerformers);
+		return new WrappedBehaviour(action.getBehaviour(), WrappedBehaviour.getDefaultActionReturnValue(action), actionPerformers);
 	}
 }

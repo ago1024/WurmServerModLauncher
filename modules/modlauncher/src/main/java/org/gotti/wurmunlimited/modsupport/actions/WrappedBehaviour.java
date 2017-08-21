@@ -30,7 +30,13 @@ import com.wurmonline.server.structures.Wall;
  */
 class WrappedBehaviour extends Behaviour {
 	
+	/** Flag if the action should be propagated to the server */
 	private boolean serverPropagation;
+	/** Flag if the action should be propagated to the next action performers */
+	private boolean actionPerformerPropagation;
+	/** Default return value for action() methods */
+	private boolean actionReturnValue;
+	
 	private Behaviour behaviour;
 	private List<ActionPerformer> actionPerformers;
 	
@@ -42,11 +48,18 @@ class WrappedBehaviour extends Behaviour {
 			throw new HookException(e);
 		}
 	}
-
-	public WrappedBehaviour(Behaviour behaviour, List<ActionPerformer> actionPerformers) {
+	
+	public WrappedBehaviour(Behaviour behaviour, boolean defaultActionReturnValue, List<ActionPerformer> actionPerformers) {
 		this.serverPropagation = true;
+		this.actionPerformerPropagation = true;
+		this.actionReturnValue = defaultActionReturnValue;
 		this.behaviour = behaviour;
 		this.actionPerformers = actionPerformers;
+	}
+
+	@Deprecated
+	public WrappedBehaviour(Behaviour behaviour, List<ActionPerformer> actionPerformers) {
+		this(behaviour, true, actionPerformers);
 	}
 	
 	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter) {
@@ -150,26 +163,55 @@ class WrappedBehaviour extends Behaviour {
 	}
 
 	/**
+	 * Get the default action() method return value. This is true (finish action) for any custom actions
+	 * and false (continue action) for any server actions.
+	 * 
+	 * @param action
+	 * @return
+	 */
+	public static boolean getDefaultActionReturnValue(Action action) {
+		if (action.getNumber() > ModActions.getLastServerActionId()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Call the ActionPerformer
 	 * @param action Action
 	 * @param code Lambda with call to correct action method on the ActionPerformer
 	 * @return true if the action is done, false if it should continue
 	 */
 	private boolean action(Action action, Predicate<Behaviour> code) {
-		boolean result = false;
-		boolean propagate = this.serverPropagation;
+		boolean actionResult = false;
+		boolean propagateToServer = this.serverPropagation;
+
+		final boolean defaultReturnValue = getDefaultActionReturnValue(action);
+		final Behaviour actionBehaviour = action.getBehaviour();
 		for (ActionPerformer actionPerformer : actionPerformers) {
-			Behaviour actionBehaviour = action.getBehaviour();
 			try {
-				// Create a behaviour without any ActionPerformes. This behaviour will call the server action
-				// if called recursively
-				WrappedBehaviour wrapped = new WrappedBehaviour(actionBehaviour, Collections.emptyList());
+				WrappedBehaviour wrapped = new WrappedBehaviour(actionBehaviour, defaultReturnValue, Collections.emptyList());
 				setActionBehaviour(action, wrapped);
+
+				// Set default server propagation to false. This was the default for the first version where
+				// a direct return from the action() method would not call any other ActionPerformers or the
+				// server behaviour
 				wrapped.serverPropagation = false;
+
 				// Call the actionPerformer
-				result |= code.test(new ActionPerformerBehaviour(actionPerformer));
-				// Check if serverPropation was reset to true. This is done in the ActionPerformer default methods
-				propagate &= wrapped.serverPropagation;
+				final boolean result = code.test(new ActionPerformerBehaviour(actionPerformer));
+
+				// Set the action() method return value. The action will be finished if any action performer wants to finish it.
+				actionResult |= result;
+
+				// Set the server propagation. The action will not propagate if any action performer wants to not propagate it.
+				propagateToServer &= wrapped.serverPropagation;
+
+				// If the action performer wants to stop propagation to other action performers then break out
+				if (!wrapped.actionPerformerPropagation) {
+					break;
+				}
 			} catch (Exception e) {
 				// Log the error and remove the faulty action performer
 				Logger.getLogger(WrappedBehaviour.class.getName()).log(Level.SEVERE, e.getMessage(), e);
@@ -178,12 +220,12 @@ class WrappedBehaviour extends Behaviour {
 				setActionBehaviour(action, actionBehaviour);
 			}
 		}
-		if (propagate) {
+		if (propagateToServer) {
 			// Propagate the action to the server Behavior classes
-			return code.test(this.behaviour) || result;
+			return code.test(this.behaviour) || actionResult;
 		} else {
 			// Don't propagate the action
-			return result;
+			return actionResult;
 		}
 	}
 
@@ -225,5 +267,49 @@ class WrappedBehaviour extends Behaviour {
 		if (behaviour instanceof WrappedBehaviour) {
 			((WrappedBehaviour)behaviour).setServerPropagation(propagate);
 		}
+	}
+	
+	/**
+	 * Set ActionPropagation flags.
+	 * @param flags {@link ActionPropagation} false
+	 * @return default return value for the action() method
+	 */
+	private boolean propagate(ActionPropagation... flags) {
+		for (ActionPropagation flag : flags) {
+			switch (flag) {
+			case CONTINUE_ACTION:
+				this.actionReturnValue = false;
+				break;
+			case FINISH_ACTION:
+				this.actionReturnValue = true;
+				break;
+			case SERVER_PROPAGATION:
+				this.serverPropagation = true;
+				break;
+			case NO_SERVER_PROPAGATION:
+				this.serverPropagation = false;
+				break;
+			case ACTION_PERFORMER_PROPAGATION:
+				this.actionPerformerPropagation = true;
+				break;
+			case NO_ACTION_PERFORMER_PROPAGATION:
+				this.actionPerformerPropagation = false;
+				break;
+			}
+		}
+		return this.actionReturnValue;
+	}
+	
+	/**
+	 * Set ActionPropagation flags.
+	 * @param behaviour Behaviour to set flags for
+	 * @param flags {@link ActionPropagation} false
+	 * @return default return value for the action() method
+	 */
+	public static boolean propagate(Behaviour behaviour, ActionPropagation... flags) {
+		if (behaviour instanceof WrappedBehaviour) {
+			return ((WrappedBehaviour)behaviour).propagate(flags);
+		}
+		return false;
 	}
 }

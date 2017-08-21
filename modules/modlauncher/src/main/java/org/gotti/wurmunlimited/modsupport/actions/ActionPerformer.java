@@ -1,5 +1,9 @@
 package org.gotti.wurmunlimited.modsupport.actions;
 
+import static org.gotti.wurmunlimited.modsupport.actions.ActionPropagation.ACTION_PERFORMER_PROPAGATION;
+import static org.gotti.wurmunlimited.modsupport.actions.ActionPropagation.NO_SERVER_PROPAGATION;
+import static org.gotti.wurmunlimited.modsupport.actions.ActionPropagation.SERVER_PROPAGATION;
+
 import com.wurmonline.mesh.Tiles;
 import com.wurmonline.server.behaviours.Action;
 import com.wurmonline.server.behaviours.Behaviour;
@@ -24,8 +28,7 @@ public interface ActionPerformer extends ActionPerformerBase {
 
 	@Deprecated
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter) {
@@ -34,8 +37,7 @@ public interface ActionPerformer extends ActionPerformerBase {
 
 	@Deprecated
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter) {
@@ -43,118 +45,95 @@ public interface ActionPerformer extends ActionPerformerBase {
 	}
 
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, int planetId, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, int planetId, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, Item target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Wound target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, Wound target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, Creature target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Creature target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, Wall target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Wall target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, boolean onSurface, Fence target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, boolean onSurface, Fence target, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, Skill skill, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Skill skill, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, boolean onSurface, Floor target, int encodedTile, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, boolean onSurface, Floor floor, int encodedTile, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, Tiles.TileBorderDirection dir, long borderId, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, Tiles.TileBorderDirection dir, long borderId, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item[] targets, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, boolean onSurface, BridgePart bridgePart, int encodedTile, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	public default boolean action(Action action, Creature performer, Item item, boolean onSurface, BridgePart bridgePart, int encodedTile, short num, float counter) {
-		setServerPropagation(action, true);
-		return true;
+		return defaultPropagation(action);
 	}
 
 	/**
@@ -182,13 +161,35 @@ public interface ActionPerformer extends ActionPerformerBase {
 	public static Behaviour getServerBehaviour(Action action) {
 		return WrappedBehaviour.unwrapBehaviour(action.getBehaviour());
 	}
-	
+
 	/**
 	 * Prevent (or enable) the ActionPerformer chain from calling the servers Behaviour object after the chain has been processed.
 	 * @param action Action
 	 * @param propagate true if the chain should call the servers Behaviour object, false if it should stop after the last ActionPerformer
 	 */
+	@Deprecated
 	public static void setServerPropagation(Action action, boolean propagate) {
-		WrappedBehaviour.setServerPropagation(action.getBehaviour(), propagate);
+		if (!propagate) {
+			WrappedBehaviour.propagate(action.getBehaviour(), NO_SERVER_PROPAGATION);
+		}
+	}
+
+	/**
+	 * Activate the default propagation for the action.
+	 *
+	 * @param action Action
+	 * @return true if the action should stop. False if it should continue
+	 */
+	public default boolean defaultPropagation(Action action) {
+		return propagate(action, SERVER_PROPAGATION, ACTION_PERFORMER_PROPAGATION);
+	}
+
+	/**
+	 * Change the action propagation and return the return value for the action() method.
+	 * @param flags {@link ActionPropagation} flags
+	 * @return true is the action should stop. False if the action should continue.
+	 */
+	public default boolean propagate(Action action, ActionPropagation... flags) {
+		return WrappedBehaviour.propagate(action.getBehaviour(), flags);
 	}
 }

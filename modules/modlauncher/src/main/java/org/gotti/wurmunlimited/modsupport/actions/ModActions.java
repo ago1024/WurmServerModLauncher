@@ -27,6 +27,8 @@ public class ModActions {
 	
 	private static boolean inited = false;
 	
+	private static short lastServerActionId = 0;
+	
 	private static List<BehaviourProvider> behaviourProviders = new CopyOnWriteArrayList<>();
 	private static ConcurrentHashMap<Short, ActionPerformerChain> actionPerformers = new ConcurrentHashMap<>();
 	
@@ -34,7 +36,20 @@ public class ModActions {
 		return Actions.actionEntrys.length;
 	}
 	
+	private static void initLastServerActionId() {
+		if (lastServerActionId == 0) {
+			lastServerActionId = (short) (Actions.actionEntrys.length - 1);
+		}
+	}
+	
+	public static short getLastServerActionId() {
+		initLastServerActionId();
+		return lastServerActionId;
+	}
+	
 	public static void registerAction(ActionEntry actionEntry) {
+		
+		initLastServerActionId();
 		
 		short number = actionEntry.getNumber();
 		
@@ -141,5 +156,4 @@ public class ModActions {
 		
 		return new ChainedBehaviourProvider(new WrappedBehaviourProvider(behaviour), behaviourProviders);
 	}
-
 }
