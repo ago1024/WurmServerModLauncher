@@ -35,6 +35,7 @@ public class ProxyServerHook extends ServerHook {
 
 	private ProxyServerHook() {
 		registerStartRunningHook();
+		registerShutdownHook();
 		registerItemTemplatesCreatedHook();
 		registerOnMessageHook();
 		registerOnPlayerLoginHook();
@@ -215,6 +216,28 @@ public class ProxyServerHook extends ServerHook {
 		} catch (NotFoundException | CannotCompileException e) {
 			throw new HookException(e);
 		}
+	}
+	
+	private void registerShutdownHook() {
+
+		InvocationHandlerFactory invocationHandlerFactory = new InvocationHandlerFactory() {
+
+			@Override
+			public InvocationHandler createInvocationHandler() {
+				return new InvocationHandler() {
+
+					@Override
+					public Object invoke(Object wrapped, Method method, Object[] args) throws Throwable {
+						fireOnServerShutdown();
+						Object result = method.invoke(wrapped, args);
+						return result;
+					}
+				};
+			}
+		};
+
+		// com.wurmonline.server.Server.shutDown(boolean)
+		HookManager.getInstance().registerHook("com.wurmonline.server.Server", "shutDown", "()V", invocationHandlerFactory);
 	}
 	
 	public static boolean communicatorMessageHook(Communicator communicator, String message, String title) {

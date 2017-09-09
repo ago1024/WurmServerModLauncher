@@ -10,6 +10,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener
 import org.gotti.wurmunlimited.modloader.interfaces.MessagePolicy;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
+import org.gotti.wurmunlimited.modloader.interfaces.ServerShutdownListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
@@ -24,7 +25,7 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.bytecode.Descriptor;
 
-public class TestMod implements WurmServerMod, Initable, PreInitable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants, PlayerMessageListener {
+public class TestMod implements WurmServerMod, Initable, PreInitable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants, PlayerMessageListener, ServerShutdownListener {
 
 	static Logger logger = Logger.getLogger(TestMod.class.getName());
 
@@ -34,6 +35,11 @@ public class TestMod implements WurmServerMod, Initable, PreInitable, ServerStar
 
 	@Override
 	public void onServerStarted() {
+	}
+	
+	@Override
+	public void onServerShutdown() {
+		logger.info("Server shutdown");
 	}
 
 	@Override

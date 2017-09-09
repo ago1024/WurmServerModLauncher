@@ -10,6 +10,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.MessagePolicy;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerPollListener;
+import org.gotti.wurmunlimited.modloader.interfaces.ServerShutdownListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
@@ -22,13 +23,14 @@ import com.wurmonline.server.villages.Village;
 public class ServerHook {
 	
 	Listeners<ServerStartedListener, Void> serverStarted = new Listeners<>(ServerStartedListener.class);
+	Listeners<ServerShutdownListener, Void> serverShutdown = new Listeners<>(ServerShutdownListener.class);
 	Listeners<ItemTemplatesCreatedListener, Void> itemTemplatesCreated = new Listeners<>(ItemTemplatesCreatedListener.class);
 	Listeners<PlayerMessageListener, MessagePolicy> playerMessage = new Listeners<>(PlayerMessageListener.class);
 	Listeners<PlayerLoginListener, Void> playerLogin = new Listeners<>(PlayerLoginListener.class);
 	Listeners<ServerPollListener, Void> serverPoll = new Listeners<>(ServerPollListener.class);
 	Listeners<ChannelMessageListener, MessagePolicy> channelMessage = new Listeners<>(ChannelMessageListener.class);
 	
-	List<Listeners<?, ?>> handlers = Arrays.asList(serverStarted, itemTemplatesCreated, playerMessage, playerLogin, serverPoll, channelMessage);
+	List<Listeners<?, ?>> handlers = Arrays.asList(serverStarted, serverShutdown, itemTemplatesCreated, playerMessage, playerLogin, serverPoll, channelMessage);
 	
 	
 	protected ServerHook() {
@@ -43,6 +45,10 @@ public class ServerHook {
 	public void fireOnServerStarted() {
 		ModComm.serverStarted();
 		serverStarted.fire(listener -> listener.onServerStarted());
+	}
+	
+	public void fireOnServerShutdown() {
+		serverShutdown.fire(listener -> listener.onServerShutdown());
 	}
 	
 	public void fireOnItemTemplatesCreated() {

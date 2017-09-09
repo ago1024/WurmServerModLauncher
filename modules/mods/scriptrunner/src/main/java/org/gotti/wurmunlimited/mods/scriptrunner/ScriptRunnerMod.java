@@ -23,6 +23,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.PlayerLoginListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PlayerMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerPollListener;
+import org.gotti.wurmunlimited.modloader.interfaces.ServerShutdownListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
@@ -32,7 +33,7 @@ import com.wurmonline.server.creatures.Communicator;
 import com.wurmonline.server.items.ItemTypes;
 import com.wurmonline.server.players.Player;
 
-public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, PreInitable, ServerStartedListener, ItemTemplatesCreatedListener, PlayerLoginListener, PlayerMessageListener, ItemTypes, MiscConstants, ServerPollListener, ModListener {
+public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, PreInitable, ServerStartedListener, ServerShutdownListener, ItemTemplatesCreatedListener, PlayerLoginListener, PlayerMessageListener, ItemTypes, MiscConstants, ServerPollListener, ModListener {
 	
 	private static final Logger LOGGER = Logger.getLogger(ScriptRunnerMod.class.getName());
 	private Map<String, List<ScriptRunner>> scriptRunners = new HashMap<>();
@@ -82,6 +83,11 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 	@Override
 	public void onServerStarted() {
 		run(scriptRunners.get("onServerStarted"));
+	}
+	
+	@Override
+	public void onServerShutdown() {
+		run(scriptRunners.get("onServerShutdown"));
 	}
 	
 	@Override
@@ -137,6 +143,7 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 		}
 		
 		initRunner("onServerStarted", properties, scriptsPath);
+		initRunner("onServerShutdown", properties, scriptsPath);
 		initRunner("onPlayerLogin", properties, scriptsPath);
 		initRunner("onPlayerLogout", properties, scriptsPath);
 		initRunner("onPlayerMessage", properties, scriptsPath);
