@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gotti.wurmunlimited.modsupport.actions.ActionEntryBuilder;
 import org.gotti.wurmunlimited.modsupport.actions.ActionPerformer;
 import org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider;
 import org.gotti.wurmunlimited.modsupport.actions.ModAction;
@@ -25,7 +26,7 @@ public class TestAction implements ModAction, BehaviourProvider, ActionPerformer
 
 	public TestAction() {
 		actionId = (short) ModActions.getNextActionId();
-		actionEntry = ActionEntry.createEntry(actionId, "Test entry", "testing", new int[] { 6 /* ACTION_TYPE_NOMOVE */, 48 /* ACTION_TYPE_ENEMY_ALWAYS */, 37 /* ACTION_TYPE_NEVER_USE_ACTIVE_ITEM */});
+		actionEntry = new ActionEntryBuilder(actionId, "Test entry", "testing", new int[] { 6 /* ACTION_TYPE_NOMOVE */, 48 /* ACTION_TYPE_ENEMY_ALWAYS */, 37 /* ACTION_TYPE_NEVER_USE_ACTIVE_ITEM */}).build();
 		ModActions.registerAction(actionEntry);
 	}
 

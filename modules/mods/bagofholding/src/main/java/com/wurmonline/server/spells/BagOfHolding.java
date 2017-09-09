@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import org.gotti.wurmunlimited.modsupport.actions.ActionEntryBuilder;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
 
 import com.wurmonline.server.Server;
@@ -29,7 +30,7 @@ public class BagOfHolding extends ReligiousSpell {
 		}
 
 		// Copied from Courier
-		ActionEntry actionEntry = ActionEntry.createEntry((short) number, name, "casting", new int[] { 2 /* ACTION_TYPE_SPELL */, 36 /* ACTION_TYPE_ALWAYS_USE_ACTIVE_ITEM */, 48 /* ACTION_TYPE_ENEMY_ALWAYS */});
+		ActionEntry actionEntry = new ActionEntryBuilder((short) number, name, "casting", new int[] { 2 /* ACTION_TYPE_SPELL */, 36 /* ACTION_TYPE_ALWAYS_USE_ACTIVE_ITEM */, 48 /* ACTION_TYPE_ENEMY_ALWAYS */}).build();
 		ModActions.registerAction(actionEntry);
 	}
 
