@@ -86,7 +86,7 @@ public class HarvestHelperMod implements WurmServerMod, Configurable, Initable, 
 	
 	private List<Harvestable> getSortedHarvestables() {
 		final Comparator<Harvestable> comparator = Comparator.comparing(Harvestable::getSeasonStart);
-		return Arrays.stream(Harvestable.values()).sorted(comparator.reversed()).collect(Collectors.toList());
+		return Arrays.stream(Harvestable.values()).filter(harvestable -> harvestable != Harvestable.NONE).sorted(comparator.reversed()).collect(Collectors.toList());
 	}
 
 	@Override
