@@ -14,4 +14,11 @@ public interface ModQuestion {
 		return 0;
 	}
 	
+	public default void sendBml(Question question, int width, int height, boolean resizeable, boolean closeable, CharSequence content, int red, int green, int blue, String title) {
+		question.getResponder().getCommunicator().sendBml(width, height, resizeable, closeable, content.toString(), red, green, blue, title);
+	}
+	
+	public default void sendBml(Question question, int width, int height, boolean resizeable, boolean closeable, CharSequence content) {
+		sendBml(question, width, height, resizeable, closeable, content, 200, 200, 200, question.getTitle());
+	}
 }
