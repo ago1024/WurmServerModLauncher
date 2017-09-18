@@ -1,4 +1,4 @@
-package com.wurmonline.server.spells;
+package org.gotti.wurmunlimited.mods.bagofholding;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,8 +13,11 @@ import com.wurmonline.server.creatures.Creature;
 import com.wurmonline.server.items.Item;
 import com.wurmonline.server.items.ItemSpellEffects;
 import com.wurmonline.server.skills.Skill;
+import com.wurmonline.server.spells.ModReligiousSpell;
+import com.wurmonline.server.spells.Spell;
+import com.wurmonline.server.spells.SpellEffect;
 
-public class BagOfHolding extends ReligiousSpell {
+public class BagOfHolding extends ModReligiousSpell {
 
 	private static Logger logger = Logger.getLogger(BagOfHolding.class.getName());
 
@@ -39,7 +42,7 @@ public class BagOfHolding extends ReligiousSpell {
 	}
 
 	@Override
-	boolean precondition(final Skill castSkill, final Creature performer, final Item target) {
+	public boolean precondition(final Skill castSkill, final Creature performer, final Item target) {
 		if (!isValidTarget(target)) {
 			performer.getCommunicator().sendNormalServerMessage("The spell will not work on that.");
 			return false;
@@ -48,12 +51,12 @@ public class BagOfHolding extends ReligiousSpell {
 	}
 
 	@Override
-	boolean precondition(final Skill castSkill, final Creature performer, final Creature target) {
+	public boolean precondition(final Skill castSkill, final Creature performer, final Creature target) {
 		return false;
 	}
 
 	@Override
-	void doEffect(final Skill castSkill, final double power, final Creature performer, final Item target) {
+	public void doEffect(final Skill castSkill, final double power, final Creature performer, final Item target) {
 		if (!isValidTarget(target)) {
 			performer.getCommunicator().sendNormalServerMessage("The spell fizzles.");
 			return;

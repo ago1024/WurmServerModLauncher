@@ -37,7 +37,6 @@ import org.gotti.wurmunlimited.modsupport.actions.ModActions;
 import com.wurmonline.server.deities.Deities;
 import com.wurmonline.server.deities.Deity;
 import com.wurmonline.server.items.Item;
-import com.wurmonline.server.spells.BagOfHolding;
 import com.wurmonline.server.spells.Spells;
 
 public class BagOfHoldingMod implements WurmServerMod, Initable, PreInitable, Configurable, ServerStartedListener {
