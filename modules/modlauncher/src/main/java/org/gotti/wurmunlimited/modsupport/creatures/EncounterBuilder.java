@@ -3,6 +3,7 @@ package org.gotti.wurmunlimited.modsupport.creatures;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.wurmonline.server.zones.Encounter;
 import com.wurmonline.server.zones.EncounterType;
 import com.wurmonline.server.zones.SpawnTable;
 
@@ -10,20 +11,15 @@ public class EncounterBuilder {
 
 	private byte tiletype;
 	private byte elevation;
-	private Object encounter;
+	private Encounter encounter;
 	
-	private static Class<?> encounterClass;
-	private static Method encounterAddType;
-	private static Method encounterTypeAddEncounter;
+	private static Method spawnTableAddTileType;
 	
 	static {
 		try {
-			encounterClass = Class.forName("com.wurmonline.server.zones.Encounter");
-			encounterAddType = encounterClass.getDeclaredMethod("addType", new Class[] { int.class, int.class });
-			encounterAddType.setAccessible(true);
-			encounterTypeAddEncounter = EncounterType.class.getDeclaredMethod("addEncounter", new Class[] { encounterClass, int.class});
-			encounterTypeAddEncounter.setAccessible(true);
-		} catch (ClassNotFoundException | NoSuchMethodException e) {
+			spawnTableAddTileType = SpawnTable.class.getDeclaredMethod("addTileType", EncounterType.class);
+			spawnTableAddTileType.setAccessible(true);
+		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -36,20 +32,11 @@ public class EncounterBuilder {
 		this.tiletype = tiletype;
 		this.elevation = elevation;
 		
-		try {
-			encounter = encounterClass.newInstance();
-		} catch (IllegalAccessException | IllegalArgumentException | InstantiationException e) {
-			throw new RuntimeException(e);
-		}
+		this.encounter = new Encounter();
 	}
 	
 	public EncounterBuilder addCreatures(int templateId, int count) {
-		
-		try {
-			encounterAddType.invoke(encounter, templateId, count);
-		} catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
-			throw new RuntimeException(e);
-		}
+		encounter.addType(templateId, count);
 		return this;
 	}
 
@@ -60,7 +47,11 @@ public class EncounterBuilder {
 
 		try {
 			EncounterType encounterType = SpawnTable.getType(tiletype, elevation);
-			encounterTypeAddEncounter.invoke(encounterType, encounter, chance);
+			if (encounterType == null) {
+				encounterType = new EncounterType(tiletype, elevation);
+				spawnTableAddTileType.invoke(SpawnTable.class, encounterType);
+			}
+			encounterType.addEncounter(encounter, chance);
 		} catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
 			throw new RuntimeException(e);
 		}
