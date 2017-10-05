@@ -30,7 +30,7 @@ ActionBehaviourParameters.prototype.getTile = function() {
 			tile : args[3],
 			dir : args[4]
 		};
-	} else if (isAction && args.length === 5 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'number' && types[4] === 'number') {
+	} else if (isAction && this.activeItem && args.length === 5 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'number' && types[4] === 'number') {
 		// public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, short num, float counter) {
 		return {
 			tilex : args[0],
@@ -38,6 +38,15 @@ ActionBehaviourParameters.prototype.getTile = function() {
 			onSurface : args[2],
 			heightOffset : args[3],
 			tile : args[4]
+		};
+	} else if (isAction && args.length === 5 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'number' && types[4] === 'number') {
+		// boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, int dir, short num, float counter);
+		return {
+			tilex : args[0],
+			tiley : args[1],
+			onSurface : args[2],
+			tile : args[3],
+			dir : args[4]
 		};
 	} else if (args.length === 5 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'boolean'  && types[4] === 'number') {
 		// public default List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, boolean corner, int tile) {
@@ -48,6 +57,16 @@ ActionBehaviourParameters.prototype.getTile = function() {
 			onSurface : args[2],
 			corner: args[3],
 			tile : args[4]
+		};
+	} else if (isAction && args.length === 6 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'number' && types[4] === 'number' && types[5] === 'number') {
+		// boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter);
+		return {
+			tilex : args[0],
+			tiley : args[1],
+			onSurface : args[2],
+			heightOffset : args[3],
+			tile : args[4],
+			dir : args[5]
 		};
 	} else if (args.length === 6 && types[0] === 'number' && types[1] === 'number' && types[2] === 'boolean' && types[3] === 'boolean'  && types[4] === 'number' && types[5] === 'number') {
 		// public default List<ActionEntry> getBehavioursFor(Creature performer, Item object, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset) {
