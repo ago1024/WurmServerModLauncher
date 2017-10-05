@@ -67,8 +67,16 @@ public interface ActionPerformerBase {
 
 	boolean action(Action action, Creature performer, Item item, boolean onSurface, BridgePart bridgePart, int encodedTile, short num, float counter);
 
-	boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, int dir,  short num, float counter);
+	/**
+	 * Tile action in caves
+	 * @since 1.5
+	 */
+	boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, int dir, short num, float counter);
 
+	/**
+	 * Tile action in caves
+	 * @since 1.5
+	 */
 	boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter);
 
 	short getActionId();
