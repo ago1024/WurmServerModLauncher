@@ -124,7 +124,7 @@ public class ModActions {
 					if (m.getClassName().equals("com.wurmonline.server.behaviours.Behaviour") && m.getMethodName().equals("action")) {
 						StringBuffer code = new StringBuffer();
 						code.append("{\n");
-						code.append("    org.gotti.wurmunlimited.modsupport.actions.ActionPerformer actionPerformer = org.gotti.wurmunlimited.modsupport.actions.ModActions.getActionPerformer(this);\n");
+						code.append("    org.gotti.wurmunlimited.modsupport.actions.ActionPerformerBase actionPerformer = org.gotti.wurmunlimited.modsupport.actions.ModActions.getActionPerformer(this);\n");
 						code.append("    if (actionPerformer != null) {\n");
 						code.append("        $_ = actionPerformer.action($$);\n");
 						code.append("    } else {\n");
