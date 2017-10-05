@@ -162,6 +162,14 @@ class WrappedBehaviour extends Behaviour {
 		return action(action, actionPerformer -> actionPerformer.action(action, performer, item, onSurface, bridgePart, encodedTile, num, counter));
 	}
 
+	public boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, int dir, short num, float counter) {
+		return action(action, actionPerformer -> actionPerformer.action(action, performer, tilex, tiley, onSurface, tile, dir, num, counter));
+	}
+
+	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter) {
+		return action(action, actionPerformer -> actionPerformer.action(action, performer, source, tiley, tiley, onSurface, heightOffset, tile, dir, num, counter));
+	}
+
 	/**
 	 * Get the default action() method return value. This is true (finish action) for any custom actions
 	 * and false (continue action) for any server actions.

@@ -144,7 +144,7 @@ public class ModActions {
 		}
 	}
 	
-	public static ActionPerformer getActionPerformer(Action action) {
+	public static ActionPerformerBase getActionPerformer(Action action) {
 		short actionId = action.getActionEntry().getNumber();
 		return actionPerformers.get(actionId);
 	}

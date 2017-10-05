@@ -44,10 +44,12 @@ public interface ActionPerformer extends ActionPerformerBase {
 		return action(action, performer, tilex, tiley, onSurface, corner, tile, num, counter);
 	}
 
+	@Deprecated
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
+	@Deprecated
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, short num, float counter) {
 		return defaultPropagation(action);
 	}
@@ -137,11 +139,11 @@ public interface ActionPerformer extends ActionPerformerBase {
 	}
 
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, int dir, short num, final float counter) {
-		return defaultPropagation(action);
+		return action(action, performer, tilex, tiley, onSurface, tile, num, counter);
 	}
 
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter) {
-		return defaultPropagation(action);
+		return action(action, performer, source, tilex, tiley, onSurface, heightOffset, tile, num, counter);
 	}
 
 	/**
