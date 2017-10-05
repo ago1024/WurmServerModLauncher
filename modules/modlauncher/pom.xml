@@ -56,7 +56,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Class-Path>javassist.jar server.jar common.jar lib/activation.jar lib/annotations.jar lib/commons-codec-1.6.jar lib/controlsfx-8.40.12.jar lib/httpclient-4.2.5.jar lib/httpcore-4.2.4.jar lib/javaws.jar lib/jsr305.jar lib/jtwitter.jar lib/mail.jar lib/mysql-connector.jar lib/mysql-connector-java-5.1.23-bin.jar lib/servlet.jar lib/signpost-core.jar lib/sqlite-jdbc-3.8.11.2.jar lib/SteamServerJni.jar lib/flyway-core-4.0.3.jar</Class-Path>
+							<Class-Path>javassist.jar server.jar common.jar lib/activation.jar lib/annotations.jar lib/commons-codec-1.9.jar lib/commons-logging-1.2.jar lib/controlsfx-8.40.12.jar lib/httpclient-4.5.3.jar lib/httpcore-4.4.6.jar lib/javaws.jar lib/jsr305.jar lib/jtwitter.jar lib/mail.jar lib/mysql-connector.jar lib/mysql-connector-java-5.1.23-bin.jar lib/servlet.jar lib/signpost-core.jar lib/sqlite-jdbc-3.8.11.2.jar lib/SteamServerJni.jar lib/flyway-core-4.0.3.jar</Class-Path>
 							<Implementation-Version>${git.buildnumber}</Implementation-Version>
 						</manifestEntries>
 						<manifest>
