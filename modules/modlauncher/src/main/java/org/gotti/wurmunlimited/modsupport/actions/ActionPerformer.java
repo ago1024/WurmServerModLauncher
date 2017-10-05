@@ -136,6 +136,14 @@ public interface ActionPerformer extends ActionPerformerBase {
 		return defaultPropagation(action);
 	}
 
+	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, int dir, short num, final float counter) {
+		return defaultPropagation(action);
+	}
+
+	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
 	/**
 	 * Get the action if which is handled by this ActionPerformer.
 	 */
