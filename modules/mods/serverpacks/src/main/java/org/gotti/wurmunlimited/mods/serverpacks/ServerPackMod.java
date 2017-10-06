@@ -34,7 +34,7 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 
 	private static final byte CMD_REFRESH = 0x01;
 
-	private Map<String, Path> packs = new HashMap<>();
+	private Map<String, PackInfo> packs = new HashMap<>();
 
 	private Logger logger = Logger.getLogger(ServerPackMod.class.getName());
 
@@ -59,10 +59,13 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 					URI uri = packServer.getUri();
 					try (PacketWriter writer = new PacketWriter()) {
 						writer.writeInt(packs.size());
-						for (String packId : packs.keySet()) {
-							URI packUri = uri.resolve(packId);
+						for (Map.Entry<String, PackInfo> entry : packs.entrySet()) {
+							final String packId = entry.getKey();
+							final PackInfo info = entry.getValue();
+							final String query = info.prepend ? "?prepend" : "";
+							final URI packUri = uri.resolve(packId);
 							writer.writeUTF(packId);
-							writer.writeUTF(packUri.toString());
+							writer.writeUTF(packUri.toString() + query);
 						}
 						channel.sendMessage(player, writer.getBytes());
 					}
@@ -125,9 +128,13 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 
 		for (String pack : packs) {
 			try {
-				Path packPath = Paths.get("mods").resolve(entry.getName()).resolve(Paths.get(pack));
+				pack = pack.trim();
+				final boolean prepend = pack.startsWith("!");
+				final String fileName = prepend ? pack.substring(1) : pack;
+				
+				Path packPath = Paths.get("mods").resolve(entry.getName()).resolve(Paths.get(fileName));
 				if (Files.isRegularFile(packPath)) {
-					addPack(packPath);
+					addPack(packPath, prepend);
 				} else {
 					logger.log(Level.WARNING, "Missing serverPack " + packPath);
 				}
@@ -155,9 +162,9 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 		return javax.xml.bind.DatatypeConverter.printHexBinary(digest);
 	}
 
-	private void addPack(Path packPath) throws NoSuchAlgorithmException, IOException {
+	private void addPack(Path packPath, boolean prepend) throws NoSuchAlgorithmException, IOException {
 		String sha1Sum = getSha1Sum(packPath);
-		packs.put(sha1Sum, packPath);
+		packs.put(sha1Sum, new PackInfo(packPath, prepend));
 		logger.info("Added pack " + sha1Sum + " for pack " + packPath);
 	}
 
@@ -168,9 +175,9 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 
 				@Override
 				protected InputStream getPackStream(String packid) throws IOException {
-					Path path = packs.get(packid);
-					if (path != null) {
-						return Files.newInputStream(path);
+					PackInfo info = packs.get(packid);
+					if (info != null && info.path != null) {
+						return Files.newInputStream(info.path);
 					}
 					return null;
 				}
