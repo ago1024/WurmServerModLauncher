@@ -26,122 +26,188 @@ import com.wurmonline.server.structures.Wall;
  */
 public interface ActionPerformer extends ActionPerformerBase {
 
+	//
+	// Tile corners
+	//
 	@Deprecated
+	@Override
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
+	@Override
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter) {
 		return action(action, performer, source, tilex, tiley, onSurface, corner, tile, num, counter);
 	}
 
 	@Deprecated
+	@Override
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
+	@Override
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, boolean corner, int tile, int heightOffset, short num, float counter) {
 		return action(action, performer, tilex, tiley, onSurface, corner, tile, num, counter);
 	}
 
-	@Deprecated
+	//
+	// Tiles
+	//
+	@Override
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
-	@Deprecated
+	@Override
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
-	public default boolean action(Action action, Creature performer, int planetId, short num, float counter) {
+	//
+	// Planets, Tickets, Missions
+	//
+	@Override
+	public default boolean action(Action action, Creature performer, int id, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
-	public default boolean action(Action action, Creature performer, Item source, int planetId, short num, float counter) {
+	@Override
+	public default boolean action(Action action, Creature performer, Item source, int id, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
-	public default boolean action(Action action, Creature performer, Item source, Item target, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
+	//
+	// Wounds
+	//
+	@Override
 	public default boolean action(Action action, Creature performer, Wound target, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
+	@Override
 	public default boolean action(Action action, Creature performer, Item source, Wound target, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
+	//
+	// Items
+	//
+	@Override
+	public default boolean action(Action action, Creature performer, Item source, Item target, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	@Override
 	public default boolean action(Action action, Creature performer, Item target, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
-	public default boolean action(Action action, Creature performer, Item source, Creature target, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, Creature target, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, Item source, Wall target, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, Wall target, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, Item source, boolean onSurface, Fence target, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, boolean onSurface, Fence target, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, Item source, Skill skill, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, Skill skill, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, Item source, boolean onSurface, Floor target, int encodedTile, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, boolean onSurface, Floor floor, int encodedTile, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, Tiles.TileBorderDirection dir, long borderId, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
-	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, Tiles.TileBorderDirection dir, long borderId, short num, float counter) {
-		return defaultPropagation(action);
-	}
-
+	@Override
 	public default boolean action(Action action, Creature performer, Item[] targets, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
+	//
+	// Creatures
+	//
+	@Override
+	public default boolean action(Action action, Creature performer, Item source, Creature target, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	@Override
+	public default boolean action(Action action, Creature performer, Creature target, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	//
+	// Walls
+	//
+	@Override
+	public default boolean action(Action action, Creature performer, Item source, Wall target, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	@Override
+	public default boolean action(Action action, Creature performer, Wall target, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	//
+	// Fences
+	//
+	@Override
+	public default boolean action(Action action, Creature performer, Item source, boolean onSurface, Fence target, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	@Override
+	public default boolean action(Action action, Creature performer, boolean onSurface, Fence target, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	//
+	// Skills
+	//
+	@Override
+	public default boolean action(Action action, Creature performer, Item source, Skill skill, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	@Override
+	public default boolean action(Action action, Creature performer, Skill skill, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	//
+	// Floor
+	//
+	@Override
+	public default boolean action(Action action, Creature performer, Item source, boolean onSurface, Floor target, int encodedTile, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	@Override
+	public default boolean action(Action action, Creature performer, boolean onSurface, Floor floor, int encodedTile, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	//
+	// Tiles border
+	//
+	@Override
+	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, Tiles.TileBorderDirection dir, long borderId, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	@Override
+	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, Tiles.TileBorderDirection dir, long borderId, short num, float counter) {
+		return defaultPropagation(action);
+	}
+
+	//
+	// Bridges
+	//
+	@Override
 	public default boolean action(Action action, Creature performer, boolean onSurface, BridgePart bridgePart, int encodedTile, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
+	@Override
 	public default boolean action(Action action, Creature performer, Item item, boolean onSurface, BridgePart bridgePart, int encodedTile, short num, float counter) {
 		return defaultPropagation(action);
 	}
 
+	//
+	// Cave tiles
+	//
+	@Override
 	public default boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, int tile, int dir, short num, final float counter) {
 		return action(action, performer, tilex, tiley, onSurface, tile, num, counter);
 	}
 
+	@Override
 	public default boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter) {
 		return action(action, performer, source, tilex, tiley, onSurface, heightOffset, tile, num, counter);
 	}
