@@ -1,4 +1,4 @@
-package org.gotti.wurmunlimited.mods.serverpacks;
+package org.gotti.wurmunlimited.mods.httpserver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,8 +9,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -39,33 +37,30 @@ public abstract class PackServer {
 
 		InetSocketAddress address = new InetSocketAddress(addr, port);
 		httpServer = HttpServer.create(address, 0);
-		httpServer.createContext("/packs/", new HttpHandler() {
+		httpServer.createContext("/", new HttpHandler() {
 			
 			@Override
 			public void handle(HttpExchange paramHttpExchange) throws IOException {
 				logger.info("Got request " + paramHttpExchange.getRequestURI().toString());
 				
-				Matcher matcher = Pattern.compile("^.*/packs/([^/]*)$").matcher(paramHttpExchange.getRequestURI().getPath());
-				if (matcher.matches()) {
-					try (InputStream stream = getPackStream(matcher.group(1))) {
-						if (stream != null) {
-							paramHttpExchange.getResponseHeaders().add("Cache-control", "max-age=31556926");
-							paramHttpExchange.sendResponseHeaders(200, 0);
-							try (OutputStream os = paramHttpExchange.getResponseBody()) {
-								int n = 0;
-								byte[] buffer = new byte[8192];
-								while (n != -1) {
-									n = stream.read(buffer);
-									if (n > 0) {
-										os.write(buffer, 0, n);
-									}
+				try (InputStream stream = getStream(paramHttpExchange.getRequestURI().getPath())) {
+					if (stream != null) {
+						paramHttpExchange.getResponseHeaders().add("Cache-control", "max-age=31556926");
+						paramHttpExchange.sendResponseHeaders(200, 0);
+						try (OutputStream os = paramHttpExchange.getResponseBody()) {
+							int n = 0;
+							byte[] buffer = new byte[8192];
+							while (n != -1) {
+								n = stream.read(buffer);
+								if (n > 0) {
+									os.write(buffer, 0, n);
 								}
 							}
-							return;
 						}
-					} catch (IOException e) {
-						logger.log(Level.SEVERE, e.getMessage(), e);
+						return;
 					}
+				} catch (IOException e) {
+					logger.log(Level.SEVERE, e.getMessage(), e);
 				}
 				paramHttpExchange.sendResponseHeaders(404, -1);
 			}
@@ -74,7 +69,7 @@ public abstract class PackServer {
 		httpServer.start();
 	}
 	
-	protected abstract InputStream getPackStream(String packid) throws IOException;
+	protected abstract InputStream getStream(String path) throws IOException;
 
 	public URI getUri() throws URISyntaxException {
 		String address = publicServerAddress;
@@ -85,7 +80,7 @@ public abstract class PackServer {
 		if (port == 0)
 			port = httpServer.getAddress().getPort();
 		
-		return new URI("http", null, address, port, "/packs/", null, null);
+		return new URI("http", null, address, port, "/", null, null);
 	}
 	
 

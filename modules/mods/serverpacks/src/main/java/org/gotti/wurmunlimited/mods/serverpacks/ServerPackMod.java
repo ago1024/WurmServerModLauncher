@@ -15,18 +15,20 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
+import org.gotti.wurmunlimited.modcomm.Channel;
+import org.gotti.wurmunlimited.modcomm.IChannelListener;
+import org.gotti.wurmunlimited.modcomm.ModComm;
+import org.gotti.wurmunlimited.modcomm.PacketReader;
+import org.gotti.wurmunlimited.modcomm.PacketWriter;
 import org.gotti.wurmunlimited.modloader.interfaces.Configurable;
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
 import org.gotti.wurmunlimited.modloader.interfaces.ModListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
-import org.gotti.wurmunlimited.modcomm.Channel;
-import org.gotti.wurmunlimited.modcomm.IChannelListener;
-import org.gotti.wurmunlimited.modcomm.ModComm;
-import org.gotti.wurmunlimited.modcomm.PacketReader;
-import org.gotti.wurmunlimited.modcomm.PacketWriter;
+import org.gotti.wurmunlimited.mods.httpserver.api.ModHttpServer;
 
 import com.wurmonline.server.players.Player;
 
@@ -38,25 +40,21 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 
 	private Logger logger = Logger.getLogger(ServerPackMod.class.getName());
 
-	private int serverPort = 0;
-	private String publicServerAddress = null;
-	private String internalServerAddress = null;
-	private int publicServerPort = 0;
-
-	private PackServer packServer;
 	private Channel channel;
+
+	private String prefix;
 
 	@Override
 	public void init() {
 		channel = ModComm.registerChannel("ago.serverpacks", new IChannelListener() {
 			@Override
 			public void onPlayerConnected(Player player) {
-				if (packServer == null) {
+				if (!ModHttpServer.getInstance().isRunning()) {
 					logger.log(Level.WARNING, "HTTP server did not start properly. No server packs will be delivered.");
 					return;
 				}
 				try {
-					URI uri = packServer.getUri();
+					URI uri = ModHttpServer.getInstance().getUri().resolve(prefix);
 					try (PacketWriter writer = new PacketWriter()) {
 						writer.writeInt(packs.size());
 						for (Map.Entry<String, PackInfo> entry : packs.entrySet()) {
@@ -69,7 +67,7 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 						}
 						channel.sendMessage(player, writer.getBytes());
 					}
-				} catch (URISyntaxException | IOException e) {
+				} catch (IOException | URISyntaxException e) {
 					logger.log(Level.WARNING, e.getMessage(), e);
 				}
 			}
@@ -103,15 +101,6 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 
 	@Override
 	public void configure(Properties properties) {
-		this.serverPort = Integer.parseInt(properties.getProperty("serverPort", Integer.toString(serverPort)));
-		this.publicServerPort = Integer.parseInt(properties.getProperty("publicServerPort", Integer.toString(publicServerPort)));
-		this.publicServerAddress = properties.getProperty("publicServerAddress");
-		this.internalServerAddress = properties.getProperty("internalServerAddress");
-
-		logger.info("serverPort: " + serverPort);
-		logger.info("publicServerAddress: " + publicServerAddress);
-		logger.info("publicServerPort: " + publicServerPort);
-		logger.info("internalServerAddress: " + internalServerAddress);
 	}
 
 	@Override
@@ -167,23 +156,24 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 		packs.put(sha1Sum, new PackInfo(packPath, prepend));
 		logger.info("Added pack " + sha1Sum + " for pack " + packPath);
 	}
+	
+	private InputStream servePack(String packid) {
+		try {
+			PackInfo info = packs.get(packid);
+			if (info != null && info.path != null) {
+				return Files.newInputStream(info.path);
+			}
+		} catch (IOException e) {
+			logger.log(Level.WARNING, e.getMessage(), e);
+		}
+		return null;
+	}
 
 	@Override
 	public void onServerStarted() {
-		try {
-			packServer = new PackServer(serverPort, publicServerAddress, publicServerPort, internalServerAddress) {
-
-				@Override
-				protected InputStream getPackStream(String packid) throws IOException {
-					PackInfo info = packs.get(packid);
-					if (info != null && info.path != null) {
-						return Files.newInputStream(info.path);
-					}
-					return null;
-				}
-			};
-		} catch (IOException e) {
-			logger.log(Level.SEVERE, e.getMessage(), e);
+		this.prefix = ModHttpServer.getInstance().serve(this, Pattern.compile("^/(?<path>[^/]*)$"), this::servePack);
+		if (prefix == null) {
+			throw new RuntimeException("Failed to register server pack http handler");
 		}
 	}
 }

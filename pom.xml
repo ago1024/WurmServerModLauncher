@@ -23,6 +23,7 @@
 		<module>modules/mods/creatureagemod</module>
 		<module>modules/mods/cropmod</module>
 		<module>modules/mods/harvesthelper</module>
+		<module>modules/mods/httpserver</module>
 		<module>modules/mods/inbreedwarning</module>
 		<module>modules/mods/scriptrunner</module>
 		<module>modules/mods/serverpacks</module>
