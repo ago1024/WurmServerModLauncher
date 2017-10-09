@@ -6,21 +6,26 @@ import java.lang.reflect.Method;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 
+import com.wurmonline.server.Items;
+import com.wurmonline.server.NoSuchItemException;
 import com.wurmonline.server.behaviours.Seat;
 import com.wurmonline.server.behaviours.Vehicle;
+import com.wurmonline.server.items.Item;
 
 public class VehicleFacadeImpl implements VehicleFacade {
 
-	private static Method createOnlyPassengerSeats;
-	private static Method createPassengerSeats;
-	private static Field embarkString;
-	private static Field maxSpeed;
-	private static Field canHaveEquipment;
+	private static final Method createOnlyPassengerSeats;
+	private static final Method createPassengerSeats;
+	private static final Method getWurmid;
+	private static final Field embarkString;
+	private static final Field maxSpeed;
+	private static final Field canHaveEquipment;
 
 	static {
 		try {
 			createOnlyPassengerSeats = ReflectionUtil.getMethod(Vehicle.class, "createOnlyPassengerSeats");
 			createPassengerSeats = ReflectionUtil.getMethod(Vehicle.class, "createPassengerSeats");
+			getWurmid = ReflectionUtil.getMethod(Vehicle.class, "getWurmid", new Class[] {});
 			embarkString = ReflectionUtil.getField(Vehicle.class, "embarkString");
 			maxSpeed = ReflectionUtil.getField(Vehicle.class, "maxSpeed");
 			canHaveEquipment = ReflectionUtil.getField(Vehicle.class, "canHaveEquipment");
@@ -125,6 +130,16 @@ public class VehicleFacadeImpl implements VehicleFacade {
 	@Override
 	public void setCanHaveEquipment(boolean b) {
 		setPrivateField(canHaveEquipment, b);
+	}
+	
+	@Override
+	public Item getItem() throws NoSuchItemException {
+		return Items.getItem(this.getWurmid());
+	}
+	
+	@Override
+	public long getWurmid() {
+		return callPrivateMethod(getWurmid);
 	}
 
 }

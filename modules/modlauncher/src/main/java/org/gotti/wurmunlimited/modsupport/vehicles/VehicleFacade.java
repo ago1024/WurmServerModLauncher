@@ -1,6 +1,8 @@
 package org.gotti.wurmunlimited.modsupport.vehicles;
 
+import com.wurmonline.server.NoSuchItemException;
 import com.wurmonline.server.behaviours.Seat;
+import com.wurmonline.server.items.Item;
 
 public interface VehicleFacade {
 
@@ -33,6 +35,11 @@ public interface VehicleFacade {
 	void setMaxSpeed(float f);
 
 	void setCanHaveEquipment(boolean b);
+
+	Item getItem() throws NoSuchItemException;
+
+	long getWurmid();
+
 }
 
 

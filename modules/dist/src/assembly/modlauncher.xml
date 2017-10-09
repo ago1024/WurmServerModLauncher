@@ -18,7 +18,6 @@
         <exclude>${project.groupId}:christmasmod</exclude>
         <exclude>${project.groupId}:creaturedemo</exclude>
         <exclude>${project.groupId}:digtoground</exclude>
-        <exclude>${project.groupId}:hitchingpost</exclude>
         <exclude>${project.groupId}:serverfixes</exclude>
       </excludes>
       <useProjectArtifact>false</useProjectArtifact>    

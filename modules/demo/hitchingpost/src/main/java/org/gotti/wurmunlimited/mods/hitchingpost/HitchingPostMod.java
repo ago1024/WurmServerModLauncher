@@ -6,9 +6,11 @@ import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.interfaces.Initable;
 import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
+import org.gotti.wurmunlimited.modloader.interfaces.PreInitable;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modsupport.ItemTemplateBuilder;
+import org.gotti.wurmunlimited.modsupport.actions.ModActions;
 import org.gotti.wurmunlimited.modsupport.vehicles.ModVehicleBehaviours;
 
 import com.wurmonline.server.MiscConstants;
@@ -16,6 +18,7 @@ import com.wurmonline.server.items.AdvancedCreationEntry;
 import com.wurmonline.server.items.CreationCategories;
 import com.wurmonline.server.items.CreationEntryCreator;
 import com.wurmonline.server.items.CreationRequirement;
+import com.wurmonline.server.items.Item;
 import com.wurmonline.server.items.ItemList;
 import com.wurmonline.server.items.ItemTemplate;
 import com.wurmonline.server.items.ItemTypes;
@@ -30,7 +33,7 @@ import com.wurmonline.server.skills.SkillList;
  * 3. Register a custom vehicle behaviour
  * 
  */
-public class HitchingPostMod implements WurmServerMod, Initable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants {
+public class HitchingPostMod implements WurmServerMod, PreInitable, Initable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants {
 
 	private static Logger logger = Logger.getLogger(HitchingPostMod.class.getName());
 	private int hitchingPostId;
@@ -113,10 +116,23 @@ public class HitchingPostMod implements WurmServerMod, Initable, ServerStartedLi
 			creationEntry.addRequirement(new CreationRequirement(3, ItemList.plank, 2, true));
 			creationEntry.addRequirement(new CreationRequirement(4, ItemList.horseShoe, 3, true));
 		}
+		
+		UnhitchAction unhitchAction = new UnhitchAction(this);
+		ModActions.registerBehaviourProvider(unhitchAction);
+		ModActions.registerActionPerformer(unhitchAction);
 	}
 
 	@Override
 	public void init() {
 		ModVehicleBehaviours.init();
+	}
+	
+	@Override
+	public void preInit() {
+		ModActions.init();
+	}
+	
+	public boolean isHitchingPost(Item item) {
+		return item != null && item.getTemplateId() == hitchingPostId;
 	}
 }
