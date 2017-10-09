@@ -42,7 +42,6 @@ public class ModComm {
     /**
      * Get player connection state
      */
-    @SuppressWarnings("unchecked")
     static PlayerModConnection getPlayerConnection(Player player) {
         try {
             return (PlayerModConnection) fPlayerConnection.get(player);

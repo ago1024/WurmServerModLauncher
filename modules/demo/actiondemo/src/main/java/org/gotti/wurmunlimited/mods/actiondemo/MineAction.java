@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.gotti.wurmunlimited.modsupport.actions.ActionPerformer;
-import org.gotti.wurmunlimited.modsupport.actions.ActionPropagation;
 import org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider;
 import org.gotti.wurmunlimited.modsupport.actions.ModAction;
 

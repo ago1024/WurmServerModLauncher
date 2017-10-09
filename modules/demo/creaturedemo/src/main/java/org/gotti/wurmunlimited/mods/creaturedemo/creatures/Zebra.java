@@ -1,6 +1,5 @@
 package org.gotti.wurmunlimited.mods.creaturedemo.creatures;
 
-import com.wurmonline.shared.constants.ItemMaterials;
 import org.gotti.wurmunlimited.modsupport.CreatureTemplateBuilder;
 import org.gotti.wurmunlimited.modsupport.creatures.EncounterBuilder;
 import org.gotti.wurmunlimited.modsupport.creatures.ModCreature;
