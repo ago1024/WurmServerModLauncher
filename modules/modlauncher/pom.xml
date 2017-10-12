@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
 		<artifactId>server-modlauncher-parent</artifactId>
-		<version>0.29</version>
+		<version>0.30-SNAPSHOT</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
