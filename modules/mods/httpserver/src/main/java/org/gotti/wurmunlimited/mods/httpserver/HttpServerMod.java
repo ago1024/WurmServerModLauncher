@@ -37,7 +37,7 @@ public class HttpServerMod implements WurmServerMod, Initable, Configurable, Ser
 		logger.info("publicServerPort: " + publicServerPort);
 		logger.info("internalServerAddress: " + internalServerAddress);
 		
-		ModHttpServerImpl.getInstance().configure(this.serverPort, this.publicServerAddress, this.publicServerPort, this.internalServerAddress);
+		ModHttpServerImpl.getInstance().configure(this.internalServerAddress, this.serverPort, this.publicServerAddress, this.publicServerPort);
 	}
 
 	@Override

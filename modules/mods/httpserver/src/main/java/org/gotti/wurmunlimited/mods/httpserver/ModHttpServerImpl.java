@@ -55,7 +55,15 @@ public class ModHttpServerImpl implements ModHttpServer {
 		modEntries.put(entry.getWurmMod(), entry.getName());
 	}
 	
-	protected void configure(int port, String publicServerAddress, int publicServerPort, String internalServerAddress) {
+	/**
+	 * Configure the server
+	 * 
+	 * @param internalServerAddress interface to bind to
+	 * @param port Server port
+	 * @param publicServerAddress publicly announced address 
+	 * @param publicServerPort publicly announced port
+	 */
+	public void configure(String internalServerAddress, int port, String publicServerAddress, int publicServerPort) {
 		this.port = port;
 		this.publicServerAddress = publicServerAddress;
 		this.publicServerPort = publicServerPort;

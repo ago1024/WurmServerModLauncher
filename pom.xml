@@ -118,6 +118,34 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<id>copy-properties</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.outputDirectory}</outputDirectory>
+							<overwrite>true</overwrite>
+							<useBuildFilters>false</useBuildFilters>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/src/dist</directory>
+									<targetPath>META-INF/org.gotti.wurmunlimited.modloader</targetPath>
+									<includes>
+										<include>${project.name}.properties</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>

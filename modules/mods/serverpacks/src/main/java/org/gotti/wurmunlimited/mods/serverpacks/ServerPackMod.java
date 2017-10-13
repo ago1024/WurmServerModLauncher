@@ -28,6 +28,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
 import org.gotti.wurmunlimited.modloader.interfaces.ModListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
+import org.gotti.wurmunlimited.mods.httpserver.ModHttpServerImpl;
 import org.gotti.wurmunlimited.mods.httpserver.api.ModHttpServer;
 
 import com.wurmonline.server.players.Player;
@@ -101,6 +102,20 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 
 	@Override
 	public void configure(Properties properties) {
+			final int serverPort = Integer.parseInt(properties.getProperty("serverPort", Integer.toString(0)));
+			final int publicServerPort = Integer.parseInt(properties.getProperty("publicServerPort", Integer.toString(0)));
+			final String publicServerAddress = properties.getProperty("publicServerAddress");
+			final String internalServerAddress = properties.getProperty("internalServerAddress");
+
+			if (serverPort != 0 || publicServerPort != 0 || internalServerAddress != null || publicServerAddress != null) {
+				logger.warning("Overriding httpserver configuration");
+				logger.info("serverPort: " + serverPort);
+				logger.info("publicServerAddress: " + publicServerAddress);
+				logger.info("publicServerPort: " + publicServerPort);
+				logger.info("internalServerAddress: " + internalServerAddress);
+
+				ModHttpServerImpl.getInstance().configure(internalServerAddress, serverPort, publicServerAddress, publicServerPort);
+			}
 	}
 
 	@Override
