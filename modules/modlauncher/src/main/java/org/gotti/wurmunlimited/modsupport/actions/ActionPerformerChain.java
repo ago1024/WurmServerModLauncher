@@ -154,7 +154,7 @@ class ActionPerformerChain implements ActionPerformerBase {
 
 	@Override
 	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter) {
-		return wrap(action).action(action, performer, source, tiley, tiley, onSurface, heightOffset, tile, dir, num, counter);
+		return wrap(action).action(action, performer, source, tilex, tiley, onSurface, heightOffset, tile, dir, num, counter);
 	}
 
 	private WrappedBehaviour wrap(Action action) {

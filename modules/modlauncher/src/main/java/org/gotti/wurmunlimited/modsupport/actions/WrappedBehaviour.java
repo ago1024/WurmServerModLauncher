@@ -167,7 +167,7 @@ class WrappedBehaviour extends Behaviour {
 	}
 
 	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter) {
-		return action(action, actionPerformer -> actionPerformer.action(action, performer, source, tiley, tiley, onSurface, heightOffset, tile, dir, num, counter));
+		return action(action, actionPerformer -> actionPerformer.action(action, performer, source, tilex, tiley, onSurface, heightOffset, tile, dir, num, counter));
 	}
 
 	/**
