@@ -165,7 +165,7 @@ public class ActionPerformerBehaviour extends Behaviour implements ActionPerform
 
 	@Override
 	public boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, int tile, int dir, short num, float counter) {
-		return actionPerformer.action(action, performer, source, tilex, tiley, onSurface, tile, dir, num, counter);
+		return actionPerformer.action(action, performer, source, tilex, tiley, onSurface, heightOffset, tile, dir, num, counter);
 	}
 
 	@Override
