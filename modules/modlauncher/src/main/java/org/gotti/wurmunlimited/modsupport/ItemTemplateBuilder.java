@@ -147,7 +147,7 @@ public class ItemTemplateBuilder {
 			throws IOException {
 
 		this.name(name, plural, itemDescriptionLong);
-		this.size(3);
+		this.size(size);
 		this.descriptions(itemDescriptionSuperb, itemDescriptionNormal, itemDescriptionBad, itemDescriptionRotten);
 		this.itemTypes(itemTypes);
 		this.imageNumber(imageNumber);
