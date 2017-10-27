@@ -64,7 +64,9 @@ public class CreatureTemplateBuilder {
 	private String handDamString;
 
 	private String kickDamString;
-	
+
+	private String headbuttDamString;
+
 	private short vision;
 
 	private byte sex;
@@ -135,12 +137,16 @@ public class CreatureTemplateBuilder {
 
 	private int[] combatMoves;
 
+	private boolean isEggLayer;
+
+	private int eggTemplate;
+
 
 	public CreatureTemplateBuilder(int id) {
 		this.templateId = id;
 		defaultSkills();
 	}
-	
+
 	public CreatureTemplateBuilder(String identifier) {
 		this(IdFactory.getIdFor(identifier, IdType.CREATURETEMPLATE));
 	}
@@ -299,6 +305,25 @@ public class CreatureTemplateBuilder {
 		return this;
 	}
 
+	/**
+	 * Set headbutt damage string
+	 * @param headbuttDamString headbutt damage string
+	 */
+	public CreatureTemplateBuilder headbuttDamString(String headbuttDamString) {
+		this.headbuttDamString = headbuttDamString;
+		return this;
+	}
+
+	/**
+	 * Creature is an egg layer
+	 * @param eggTemplate Egg template. -1 disabled egg laying
+	 */
+	public CreatureTemplateBuilder eggLayer(int eggTemplate) {
+		this.isEggLayer = eggTemplate != -1;
+		this.eggTemplate = eggTemplate;
+		return this;
+	}
+
 	public CreatureTemplate build() {
 		try {
 			final Skills skills = SkillsFactory.createSkills(name);
@@ -314,9 +339,13 @@ public class CreatureTemplateBuilder {
 
 			if (this.handDamString != null)
 				temp.setHandDamString(handDamString);
-			
+
 			if (this.kickDamString != null)
 				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setKickDamString"), kickDamString);
+
+			if (this.headbuttDamString != null) {
+				temp.setHeadbuttDamString(headbuttDamString);
+			}
 
 			if (maxAge > 0)
 				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setMaxAge"), maxAge);
@@ -373,6 +402,11 @@ public class CreatureTemplateBuilder {
 			}
 			if (combatMoves != null) {
 				temp.setCombatMoves(combatMoves);
+			}
+
+			if (isEggLayer) {
+				temp.setEggLayer(this.isEggLayer);
+				temp.setEggTemplateId(this.eggTemplate);
 			}
 
 			return temp;
