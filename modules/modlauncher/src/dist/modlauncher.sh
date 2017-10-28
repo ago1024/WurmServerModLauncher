@@ -6,7 +6,7 @@ fi
 
 if test -x "runtime/jre1.8.0_121/bin/java"; then
 	JAVA="runtime/jre1.8.0_121/bin/java"
-elif test -x "../runtime/jre1.8.0_1210/bin/java"; then
+elif test -x "../runtime/jre1.8.0_121/bin/java"; then
 	JAVA="../runtime/jre1.8.0_121/bin/java"
 else
 	JAVA="java"
