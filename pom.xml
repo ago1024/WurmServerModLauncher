@@ -49,6 +49,19 @@
 			<url>scp://gotti.no-ip.org/srv/maven/repository</url>
 		</repository>
 	</distributionManagement>
+	
+	<scm>
+		<connection>scm:git:https://github.com/ago1024/WurmServerModLauncher.git</connection>
+		<developerConnection>scm:git:git@github.com:ago1024/WurmServerModLauncher.git</developerConnection>
+		<url>https://github.com/ago1024/WurmServerModLauncher</url>
+		<tag>HEAD</tag>
+	</scm>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
 
 	<build>
 		<extensions>
@@ -62,13 +75,11 @@
 
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<inherited>true</inherited>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
+					<arguments>-Dmaven.javadoc.skip=true</arguments>
 				</configuration>
 			</plugin>
 			<plugin>
