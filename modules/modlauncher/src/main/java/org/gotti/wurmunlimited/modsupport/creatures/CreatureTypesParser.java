@@ -1,17 +1,15 @@
 package org.gotti.wurmunlimited.modsupport.creatures;
 
-import org.gotti.wurmunlimited.modsupport.NamedIdParser;
-
-import com.wurmonline.server.creatures.CreatureTypes;
+import org.gotti.wurmunlimited.modsupport.NonFreezingNamedIdParser;
 
 /**
  * Parse a list of creature types and creature type ids.
  */
-public class CreatureTypesParser extends NamedIdParser {
+public class CreatureTypesParser extends NonFreezingNamedIdParser {
 	
 	@Override
-	protected Class<?> getNamesClass() {
-		return CreatureTypes.class;
+	protected String getNamesClassName() {
+		return "com.wurmonline.server.creatures.CreatureTypes";
 	}
 	
 	@Override
@@ -26,6 +24,6 @@ public class CreatureTypesParser extends NamedIdParser {
 	
 	@Override
 	protected int unparsable(String name) {
-		throw new IllegalArgumentException(name + "is not a valid CreatureType");
+		throw new IllegalArgumentException(name + " is not a valid creature type");
 	}
 }

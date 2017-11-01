@@ -1,21 +1,19 @@
 package org.gotti.wurmunlimited.modsupport.items;
 
-import org.gotti.wurmunlimited.modsupport.NamedIdParser;
-
-import com.wurmonline.server.items.ItemList;
+import org.gotti.wurmunlimited.modsupport.NonFreezingNamedIdParser;
 
 /**
  * Parse a list of item names and ids.
  */
-public class ItemIdParser extends NamedIdParser {
+public class ItemIdParser extends NonFreezingNamedIdParser {
 	
 	@Override
-	protected Class<?> getNamesClass() {
-		return ItemList.class;
+	protected String getNamesClassName() {
+		return "com.wurmonline.server.items.ItemList";
 	}
 	
 	@Override
 	protected int unparsable(String name) {
-		throw new IllegalArgumentException(name + "is not a valid item name");
+		throw new IllegalArgumentException(name + " is not a valid item name");
 	}
 }
