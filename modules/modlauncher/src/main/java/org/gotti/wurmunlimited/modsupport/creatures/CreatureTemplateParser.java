@@ -1,31 +1,29 @@
 package org.gotti.wurmunlimited.modsupport.creatures;
 
-import org.gotti.wurmunlimited.modsupport.NamedIdParser;
-
-import com.wurmonline.server.creatures.CreatureTemplateIds;
+import org.gotti.wurmunlimited.modsupport.NonFreezingNamedIdParser;
 
 /**
  * Parse a list of creature templates and creature template ids.
  */
-public class CreatureTemplateParser extends NamedIdParser {
+public class CreatureTemplateParser extends NonFreezingNamedIdParser {
 	
 	@Override
-	protected Class<?> getNamesClass() {
-		return CreatureTemplateIds.class;
+	protected String getNamesClassName() {
+		return "com.wurmonline.server.creatures.CreatureTemplateIds";
 	}
 	
 	@Override
 	protected boolean isValidName(String fieldName) {
-		return fieldName.endsWith("_cid");
+		return fieldName.endsWith("_CID");
 	}
 	
 	@Override
 	protected String cleanupFieldName(String fieldName) {
-		return fieldName.replaceAll("_cid$", "");
+		return fieldName.replaceAll("_CID$", "");
 	}
 	
 	@Override
 	protected int unparsable(String name) {
-		throw new IllegalArgumentException(name + "is not a valid CreatureTemplateId");
+		throw new IllegalArgumentException(name + " is not a valid creature template id");
 	}
 }
