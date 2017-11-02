@@ -12,6 +12,12 @@ import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
+/**
+ * Listeners management
+ *
+ * @param <T> Listener type
+ * @param <V> Listener return type
+ */
 public class Listeners<T, V> {
 	
 	private static final Logger LOGGER = Logger.getLogger(Listeners.class.getName());
@@ -19,16 +25,38 @@ public class Listeners<T, V> {
 	private List<T> listeners = new CopyOnWriteArrayList<>();
 	private Class<T> listenerClass;
 	
+	/**
+	 * Create listeners manager
+	 * @param listenerClass listener class type
+	 */
 	public Listeners(Class<T> listenerClass) {
 		this.listenerClass = listenerClass;
 	}
 	
+	/**
+	 * Add a mod if it implements the listener
+	 * @param mod mod to add
+	 */
 	public void add(WurmServerMod mod) {
 		if (this.listenerClass.isInstance(mod) && !listeners.contains(mod)) {
 			listeners.add(listenerClass.cast(mod));
 		}
 	}
 	
+	/**
+	 * Add a listener
+	 * @param listener listener to add
+	 */
+	public void add(T listener) {
+		if (!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
+	}
+
+	/**
+	 * Process listeners
+	 * @param handler consumer which is called for each listener
+	 */
 	public void fire(Consumer<T> handler) {
 		listeners.forEach(listener -> {
 			try {
@@ -39,6 +67,13 @@ public class Listeners<T, V> {
 		});
 	}
 	
+	/**
+	 * Process listeners
+	 * @param handler consumer which is called for each listener
+	 * @param onFailure supplier which is called if a listener threw an exception
+	 * @param combiner combine results of each listener
+	 * @return combined results
+	 */
 	public Optional<V> fire(Function<T, V> handler, Supplier<V> onFailure,  BinaryOperator<V> combiner) {
 		return listeners
 			.stream()

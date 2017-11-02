@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import org.gotti.wurmunlimited.modloader.ModLoader;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
+import org.gotti.wurmunlimited.modloader.interfaces.ModEntry;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modloader.server.ServerHook;
 
@@ -15,8 +16,12 @@ public class DelegatedLauncher {
 	public static void main(String[] args) {
 		
 		try {
-			List<WurmServerMod> wurmMods = new ModLoader().loadModsFromModDir(Paths.get("mods"));
-			ServerHook.createServerHook().addMods(wurmMods);
+			ModLoader modLoader = new ModLoader();
+			List<? extends ModEntry<WurmServerMod>> wurmMods = modLoader.loadModsFromModDir(Paths.get("mods"));
+			
+			ServerHook serverHook = ServerHook.createServerHook();
+			serverHook.addMods(wurmMods);
+			serverHook.addVersionHandler(modLoader.getVersion(), modLoader.getGameVersion(), wurmMods);
 			HookManager.getInstance().initCallbacks();
 			
 			String[] classes = {
