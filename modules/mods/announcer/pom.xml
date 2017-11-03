@@ -8,45 +8,8 @@
 
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
-		<artifactId>server-modlauncher-parent</artifactId>
+		<artifactId>server-mods</artifactId>
 		<version>0.32-SNAPSHOT</version>
-		<relativePath>../../..</relativePath>
+		<relativePath>..</relativePath>
 	</parent>
-
-	<dependencies>
-		<dependency>
-			<groupId>org.gotti.wurmunlimited</groupId>
-			<artifactId>server-modlauncher</artifactId>
-			<version>0.32-SNAPSHOT</version>
-		</dependency>
-	</dependencies>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/mod-package.xml</descriptor>
-					</descriptors>
-					<finalName>${project.name}-${project.version}</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

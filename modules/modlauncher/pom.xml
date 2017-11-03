@@ -95,7 +95,7 @@
 				<version>2.6</version>
 				<configuration>
 					<descriptors>
-						<descriptor>src/assembly/modloader.xml</descriptor>
+						<descriptor>src/main/resources/assemblies/modloader.xml</descriptor>
 					</descriptors>
 					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>

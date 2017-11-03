@@ -195,15 +195,10 @@
 								<path>${project.build.directory}/dist-${project.version}</path>
 							</properties>
 							<source>
-								println 'Hello';
-								println properties.path;
-								println project.attachedArtifacts;
 								def projectHelper = container.lookup("org.apache.maven.project.MavenProjectHelper")
 								new File(properties.path).eachFile() { file -&gt;
 									projectHelper.attachArtifact(project, 'mod', file.name, file);
 								}
-								println project.attachedArtifacts;
-
 							</source>
 						</configuration>
 					</execution>

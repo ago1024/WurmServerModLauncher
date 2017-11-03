@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>server-mods</artifactId>
+	<packaging>pom</packaging>
+
+	<name>server mods</name>
+
+	<parent>
+		<groupId>org.gotti.wurmunlimited</groupId>
+		<artifactId>server-modlauncher-parent</artifactId>
+		<version>0.32-SNAPSHOT</version>
+		<relativePath>../..</relativePath>
+	</parent>
+
+	<modules>
+		<module>../demo/actiondemo</module>
+		<module>../demo/christmasmod</module>
+		<module>../demo/creaturedemo</module>
+		<module>../demo/digtoground</module>
+		<module>../demo/hitchingpost</module>
+		<module>../demo/serverfixes</module>
+		<module>announcer</module>
+		<module>bagofholding</module>
+		<module>creatureagemod</module>
+		<module>cropmod</module>
+		<module>harvesthelper</module>
+		<module>httpserver</module>
+		<module>inbreedwarning</module>
+		<module>scriptrunner</module>
+		<module>serverpacks</module>
+		<module>spellmod</module>
+		<module>testmod</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.gotti.wurmunlimited</groupId>
+			<artifactId>server-modlauncher</artifactId>
+			<version>0.32-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.1.0</version>
+					<dependencies>
+						<dependency>
+							<groupId>org.gotti.wurmunlimited</groupId>
+							<artifactId>server-modlauncher</artifactId>
+							<version>0.32-SNAPSHOT</version>
+						</dependency>
+					</dependencies>
+					<executions>
+						<execution>
+							<id>make-assembly-${project.artifactId}</id>
+							<phase>package</phase>
+							<goals>
+								<goal>single</goal>
+							</goals>
+							<configuration>
+								<descriptorRefs>
+									<descriptorRef>mod-package</descriptorRef>
+								</descriptorRefs>
+								<finalName>${project.name}-${project.version}</finalName>
+								<appendAssemblyId>false</appendAssemblyId>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make-assembly-server-mods</id>
+						<configuration>
+							<skipAssembly>true</skipAssembly>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

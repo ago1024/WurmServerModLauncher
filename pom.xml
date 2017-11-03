@@ -11,23 +11,7 @@
 	<modules>
 		<module>modules/modlauncher</module>
 		<module>modules/patcher</module>
-		<module>modules/demo/actiondemo</module>
-		<module>modules/demo/christmasmod</module>
-		<module>modules/demo/creaturedemo</module>
-		<module>modules/demo/digtoground</module>
-		<module>modules/demo/hitchingpost</module>
-		<module>modules/demo/serverfixes</module>
-		<module>modules/mods/announcer</module>
-		<module>modules/mods/bagofholding</module>
-		<module>modules/mods/creatureagemod</module>
-		<module>modules/mods/cropmod</module>
-		<module>modules/mods/harvesthelper</module>
-		<module>modules/mods/httpserver</module>
-		<module>modules/mods/inbreedwarning</module>
-		<module>modules/mods/scriptrunner</module>
-		<module>modules/mods/serverpacks</module>
-		<module>modules/mods/spellmod</module>
-		<module>modules/mods/testmod</module>
+		<module>modules/mods</module>
 		<module>modules/dist</module>
 	</modules>
 
@@ -147,6 +131,7 @@
 									<targetPath>META-INF/org.gotti.wurmunlimited.modloader</targetPath>
 									<includes>
 										<include>${project.name}.properties</include>
+										<include>${project.name}.config</include>
 									</includes>
 									<filtering>true</filtering>
 								</resource>
