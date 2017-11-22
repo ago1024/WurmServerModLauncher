@@ -7,6 +7,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,16 +19,19 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import com.wurmonline.server.Server;
 
+@SuppressWarnings("restriction")
 public abstract class PackServer {
 	
-	private Logger logger = Logger.getLogger(PackServer.class.getName());
+	private final Logger logger = Logger.getLogger(PackServer.class.getName());
 	
-	private HttpServer httpServer;
+	private final HttpServer httpServer;
 	
 	private final String publicServerAddress;
 	private final int publicServerPort;
 	
-	public PackServer(int port, String publicServerAddress, int publicServerPort, String internalServerAddress) throws IOException {
+	private final ExecutorService executor;
+	
+	public PackServer(int port, String publicServerAddress, int publicServerPort, String internalServerAddress, int maxThreads) throws IOException {
 		
 		this.publicServerAddress = publicServerAddress;
 		this.publicServerPort = publicServerPort;
@@ -34,9 +41,12 @@ public abstract class PackServer {
 			addr = InetAddress.getByAddress(Server.getInstance().getExternalIp());
 		else
 			addr = InetAddress.getByName(internalServerAddress);
+		
+		executor = new ThreadPoolExecutor(0, maxThreads, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
 		InetSocketAddress address = new InetSocketAddress(addr, port);
 		httpServer = HttpServer.create(address, 0);
+		httpServer.setExecutor(executor);
 		httpServer.createContext("/", new HttpHandler() {
 			
 			@Override
@@ -83,5 +93,14 @@ public abstract class PackServer {
 		return new URI("http", null, address, port, "/", null, null);
 	}
 	
+	public void stop() throws IOException {
+		httpServer.stop(0);
+		executor.shutdown();
+		try {
+			executor.awaitTermination(60, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			throw new IOException(e);
+		}
+	}
 
 }
