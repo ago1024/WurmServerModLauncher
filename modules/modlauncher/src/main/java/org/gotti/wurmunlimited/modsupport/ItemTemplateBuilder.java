@@ -35,6 +35,12 @@ public class ItemTemplateBuilder {
 	private boolean isTraded = false;
 	private int armourType = -1;
 	private int dyeAmountOverrideGrams = 0;
+	private boolean hasContainerSizes = false;
+	private int containerSizeX;
+	private int containerSizeY;
+	private int containerSizeZ;
+	private int maxItemCount = -1;
+	private int maxItemWeight = -1;
 
 	public ItemTemplateBuilder(String identifier) {
 		this.templateId = IdFactory.getIdFor(identifier, IdType.ITEMTEMPLATE);
@@ -142,6 +148,24 @@ public class ItemTemplateBuilder {
 		return this;
 	}
 
+	public ItemTemplateBuilder containerSize(int sizeX, int sizeY, int sizeZ) {
+		this.hasContainerSizes = true;
+		this.containerSizeX = sizeX;
+		this.containerSizeY = sizeY;
+		this.containerSizeZ = sizeZ;
+		return this;
+	}
+
+	public ItemTemplateBuilder maxItemCount(int maxItemCount) {
+		this.maxItemCount = maxItemCount;
+		return this;
+	}
+
+	public ItemTemplateBuilder maxItemWeight(int maxItemWeight) {
+		this.maxItemWeight = maxItemWeight;
+		return this;
+	}
+
 	public ItemTemplate build(final String name, int size, final String plural, final String itemDescriptionSuperb, final String itemDescriptionNormal, final String itemDescriptionBad, final String itemDescriptionRotten, final String itemDescriptionLong, final short[] itemTypes, final short imageNumber,
 			final short behaviourType, final int combatDamage, final long decayTime, final int centimetersX, final int centimetersY, final int centimetersZ, final int primarySkill, final byte[] bodySpaces, final String modelName, final float difficulty, final int weightGrams, final byte material, int value, boolean isTraded, int armourType)
 			throws IOException {
@@ -170,9 +194,18 @@ public class ItemTemplateBuilder {
 	}
 
 	public ItemTemplate build() throws IOException {
-		return ItemTemplateFactory.getInstance().createItemTemplate(templateId, size, name, plural, itemDescriptionSuperb, itemDescriptionNormal, itemDescriptionBad, itemDescriptionRotten, itemDescriptionLong, itemTypes, imageNumber, behaviourType, combatDamage, decayTime, centimetersX,
+		ItemTemplate template = ItemTemplateFactory.getInstance().createItemTemplate(templateId, size, name, plural, itemDescriptionSuperb, itemDescriptionNormal, itemDescriptionBad, itemDescriptionRotten, itemDescriptionLong, itemTypes, imageNumber, behaviourType, combatDamage, decayTime, centimetersX,
 				centimetersY, centimetersZ, primarySkill, bodySpaces, modelName, difficulty, weightGrams, material, value, isTraded, armourType, dyeAmountOverrideGrams);
-
+		if (hasContainerSizes) {
+			template.setContainerSize(containerSizeX, containerSizeY, containerSizeZ);
+		}
+		if (maxItemCount >= 0) {
+			template.setMaxItemCount(maxItemCount);
+		}
+		if (maxItemWeight >= 0) {
+			template.setMaxItemWeight(maxItemWeight);
+		}
+		return template;
 	}
 
 }
