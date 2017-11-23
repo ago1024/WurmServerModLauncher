@@ -41,6 +41,7 @@ public class ModHttpServerImpl implements ModHttpServer {
 	private int publicServerPort = 0;
 	private String publicServerAddress = null;
 	private String internalServerAddress = null;
+	private int maxThreads = 10;
 
 	private PackServer packServer;
 
@@ -105,13 +106,36 @@ public class ModHttpServerImpl implements ModHttpServer {
 		return serve(mod, regex, path -> readFile(file));
 	}
 
+	/**
+	 * Start the http server
+	 * @throws IOException
+	 */
 	protected void start() throws IOException {
-		this.packServer = new PackServer(port, publicServerAddress, publicServerPort, internalServerAddress) {
+		this.packServer = new PackServer(port, publicServerAddress, publicServerPort, internalServerAddress, maxThreads) {
 			@Override
 			protected InputStream getStream(String path) throws IOException {
 				return handle(path);
 			}
 		};
+	}
+	
+	/**
+	 * Stop the http server
+	 * @throws IOException
+	 */
+	protected void stop() throws IOException {
+		if (this.packServer != null) {
+			this.packServer.stop();
+			this.packServer = null;
+		}
+	}
+	
+	/**
+	 * Set maximum number of threads serving parallel downloads
+	 * @param maxThreads maximum number of thread
+	 */
+	protected void setMaxThreads(int maxThreads) {
+		this.maxThreads = maxThreads;
 	}
 	
 	private InputStream handle(String path) {
@@ -142,6 +166,9 @@ public class ModHttpServerImpl implements ModHttpServer {
 	
 	@Override
 	public URI getUri() throws URISyntaxException {
-		return packServer.getUri();
+		if (packServer != null) {
+			return packServer.getUri();
+		}
+		return null;
 	}
 }
