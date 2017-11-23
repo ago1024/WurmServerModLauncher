@@ -14,10 +14,12 @@ import org.gotti.wurmunlimited.modloader.interfaces.ServerShutdownListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
+import org.gotti.wurmunlimited.modsupport.items.ModItems;
 
 import com.wurmonline.server.MiscConstants;
 import com.wurmonline.server.behaviours.Action;
 import com.wurmonline.server.creatures.Communicator;
+import com.wurmonline.server.items.ItemList;
 import com.wurmonline.server.items.ItemTypes;
 
 import javassist.ClassPool;
@@ -35,6 +37,7 @@ public class TestMod implements WurmServerMod, Initable, PreInitable, ServerStar
 
 	@Override
 	public void onServerStarted() {
+		ModItems.addModelNameProvider(ItemList.chair, item -> item.getTemplate().getModelName() + "birchwood.foo");
 	}
 	
 	@Override
