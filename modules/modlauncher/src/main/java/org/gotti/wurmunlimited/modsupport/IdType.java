@@ -34,6 +34,8 @@ public enum IdType implements IIdType {
 		}
 	};
 
+	private int lastUsedId = startValue();
+
 	@Override
 	public abstract int startValue();
 
@@ -45,5 +47,19 @@ public enum IdType implements IIdType {
 	@Override
 	public String typeName() {
 		return name();
+	}
+
+	@Override
+	public void updateLastUsedId(int id) {
+		if (isCountingDown()) {
+			lastUsedId = Math.min(lastUsedId, id);
+		} else {
+			lastUsedId = Math.max(lastUsedId, id);
+		}
+	}
+
+	@Override
+	public int getLastUsedId() {
+		return lastUsedId;
 	}
 }

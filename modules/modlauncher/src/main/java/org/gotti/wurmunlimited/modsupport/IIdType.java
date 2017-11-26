@@ -12,9 +12,20 @@ public interface IIdType {
 	 * Indicate if generated ids will increase or decrease.
 	 */
 	boolean isCountingDown();
-	
+
 	/**
 	 * Get the property name.
 	 */
 	String typeName();
+
+	/**
+	 * Update the last currently used item id.
+	 */
+	void updateLastUsedId(int id);
+
+	/**
+	 * Get the last used id. This can be the lowest or highest used id depending on {@link IIdType#isCountingDown()}
+	 * @return
+	 */
+	int getLastUsedId();
 }

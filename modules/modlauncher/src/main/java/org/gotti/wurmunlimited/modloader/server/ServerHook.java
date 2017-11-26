@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.gotti.wurmunlimited.modcomm.ModComm;
+import org.gotti.wurmunlimited.modcomm.intra.ModIntraServer;
 import org.gotti.wurmunlimited.modloader.interfaces.ChannelMessageListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ItemTemplatesCreatedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.MessagePolicy;
@@ -76,6 +77,7 @@ public class ServerHook {
 
 	public void fireOnServerStarted() {
 		ModComm.serverStarted();
+		ModIntraServer.serverStarted();
 		serverStarted.fire(listener -> listener.onServerStarted());
 	}
 	
