@@ -93,6 +93,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
+			<artifactId>servermap</artifactId>
+			<type>zip</type>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>spellmod</artifactId>
 			<type>zip</type>
 			<version>${project.version}</version>

@@ -29,6 +29,7 @@
 		<module>inbreedwarning</module>
 		<module>scriptrunner</module>
 		<module>serverpacks</module>
+		<module>servermap</module>
 		<module>spellmod</module>
 		<module>testmod</module>
 	</modules>
