@@ -252,7 +252,7 @@ public class ModPlayerTransfer {
 	public boolean willItemLeaveServer(int targetServer, Item item, boolean setTransferFlag) {
 		TemplateIdMapper itemTemplateMapper = getItemTemplateMapper(targetServer);
 		int templateId = item.getTemplateId();
-		boolean result = TemplateIdMapper.isRegularTemplate(IdType.ITEMTEMPLATE, templateId) || itemTemplateMapper != null && itemTemplateMapper.willTemplateLeaveServer(templateId);
+		boolean result = TemplateIdMapper.isRegularTemplate(IdType.ITEMTEMPLATE, templateId) || (targetServer == 0) ||(itemTemplateMapper != null && itemTemplateMapper.willTemplateLeaveServer(templateId));
 		if (setTransferFlag && !result) {
 			// Mark the item as not transferable. Yes, "true" is correct
 			item.setTransferred(true);
