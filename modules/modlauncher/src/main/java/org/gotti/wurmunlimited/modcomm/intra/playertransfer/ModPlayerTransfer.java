@@ -62,7 +62,10 @@ public class ModPlayerTransfer {
 		public void edit(MethodCall m) throws CannotCompileException {
 			switch (m.getClassName() + "." + m.getMethodName()) {
 			case "com.wurmonline.server.items.Item.willLeaveServer":
-				m.replace("$_ = modPlayerTransfer.willItemLeaveServer(" + targetServerName + ", $0, $1) && $proceed($$);");
+				String code = "";
+				code += "int targetId = " + targetServerName + ";";
+				code += "$_ = (targetId == 0 || modPlayerTransfer.willItemLeaveServer(targetId, $0, $1)) && $proceed($$);";
+				m.replace("{" + code + "}");
 				break;
 			}
 		}
