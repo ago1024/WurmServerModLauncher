@@ -1,8 +1,9 @@
 package org.gotti.wurmunlimited.mods.servermap.renderer;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.awt.image.WritableRaster;
 
 import org.gotti.wurmunlimited.mods.servermap.ServerMapRenderer;
 
@@ -20,10 +21,28 @@ public class InternalServerMapRenderer implements ServerMapRenderer {
 	public BufferedImage renderServerMap() {
 		return createMapDump(Server.surfaceMesh);
 	}
-
+	
+	private static class ColorBuffer {
+		private final int[] pixels;
+		private final int stride;
+		
+		public ColorBuffer(BufferedImage img) {
+			WritableRaster raster = img.getRaster();
+			pixels = ((DataBufferInt) raster.getDataBuffer()).getData();
+			stride = raster.getWidth();
+		}
+		
+		public void set(int x, int y, Color color) {
+			final int index = y * stride + x;
+			pixels[index] = color.getRGB();
+		}
+	}
+	
 	public static BufferedImage createMapDump(final MeshIO mesh) {
 		final int size = mesh.getSize();
-		final Color[][] colors = new Color[size][size];
+		final BufferedImage bmi = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+		final ColorBuffer buffer = new ColorBuffer(bmi);
+		
 		int maxH = 0;
 		int minH = 0;
 		for (int x = 0; x < size; ++x) {
@@ -51,30 +70,22 @@ public class InternalServerMapRenderer implements ServerMapRenderer {
 						final float tenth = height2 / 10.0f;
 						final float percent = tenth / maxH;
 						final int step = (int) (150.0f * percent);
-						colors[x][y] = new Color(Math.min(200, 10 + step), Math.min(200, 10 + step), Math.min(200, 10 + step));
+						buffer.set(x, y, new Color(Math.min(200, 10 + step), Math.min(200, 10 + step), Math.min(200, 10 + step)));
 					} else if (type == 12) {
-						colors[x][y] = Color.MAGENTA;
+						buffer.set(x, y, Color.MAGENTA);
 					} else {
 						final float tenth = height2 / 10.0f;
 						final float percent = tenth / maxH;
 						final int step = (int) (190.0f * percent);
 						final Color c = tile.getColor();
-						colors[x][y] = new Color(c.getRed(), Math.min(255, c.getGreen() + step), c.getBlue());
+						buffer.set(x, y, new Color(c.getRed(), Math.min(255, c.getGreen() + step), c.getBlue()));
 					}
 				} else {
 					final float tenth = height2 / 10.0f;
 					final float percent = tenth / minH;
 					final int step = (int) (255.0f * percent);
-					colors[x][y] = new Color(0, 0, Math.max(20, 255 - Math.abs(step)));
+					buffer.set(x, y, new Color(0, 0, Math.max(20, 255 - Math.abs(step))));
 				}
-			}
-		}
-		final BufferedImage bmi = new BufferedImage(size * 4, size * 4, 2);
-		final Graphics g = bmi.createGraphics();
-		for (int x2 = 0; x2 < size; ++x2) {
-			for (int y2 = 0; y2 < size; ++y2) {
-				g.setColor(colors[x2][y2]);
-				g.fillRect(x2 * 4, y2 * 4, 4, 4);
 			}
 		}
 		return bmi;
