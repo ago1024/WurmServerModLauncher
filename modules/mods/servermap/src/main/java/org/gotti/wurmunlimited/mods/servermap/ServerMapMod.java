@@ -105,7 +105,7 @@ public class ServerMapMod implements WurmServerMod, Configurable, ServerStartedL
 		try {
 			byte[] data = createServerPackData(mapName);
 			if (data != null) {
-				ServerPacks.getInstance().addServerPack("map_" + mapName, data, ServerPackOptions.FORCE);
+				ServerPacks.getInstance().addServerPack("map_" + mapName, data, ServerPackOptions.FORCE, ServerPackOptions.PREPEND);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
