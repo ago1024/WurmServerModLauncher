@@ -3,7 +3,7 @@
 
 	<groupId>org.gotti.wurmunlimited</groupId>
 	<artifactId>server-modlauncher-parent</artifactId>
-	<version>0.33-SNAPSHOT</version>
+	<version>0.33</version>
 	<packaging>pom</packaging>
 
 	<name>server modlauncher parent</name>
@@ -37,7 +37,7 @@
 		<connection>scm:git:https://github.com/ago1024/WurmServerModLauncher.git</connection>
 		<developerConnection>scm:git:git@github.com:ago1024/WurmServerModLauncher.git</developerConnection>
 		<url>https://github.com/ago1024/WurmServerModLauncher</url>
-		<tag>HEAD</tag>
+		<tag>v0.33</tag>
 	</scm>
 
 	<properties>
