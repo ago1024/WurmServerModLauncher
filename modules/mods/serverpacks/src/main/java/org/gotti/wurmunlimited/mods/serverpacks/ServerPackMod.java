@@ -98,7 +98,7 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 					byte cmd = reader.readByte();
 					switch (cmd) {
 					case CMD_REFRESH:
-						sendModelRefresh(player);
+						CommandHandler.sendModelRefresh(player);
 						break;
 					default:
 						logger.log(Level.WARNING, String.format("Unknown channel command 0x%02x", 128 + cmd));
@@ -109,14 +109,6 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 				}
 			}
 		});
-	}
-
-	private void sendModelRefresh(Player player) {
-		try {
-			player.createVisionArea();
-		} catch (Exception e) {
-			logger.log(Level.WARNING, e.getMessage(), e);
-		}
 	}
 
 	@Override
