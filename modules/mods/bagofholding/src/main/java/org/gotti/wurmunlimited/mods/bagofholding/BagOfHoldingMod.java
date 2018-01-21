@@ -45,6 +45,7 @@ public class BagOfHoldingMod implements WurmServerMod, Initable, PreInitable, Co
 	private int spellDifficulty = 20;
 	private long spellCooldown = 300000L;
 	private int effectModifier = 0;
+	private boolean allowComponentItems;
 	
 	private static final Logger logger = Logger.getLogger(BagOfHoldingMod.class.getName());
 	
@@ -77,11 +78,13 @@ public class BagOfHoldingMod implements WurmServerMod, Initable, PreInitable, Co
 		spellDifficulty = Integer.valueOf(properties.getProperty("spellDifficulty", Integer.toString(spellDifficulty)));
 		spellCooldown = Long.valueOf(properties.getProperty("spellCooldown", Long.toString(spellCooldown)));
 		effectModifier = Integer.valueOf(properties.getProperty("effectModifier", Integer.toString(effectModifier)));
+		allowComponentItems = Boolean.parseBoolean(properties.getProperty("allowComponentItems", "false"));
 		
 		logger.log(Level.INFO, "spellCost: " + spellCost);
 		logger.log(Level.INFO, "spellDifficulty: " + spellDifficulty);
 		logger.log(Level.INFO, "spellCooldown: " + spellCooldown);
 		logger.log(Level.INFO, "effectModifier: " + effectModifier);
+		logger.log(Level.INFO, "allowComponentItems: " + allowComponentItems);
 	}
 	
 	@Override
@@ -163,6 +166,12 @@ public class BagOfHoldingMod implements WurmServerMod, Initable, PreInitable, Co
 							Item target = (Item)proxy;
 							
 							float modifier = BagOfHolding.getSpellEffect(target);
+
+							if (allowComponentItems && target.isComponentItem()) {
+								Item parent = target.getParentOrNull();
+								if (parent != null && BagOfHolding.isValidTarget(parent))
+									modifier = BagOfHolding.getSpellEffect(parent);
+							}
 							
 							if (effectModifier == 0) {
 								if (modifier > 1) {
