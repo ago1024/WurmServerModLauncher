@@ -141,6 +141,15 @@ public class CreatureTemplateBuilder {
 
 	private int eggTemplate;
 
+	private boolean hasHands;
+
+	private boolean keepSex;
+
+	private int maxPopulationOfCreatures;
+
+	private int paintMode;
+
+	private float bonusCombatRating;
 
 	public CreatureTemplateBuilder(int id) {
 		this.templateId = id;
@@ -409,6 +418,20 @@ public class CreatureTemplateBuilder {
 				temp.setEggTemplateId(this.eggTemplate);
 			}
 
+			if (hasHands) {
+				ReflectionUtil.setPrivateField(temp, ReflectionUtil.getField(CreatureTemplate.class, "hasHands"), hasHands);
+			}
+
+			temp.setKeepSex(keepSex);
+
+			if (maxPopulationOfCreatures > 0) {
+				temp.setMaxPopulationOfCreatures(maxPopulationOfCreatures);
+			}
+
+			temp.setPaintMode(paintMode);
+
+			temp.setBonusCombatRating(bonusCombatRating);
+
 			return temp;
 		} catch (IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | ClassCastException | NoSuchFieldException e) {
 			throw new RuntimeException(e);
@@ -557,5 +580,30 @@ public class CreatureTemplateBuilder {
 
 	public int getTemplateId() {
 		return templateId;
+	}
+
+	public CreatureTemplateBuilder hasHands(boolean hasHands) {
+		this.hasHands = hasHands;
+		return this;
+	}
+
+	public CreatureTemplateBuilder keepSex(boolean keepSex) {
+		this.keepSex = keepSex;
+		return this;
+	}
+
+	public CreatureTemplateBuilder maxPopulationOfCreatures(int maxPopulationOfCreatures) {
+		this.maxPopulationOfCreatures = maxPopulationOfCreatures;
+		return this;
+	}
+
+	public CreatureTemplateBuilder paintMode(int paintMode) {
+		this.paintMode = paintMode;
+		return this;
+	}
+
+	public CreatureTemplateBuilder bonusCombatRating(int bonusCombatRating) {
+		this.bonusCombatRating = baseCombatRating;
+		return this;
 	}
 }
