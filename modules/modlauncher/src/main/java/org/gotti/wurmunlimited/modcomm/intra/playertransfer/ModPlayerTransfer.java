@@ -167,6 +167,7 @@ public class ModPlayerTransfer {
 			CtMethod ctCreatePlayerData = ctPlayerTransfer.getMethod("createPlayerData", Descriptor.ofMethod(classPool.get("byte[]"), new CtClass[] {
 					classPool.get("com.wurmonline.server.players.PlayerInfo"), //final PlayerInfo pinf,
 					classPool.get("com.wurmonline.server.creatures.CreatureStatus"), // final CreatureStatus status,
+					classPool.get("com.wurmonline.server.skills.Skill[]"),
 					CtClass.intType, //final int targServId,
 					CtClass.byteType, // final byte targetKingdomId,
 					CtClass.longType, // final long clientTimeDifference
