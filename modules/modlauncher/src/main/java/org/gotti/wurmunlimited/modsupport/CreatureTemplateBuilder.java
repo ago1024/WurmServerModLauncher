@@ -151,6 +151,56 @@ public class CreatureTemplateBuilder {
 
 	private float bonusCombatRating;
 
+	private float fireResistance;
+
+	private float coldResistance;
+
+	private float diseaseResistance;
+
+	private float physicalResistance;
+
+	private float pierceResistance;
+
+	private float slashResistance;
+
+	private float crushResistance;
+
+	private float biteResistance;
+
+	private float poisonResistance;
+
+	private float waterResistance;
+
+	private float acidResistance;
+
+	private float internalResistance;
+
+	private float fireVulnerability;
+
+	private float coldVulnerability;
+
+	private float diseaseVulnerability;
+
+	private float physicalVulnerability;
+
+	private float pierceVulnerability;
+
+	private float slashVulnerability;
+
+	private float crushVulnerability;
+
+	private float biteVulnerability;
+
+	private float poisonVulnerability;
+
+	private float waterVulnerability;
+
+	private float acidVulnerability;
+
+	private float internalVulnerability;
+
+	private int leaderTemplateId = -1;
+
 	public CreatureTemplateBuilder(int id) {
 		this.templateId = id;
 		defaultSkills();
@@ -431,6 +481,34 @@ public class CreatureTemplateBuilder {
 			temp.setPaintMode(paintMode);
 
 			temp.setBonusCombatRating(bonusCombatRating);
+			
+			temp.fireResistance = fireResistance;
+			temp.coldResistance = coldResistance;
+			temp.diseaseResistance = diseaseResistance;
+			temp.physicalResistance = physicalResistance;
+			temp.pierceResistance = pierceResistance;
+			temp.slashResistance = slashResistance;
+			temp.crushResistance = crushResistance;
+			temp.biteResistance = biteResistance;
+			temp.poisonResistance = poisonResistance;
+			temp.waterResistance = waterResistance;
+			temp.acidResistance = acidResistance;
+			temp.internalResistance = internalResistance;
+
+			temp.fireVulnerability = fireVulnerability;
+			temp.coldVulnerability = coldVulnerability;
+			temp.diseaseVulnerability = diseaseVulnerability;
+			temp.physicalVulnerability = physicalVulnerability;
+			temp.pierceVulnerability = pierceVulnerability;
+			temp.slashVulnerability = slashVulnerability;
+			temp.crushVulnerability = crushVulnerability;
+			temp.biteVulnerability = biteVulnerability;
+			temp.poisonVulnerability = poisonVulnerability;
+			temp.waterVulnerability = waterVulnerability;
+			temp.acidVulnerability = acidVulnerability;
+			temp.internalVulnerability = internalVulnerability;
+
+			temp.setLeaderTemplateId(leaderTemplateId);
 
 			return temp;
 		} catch (IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | ClassCastException | NoSuchFieldException e) {
@@ -604,6 +682,131 @@ public class CreatureTemplateBuilder {
 
 	public CreatureTemplateBuilder bonusCombatRating(int bonusCombatRating) {
 		this.bonusCombatRating = baseCombatRating;
+		return this;
+	}
+
+	public CreatureTemplateBuilder fireResistance(float fireResistance) {
+		this.fireResistance = fireResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder coldResistance(float coldResistance) {
+		this.coldResistance = coldResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder diseaseResistance(float diseaseResistance) {
+		this.diseaseResistance = diseaseResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder physicalResistance(float physicalResistance) {
+		this.physicalResistance = physicalResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder pierceResistance(float pierceResistance) {
+		this.pierceResistance = pierceResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder slashResistance(float slashResistance) {
+		this.slashResistance = slashResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder crushResistance(float crushResistance) {
+		this.crushResistance = crushResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder biteResistance(float biteResistance) {
+		this.biteResistance = biteResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder poisonResistance(float poisonResistance) {
+		this.poisonResistance = poisonResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder waterResistance(float waterResistance) {
+		this.waterResistance = waterResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder acidResistance(float acidResistance) {
+		this.acidResistance = acidResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder internalResistance(float internalResistance) {
+		this.internalResistance = internalResistance;
+		return this;
+	}
+
+	public CreatureTemplateBuilder fireVulnerability(float fireVulnerability) {
+		this.fireVulnerability = fireVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder coldVulnerability(float coldVulnerability) {
+		this.coldVulnerability = coldVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder diseaseVulnerability(float diseaseVulnerability) {
+		this.diseaseVulnerability = diseaseVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder physicalVulnerability(float physicalVulnerability) {
+		this.physicalVulnerability = physicalVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder pierceVulnerability(float pierceVulnerability) {
+		this.pierceVulnerability = pierceVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder slashVulnerability(float slashVulnerability) {
+		this.slashVulnerability = slashVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder crushVulnerability(float crushVulnerability) {
+		this.crushVulnerability = crushVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder biteVulnerability(float biteVulnerability) {
+		this.biteVulnerability = biteVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder poisonVulnerability(float poisonVulnerability) {
+		this.poisonVulnerability = poisonVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder waterVulnerability(float waterVulnerability) {
+		this.waterVulnerability = waterVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder acidVulnerability(float acidVulnerability) {
+		this.acidVulnerability = acidVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder internalVulnerability(float internalVulnerability) {
+		this.internalVulnerability = internalVulnerability;
+		return this;
+	}
+
+	public CreatureTemplateBuilder leaderTemplateId(int leaderTemplateId) {
+		this.leaderTemplateId = leaderTemplateId;
 		return this;
 	}
 }
