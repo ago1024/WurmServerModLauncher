@@ -41,6 +41,9 @@ public class ItemTemplateBuilder {
 	private int containerSizeZ;
 	private int maxItemCount = -1;
 	private int maxItemWeight = -1;
+	private int dyePrimaryAmountRequired = 0;
+	private int dyeSecondaryAmountRequired = 0;
+	private String secondaryItemName;
 
 	public ItemTemplateBuilder(String identifier) {
 		this.templateId = IdFactory.getIdFor(identifier, IdType.ITEMTEMPLATE);
@@ -166,6 +169,21 @@ public class ItemTemplateBuilder {
 		return this;
 	}
 
+	public ItemTemplateBuilder dyePrimaryAmountGrams(int dyePrimaryAmountRequired) {
+		this.dyePrimaryAmountRequired = dyePrimaryAmountRequired;
+		return this;
+	}
+
+	public ItemTemplateBuilder dyeSecondaryAmountGrams(int dyeSecondaryAmountRequired) {
+		this.dyeSecondaryAmountRequired = dyeSecondaryAmountRequired;
+		return this;
+	}
+
+	public ItemTemplateBuilder secondaryItemName(String secondaryItemName) {
+		this.secondaryItemName = secondaryItemName;
+		return this;
+	}
+
 	public ItemTemplate build(final String name, int size, final String plural, final String itemDescriptionSuperb, final String itemDescriptionNormal, final String itemDescriptionBad, final String itemDescriptionRotten, final String itemDescriptionLong, final short[] itemTypes, final short imageNumber,
 			final short behaviourType, final int combatDamage, final long decayTime, final int centimetersX, final int centimetersY, final int centimetersZ, final int primarySkill, final byte[] bodySpaces, final String modelName, final float difficulty, final int weightGrams, final byte material, int value, boolean isTraded, int armourType)
 			throws IOException {
@@ -204,6 +222,11 @@ public class ItemTemplateBuilder {
 		}
 		if (maxItemWeight >= 0) {
 			template.setMaxItemWeight(maxItemWeight);
+		}
+
+		template.setDyeAmountGrams(dyePrimaryAmountRequired);
+		if (secondaryItemName != null) {
+			template.setSecondryItem(secondaryItemName, dyeSecondaryAmountRequired);
 		}
 		return template;
 	}
