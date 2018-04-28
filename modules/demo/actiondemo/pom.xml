@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
 		<artifactId>server-mods</artifactId>
-		<version>0.35-SNAPSHOT</version>
+		<version>0.35-beta1</version>
 		<relativePath>../../mods</relativePath>
 	</parent>
 
