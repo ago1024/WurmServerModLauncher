@@ -48,9 +48,12 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 					CtClass.intType,
 					CtClass.floatType,
 					CtClass.booleanType,
-					classpool.get("com.wurmonline.mesh.MeshIO")
+					classpool.get("com.wurmonline.mesh.MeshIO"),
+					CtClass.booleanType,
 			});
 			classpool.get("com.wurmonline.server.behaviours.Terraforming").getMethod("dig", descriptor).instrument(new ExprEditor() {
+				
+				private boolean replaceInsertItem = true;
 				
 				@Override
 				public void edit(MethodCall m) throws CannotCompileException {
@@ -72,13 +75,16 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 						// allowed anyway or prevented by overwriting testInsertItem above
 						
 						StringBuffer buffer = new StringBuffer();
-						buffer.append("if ($1 == created && !$0.isBoat()) {\n");
-						buffer.append("  created.putItemInfrontof(performer);");
+						buffer.append("if ($1 != null && $1.getTemplateId() == createdItemTemplate && !$0.isBoat()) {\n");
+						buffer.append("  $1.putItemInfrontof(performer);");
 						buffer.append("  $_ = true;");
 						buffer.append("} else {\n");
 						buffer.append("  $_ = $proceed($$);\n");
 						buffer.append("}\n");
 						m.replace(buffer.toString());
+					} else if ("com.wurmonline.server.Server".equals(m.getClassName()) && m.getMethodName().equals("isDirtHeightLower")) {
+						// After isDirtHightLower the gem and mission items are handled
+						//replaceInsertItem = false;
 					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("getNumItemsNotCoins")) {
 						m.replace("$_ = 0;");
 					} else if ("com.wurmonline.server.creatures.Creature".equals(m.getClassName()) && m.getMethodName().equals("canCarry")) {
@@ -105,6 +111,8 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 				public void edit(MethodCall m) throws CannotCompileException {
 					if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("insertItem")) {
 						m.replace("{ dirt.putItemInfrontof(performer); $_ = true; }");
+					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("isDredgingTool")) {
+						m.replace("$_ = $proceed($$) && $0.getTemplateId() != 315 && $0.getTemplateId() != 176;");
 					}
 				}
 			});
