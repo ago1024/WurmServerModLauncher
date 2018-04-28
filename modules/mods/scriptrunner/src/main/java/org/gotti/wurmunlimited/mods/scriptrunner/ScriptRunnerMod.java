@@ -27,6 +27,8 @@ import org.gotti.wurmunlimited.modloader.interfaces.ServerShutdownListener;
 import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
+import org.gotti.wurmunlimited.modsupport.creatures.ModCreatures;
+import org.gotti.wurmunlimited.modsupport.vehicles.ModVehicleBehaviours;
 
 import com.wurmonline.server.MiscConstants;
 import com.wurmonline.server.creatures.Communicator;
@@ -49,6 +51,8 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 	
 	@Override
 	public void init() {
+		ModVehicleBehaviours.init();
+		ModCreatures.init();
 	}
 	
 	private void initRunner(String name, Properties properties, Path scriptsPath) {
