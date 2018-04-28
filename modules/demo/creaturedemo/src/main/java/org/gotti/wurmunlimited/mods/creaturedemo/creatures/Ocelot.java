@@ -5,7 +5,7 @@ import org.gotti.wurmunlimited.modsupport.creatures.EncounterBuilder;
 import org.gotti.wurmunlimited.modsupport.creatures.ModCreature;
 
 import com.wurmonline.mesh.Tiles;
-import com.wurmonline.server.creatures.CreatureTypes;
+import com.wurmonline.shared.constants.CreatureTypes;
 
 public class Ocelot implements ModCreature, CreatureTypes {
 

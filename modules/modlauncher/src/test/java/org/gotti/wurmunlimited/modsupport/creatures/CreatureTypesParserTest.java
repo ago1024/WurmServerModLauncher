@@ -56,7 +56,7 @@ public class CreatureTypesParserTest {
 		Assertions.assertThat(parser.parse("herd")).isEqualTo(10);
 		
 		// Add a new field
-		CtClass ctIds = HookManager.getInstance().getClassPool().get("com.wurmonline.server.creatures.CreatureTypes");
+		CtClass ctIds = HookManager.getInstance().getClassPool().get("com.wurmonline.shared.constants.CreatureTypes");
 		ctIds.addField(CtField.make("public static final int C_TYPE_TEST = 37;", ctIds));
 		
 		// Test that it works

@@ -9,7 +9,7 @@ public class CreatureTypesParser extends NonFreezingNamedIdParser {
 	
 	@Override
 	protected String getNamesClassName() {
-		return "com.wurmonline.server.creatures.CreatureTypes";
+		return "com.wurmonline.shared.constants.CreatureTypes";
 	}
 	
 	@Override

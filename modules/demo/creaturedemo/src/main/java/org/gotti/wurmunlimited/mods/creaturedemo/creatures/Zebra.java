@@ -9,7 +9,7 @@ import org.gotti.wurmunlimited.modsupport.vehicles.VehicleFacade;
 import com.wurmonline.mesh.Tiles;
 import com.wurmonline.server.behaviours.Vehicle;
 import com.wurmonline.server.creatures.Creature;
-import com.wurmonline.server.creatures.CreatureTypes;
+import com.wurmonline.shared.constants.CreatureTypes;
 import com.wurmonline.server.items.Item;
 
 public class Zebra implements ModCreature, CreatureTypes {

@@ -12,7 +12,7 @@ import com.wurmonline.server.creatures.AttackAction;
 import com.wurmonline.server.creatures.AttackIdentifier;
 import com.wurmonline.server.creatures.AttackValues;
 import com.wurmonline.server.creatures.Creature;
-import com.wurmonline.server.creatures.CreatureTypes;
+import com.wurmonline.shared.constants.CreatureTypes;
 import com.wurmonline.server.items.Item;
 
 public class PandaBear implements ModCreature, CreatureTypes {
