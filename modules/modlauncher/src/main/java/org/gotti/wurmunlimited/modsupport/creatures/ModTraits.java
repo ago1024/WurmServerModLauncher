@@ -39,6 +39,10 @@ public class ModTraits {
 	public static final int TRAIT_FEEBLE_AND_UNHEALTHY = 19;
 	public static final int TRAIT_STRONG_AND_HEALTHY = 20;
 	public static final int TRAIT_SPARK = 21;
+	public static final int TRAIT_CORRUPTED = 22;
+	public static final int TRAIT_RIFT = 27;
+	public static final int TRAIT_TRAITOR = 28;
+	public static final int TRAIT_VALREI = 29;
 	
 	public static final int COLOR_EBONY_BLACK = 23;
 	public static final int COLOR_BLOOD_BAY = 25;
@@ -97,8 +101,12 @@ public class ModTraits {
 	}
 
 	public static long calcNewTraits(final double breederSkill, final boolean inbred, final long mothertraits, final long fathertraits, final long regulartraits, final long colortraits) {
-		
 		final Random rand = new Random();
+		return calcNewTraits(rand, breederSkill, inbred, mothertraits, fathertraits, regulartraits, colortraits, Servers.isThisAPvpServer());
+	}
+	
+	public static long calcNewTraits(Random rand, final double breederSkill, final boolean inbred, final long mothertraits, final long fathertraits, final long regulartraits, final long colortraits, boolean isThisAPvpServer) {
+		
 		final BitSet motherSet = new BitSet(64);
 		final BitSet fatherSet = new BitSet(64);
 		final BitSet childSet = new BitSet(64);
@@ -194,7 +202,7 @@ public class ModTraits {
 				LOGGER.log(Level.WARNING, "Failed to select a trait from a map of size " + newSet.size());
 			}
 		}
-		if (!Servers.isThisAPvpServer()) {
+		if (!isThisAPvpServer) {
 			childSet.clear(22);
 		} else if (fatherSet.get(22) || motherSet.get(22)) {
 			childSet.set(22);
@@ -241,13 +249,7 @@ public class ModTraits {
 	}
 
 	static long getTraitBits(final BitSet bitsprovided) {
-		long ret = 0L;
-		for (int x = 0; x < 64; ++x) {
-			if (bitsprovided.get(x)) {
-				ret += 1 << x;
-			}
-		}
-		return ret;
+		return bitsprovided.toLongArray()[0];
 	}
 
 }

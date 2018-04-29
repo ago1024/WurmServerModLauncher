@@ -39,8 +39,6 @@ public class ModCreatures {
 		piebaldpinto(24),
 		bloodbay(25),
 		Custom4(26),
-		Custom5(28),
-		Custom6(29),
 		Custom7(30),
 		Custom8(31),
 		Custom9(32),
@@ -49,6 +47,9 @@ public class ModCreatures {
 		Custom12(35),
 		Custom13(36),
 		Custom14(37),
+		Custom15(38),
+		Custom16(39),
+		Custom17(40),
 		;
 		
 		private int number;
