@@ -20,6 +20,10 @@ public interface ModCreature {
 		return null;
 	}
 	
+	default String getColourName(int trait) {
+		return null;
+	}
+	
 	default void assignTraits(TraitsSetter traitsSetter) {
 	}
 

@@ -190,11 +190,11 @@ public class ModCreatures {
 				String code = "{ String name = org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.getModelName($0); if (name != null) { return name; }; }";
 				ctCreature.getMethod("getModelName", Descriptor.ofMethod(classPool.get("java.lang.String"), new CtClass[0])).insertBefore(code);
 			}
-		
+			
 			{
-				// com.wurmonline.server.creatures.Creature.getModelName()
-				String code = "{ String name = org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.getModelName($0); if (name != null) { return name; }; }";
-				ctCreature.getMethod("getModelName", Descriptor.ofMethod(classPool.get("java.lang.String"), new CtClass[0])).insertBefore(code);
+				// com.wurmonline.server.creatures.Creature.getColourName()
+				String code = "{ String colour = org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.getColourName($0); if (colour != null) { return colour; }; }";
+				ctCreature.getMethod("getColourName", Descriptor.ofMethod(classPool.get("java.lang.String"), new CtClass[0])).insertBefore(code);
 			}
 			
 			ctCreature.getMethod("die", "(Z)V").instrument(new ExprEditor() {
@@ -272,6 +272,19 @@ public class ModCreatures {
 				if (creature.hasTrait(trait)) {
 					Optional<String> name = Optional.ofNullable(c.getTraitName(trait));
 					return name.orElseGet(() -> customTrait.getTraitName());
+				}
+			}
+		}
+		return null;
+	}
+	
+	public static String getColourName(Creature creature) {
+		ModCreature c = creaturesById.get(creature.getTemplate().getTemplateId());
+		if (c != null && c.hasTraits()) {
+			for (CustomTrait customTrait : CustomTrait.values()) {
+				int trait = customTrait.getTraitNumber();
+				if (creature.hasTrait(trait)) {
+					return c.getColourName(trait);
 				}
 			}
 		}
