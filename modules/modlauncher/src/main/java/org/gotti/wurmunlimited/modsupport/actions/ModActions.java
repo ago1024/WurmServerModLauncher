@@ -21,6 +21,7 @@ import javassist.CtMethod;
 import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.expr.ExprEditor;
+import javassist.expr.FieldAccess;
 import javassist.expr.MethodCall;
 
 public class ModActions {
@@ -117,6 +118,29 @@ public class ModActions {
 					}
 				});
 			}
+			
+			ctBehaviourDispatcher.getDeclaredMethod("requestActionForSkillIds").instrument(new ExprEditor() {
+				
+				@Override
+				public void edit(FieldAccess f) throws CannotCompileException {
+					if (f.getClassName().equals("com.wurmonline.server.behaviours.BehaviourDispatcher") && f.getFieldName().equals("emptyActions")) {
+						StringBuffer code = new StringBuffer();
+						code.append("{\n");
+						code.append("    com.wurmonline.server.creatures.Creature creature = comm.getPlayer();\n");
+						code.append("    com.wurmonline.server.behaviours.Behaviour behaviour = com.wurmonline.server.behaviours.Action.getBehaviour(target, creature.isOnSurface());\n");
+						code.append("    org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider behaviourProvider = org.gotti.wurmunlimited.modsupport.actions.ModActions.getBehaviourProvider(behaviour);\n");
+						code.append("    com.wurmonline.server.skills.Skill skill = creature.getSkills().getSkill(skillid);\n");
+						code.append("    if (skill != null && behaviourProvider != null) {\n");
+						code.append("        $_ = behaviourProvider.getBehavioursFor(creature, skill);\n");
+						code.append("    } else {\n");
+						code.append("        $_ = $proceed();\n");
+						code.append("    }\n");
+						code.append("}\n");
+						f.replace(code.toString());
+					}
+				}
+				
+			});
 			
 			classPool.get("com.wurmonline.server.behaviours.Action").getMethod("poll", "()Z").instrument(new ExprEditor() {
 				@Override
