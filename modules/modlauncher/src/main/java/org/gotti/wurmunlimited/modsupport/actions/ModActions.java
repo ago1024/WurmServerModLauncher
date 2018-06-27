@@ -12,6 +12,9 @@ import com.wurmonline.server.behaviours.Action;
 import com.wurmonline.server.behaviours.ActionEntry;
 import com.wurmonline.server.behaviours.Actions;
 import com.wurmonline.server.behaviours.Behaviour;
+import com.wurmonline.server.creatures.Creature;
+import com.wurmonline.server.skills.NoSuchSkillException;
+import com.wurmonline.server.skills.Skill;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -129,7 +132,7 @@ public class ModActions {
 						code.append("    com.wurmonline.server.creatures.Creature creature = comm.getPlayer();\n");
 						code.append("    com.wurmonline.server.behaviours.Behaviour behaviour = com.wurmonline.server.behaviours.Action.getBehaviour(target, creature.isOnSurface());\n");
 						code.append("    org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider behaviourProvider = org.gotti.wurmunlimited.modsupport.actions.ModActions.getBehaviourProvider(behaviour);\n");
-						code.append("    com.wurmonline.server.skills.Skill skill = creature.getSkills().getSkill(skillid);\n");
+						code.append("    com.wurmonline.server.skills.Skill skill = org.gotti.wurmunlimited.modsupport.actions.ModActions.getSkillOrNull(creature, skillid);\n");
 						code.append("    if (skill != null && behaviourProvider != null) {\n");
 						code.append("        $_ = behaviourProvider.getBehavioursFor(creature, skill);\n");
 						code.append("    } else {\n");
@@ -179,5 +182,13 @@ public class ModActions {
 		}
 		
 		return new ChainedBehaviourProvider(new WrappedBehaviourProvider(behaviour), behaviourProviders);
+	}
+	
+	public static Skill getSkillOrNull(Creature creature, int skillId) {
+		try {
+			return creature.getSkills().getSkill(skillId);
+		} catch (NoSuchSkillException e) {
+			return null;
+		}
 	}
 }
