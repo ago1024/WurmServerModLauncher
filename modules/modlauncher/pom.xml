@@ -22,12 +22,12 @@
 		<dependency>
 			<groupId>org.gotti.wurmunlimited</groupId>
 			<artifactId>common</artifactId>
-			<version>2744603</version>
+			<version>2897897</version>
 		</dependency>
 		<dependency>
 			<groupId>org.gotti.wurmunlimited</groupId>
 			<artifactId>server</artifactId>
-			<version>2744603</version>
+			<version>2897897</version>
 		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
