@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.wurmonline.server.combat.ArmourTemplate;
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 
 import com.wurmonline.server.creatures.AttackAction;
@@ -25,7 +26,7 @@ public class CreatureTemplateBuilder {
 
 	private int[] types;
 
-	private String name;
+	private String name, plural;
 
 	private String description;
 
@@ -43,7 +44,7 @@ public class CreatureTemplateBuilder {
 
 	private boolean usesNewAttacks;
 
-	private int armourType = -10;
+	private ArmourTemplate.ArmourType armourType = ArmourTemplate.ARMOUR_TYPE_CLOTH;
 
 	private byte bodyType;
 
@@ -349,7 +350,13 @@ public class CreatureTemplateBuilder {
 		return this;
 	}
 
-	public CreatureTemplateBuilder description(String description) {
+    public CreatureTemplateBuilder plural(String plural) {
+        this.plural = plural;
+        return this;
+    }
+
+
+    public CreatureTemplateBuilder description(String description) {
 		this.description = description;
 		return this;
 	}
@@ -390,7 +397,7 @@ public class CreatureTemplateBuilder {
 				skills.learnTemp(skillEntry.getKey(), skillEntry.getValue());
 			}
 
-			final CreatureTemplate temp = createCreatureTemplate(templateId, name, description, modelName, types, bodyType, skills, vision, sex, centimetersHigh, centimetersLong, centimetersWide, deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam,
+			final CreatureTemplate temp = createCreatureTemplate(templateId, name, plural==null ? name+"s" : plural, description, modelName, types, bodyType, skills, vision, sex, centimetersHigh, centimetersLong, centimetersWide, deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam,
 					headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggressive, meatMaterial);
 
 			if (hasBounds)
@@ -409,7 +416,7 @@ public class CreatureTemplateBuilder {
 			if (maxAge > 0)
 				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setMaxAge"), maxAge);
 
-			if (armourType > 0)
+			if (armourType != null)
 				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setArmourType"), armourType);
 
 			if (baseCombatRating > 0)
@@ -481,7 +488,7 @@ public class CreatureTemplateBuilder {
 			temp.setPaintMode(paintMode);
 
 			temp.setBonusCombatRating(bonusCombatRating);
-			
+
 			temp.fireResistance = fireResistance;
 			temp.coldResistance = coldResistance;
 			temp.diseaseResistance = diseaseResistance;
@@ -516,11 +523,11 @@ public class CreatureTemplateBuilder {
 		}
 	}
 
-	private static CreatureTemplate createCreatureTemplate(final int id, final String name, final String longDesc, final String modelName, final int[] types, final byte bodyType, final Skills skills, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong,
+	private static CreatureTemplate createCreatureTemplate(final int id, final String name, final String plural, final String longDesc, final String modelName, final int[] types, final byte bodyType, final Skills skills, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong,
 			final short centimetersWide, final String deathSndMale, final String deathSndFemale, final String hitSndMale, final String hitSndFemale, final float naturalArmour, final float handDam, final float kickDam, final float biteDam, final float headDam, final float breathDam,
 			final float speed, final int moveRate, final int[] itemsButchered, final int maxHuntDist, final int aggress, final byte meatMaterial) throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
 
-		return ReflectionUtil.callPrivateMethod(CreatureTemplateFactory.getInstance(), ReflectionUtil.getMethod(CreatureTemplateFactory.class, "createCreatureTemplate"), id, name, longDesc, modelName, types, bodyType, skills, vision, sex, centimetersHigh, centimetersLong, centimetersWide,
+		return ReflectionUtil.callPrivateMethod(CreatureTemplateFactory.getInstance(), ReflectionUtil.getMethod(CreatureTemplateFactory.class, "createCreatureTemplate"), id, name, plural, longDesc, modelName, types, bodyType, skills, vision, sex, centimetersHigh, centimetersLong, centimetersWide,
 				deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam, headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggress, meatMaterial);
 	}
 
@@ -543,18 +550,37 @@ public class CreatureTemplateBuilder {
 		this.kickDamString = kickDamString;
 		return this;
 	}
-	
+
 	public CreatureTemplateBuilder maxAge(int i) {
 		maxAge = i;
 		return this;
 	}
 
+	@Deprecated
 	public CreatureTemplateBuilder armourType(int i) {
-		this.armourType = i;
+	    switch (i) {
+            case 1: this.armourType = ArmourTemplate.ARMOUR_TYPE_LEATHER; break;
+            case 2: this.armourType = ArmourTemplate.ARMOUR_TYPE_STUDDED; break;
+            case 3: this.armourType = ArmourTemplate.ARMOUR_TYPE_CHAIN; break;
+            case 4: this.armourType = ArmourTemplate.ARMOUR_TYPE_PLATE; break;
+            case 5: this.armourType = ArmourTemplate.ARMOUR_TYPE_RING; break;
+            case 6: this.armourType = ArmourTemplate.ARMOUR_TYPE_CLOTH; break;
+            case 7: this.armourType = ArmourTemplate.ARMOUR_TYPE_SCALE; break;
+            case 8: this.armourType = ArmourTemplate.ARMOUR_TYPE_SPLINT; break;
+            case 9: this.armourType = ArmourTemplate.ARMOUR_TYPE_LEATHER_DRAGON; break;
+            case 10: this.armourType = ArmourTemplate.ARMOUR_TYPE_SCALE_DRAGON; break;
+            default:  this.armourType = ArmourTemplate.ARMOUR_TYPE_CLOTH;
+        }
 		return this;
 	}
 
-	public CreatureTemplateBuilder baseCombatRating(float f) {
+    public CreatureTemplateBuilder armourType(ArmourTemplate.ArmourType t) {
+        this.armourType = t;
+        return this;
+    }
+
+
+    public CreatureTemplateBuilder baseCombatRating(float f) {
 		this.baseCombatRating = f;
 		return this;
 	}
@@ -598,10 +624,10 @@ public class CreatureTemplateBuilder {
 		isHorse = b;
 		return this;
 	}
-	
+
 	/**
 	 * Set size modifier. The default value is 64 for all values.
-	 * 
+	 *
 	 * @param sizeModX size modifier
 	 * @param sizeModY size modifier
 	 * @param sizeModZ size modifier
@@ -613,10 +639,10 @@ public class CreatureTemplateBuilder {
 		this.sizeModZ = sizeModZ;
 		return this;
 	}
-	
+
 	/**
 	 * Set a custom color.
-	 * 
+	 *
 	 * @param red
 	 * @param green
 	 * @param blue
@@ -628,7 +654,7 @@ public class CreatureTemplateBuilder {
 		this.colorBlue = blue;
 		return this;
 	}
-	
+
 	/**
 	 * Set glowing status.
 	 * @param glowing
@@ -638,7 +664,7 @@ public class CreatureTemplateBuilder {
 		this.glowing = glowing;
 		return this;
 	}
-	
+
 	/**
 	 * Set fire status
 	 * @param onFire onFire flag
@@ -650,7 +676,7 @@ public class CreatureTemplateBuilder {
 		this.fireRadius = fireRadius;
 		return this;
 	}
-	
+
 	public CreatureTemplateBuilder setCombatMoves(int[] aCombatMoves) {
 		this.combatMoves = aCombatMoves;
 		return this;

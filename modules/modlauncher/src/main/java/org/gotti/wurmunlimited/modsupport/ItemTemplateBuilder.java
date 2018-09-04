@@ -5,6 +5,7 @@ import java.io.IOException;
 import com.wurmonline.server.MiscConstants;
 import com.wurmonline.server.items.ItemTemplate;
 import com.wurmonline.server.items.ItemTemplateFactory;
+import org.gotti.wurmunlimited.modloader.ModLoader;
 
 public class ItemTemplateBuilder {
 
@@ -33,7 +34,6 @@ public class ItemTemplateBuilder {
 	private byte material;
 	private int value = 0;
 	private boolean isTraded = false;
-	private int armourType = -1;
 	private int dyeAmountOverrideGrams = 0;
 	private boolean hasContainerSizes = false;
 	private int containerSizeX;
@@ -94,8 +94,8 @@ public class ItemTemplateBuilder {
 		return this;
 	}
 
+	@Deprecated
 	public ItemTemplateBuilder armourType(int armourType2) {
-		this.armourType = armourType2;
 		return this;
 	}
 	
@@ -213,7 +213,8 @@ public class ItemTemplateBuilder {
 
 	public ItemTemplate build() throws IOException {
 		ItemTemplate template = ItemTemplateFactory.getInstance().createItemTemplate(templateId, size, name, plural, itemDescriptionSuperb, itemDescriptionNormal, itemDescriptionBad, itemDescriptionRotten, itemDescriptionLong, itemTypes, imageNumber, behaviourType, combatDamage, decayTime, centimetersX,
-				centimetersY, centimetersZ, primarySkill, bodySpaces, modelName, difficulty, weightGrams, material, value, isTraded, armourType, dyeAmountOverrideGrams);
+				centimetersY, centimetersZ, primarySkill, bodySpaces, modelName, difficulty, weightGrams, material, value, isTraded, dyeAmountOverrideGrams);
+
 		if (hasContainerSizes) {
 			template.setContainerSize(containerSizeX, containerSizeY, containerSizeZ);
 		}
