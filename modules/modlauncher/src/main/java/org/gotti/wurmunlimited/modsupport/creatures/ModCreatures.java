@@ -197,7 +197,7 @@ public class ModCreatures {
 				ctCreature.getMethod("getColourName", Descriptor.ofMethod(classPool.get("java.lang.String"), new CtClass[0])).insertBefore(code);
 			}
 			
-			ctCreature.getMethod("die", "(Z)V").instrument(new ExprEditor() {
+			ctCreature.getMethod("die", "(ZLjava/lang/String;)V").instrument(new ExprEditor() {
 				@Override
 				public void edit(FieldAccess f) throws CannotCompileException {
 					if (f.getClassName().equals("com.wurmonline.server.creatures.CreatureTemplate") && f.getFieldName().equals("isHorse")) {
