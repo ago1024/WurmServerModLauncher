@@ -8,6 +8,7 @@ import org.gotti.wurmunlimited.modsupport.vehicles.VehicleFacade;
 
 import com.wurmonline.mesh.Tiles;
 import com.wurmonline.server.behaviours.Vehicle;
+import com.wurmonline.server.combat.ArmourTemplate;
 import com.wurmonline.server.creatures.Creature;
 import com.wurmonline.shared.constants.CreatureTypes;
 import com.wurmonline.server.items.Item;
@@ -39,7 +40,7 @@ public class Zebra implements ModCreature, CreatureTypes {
 		builder.combatDamageType((byte) 0);
 		builder.alignment(100.0f);
 		builder.handDamString("kick");
-		builder.armourType(6);
+		builder.armourType(ArmourTemplate.ARMOUR_TYPE_CLOTH);
 		builder.isHorse(true);
 		builder.maxPercentOfCreatures(0.02f);
 
