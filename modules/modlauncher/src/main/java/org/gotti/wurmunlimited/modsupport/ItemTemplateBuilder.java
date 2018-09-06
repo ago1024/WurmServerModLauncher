@@ -1,8 +1,12 @@
 package org.gotti.wurmunlimited.modsupport;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
+import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 
 import com.wurmonline.server.MiscConstants;
+import com.wurmonline.server.creatures.CreatureTemplate;
 import com.wurmonline.server.items.ItemTemplate;
 import com.wurmonline.server.items.ItemTemplateFactory;
 
@@ -43,6 +47,17 @@ public class ItemTemplateBuilder {
 	private int dyePrimaryAmountRequired = 0;
 	private int dyeSecondaryAmountRequired = 0;
 	private String secondaryItemName;
+	private int foodGroup;
+	private boolean hasNutritionValues;
+	private int calories;
+	private int carbs;
+	private int fats;
+	private int proteins;
+	private int alcoholStrength;
+	private int grows;
+	private int crushsTo;
+	private int harvestTo;
+	private int pickSeeds;
 
 	public ItemTemplateBuilder(String identifier) {
 		this.templateId = IdFactory.getIdFor(identifier, IdType.ITEMTEMPLATE);
@@ -182,7 +197,46 @@ public class ItemTemplateBuilder {
 		this.secondaryItemName = secondaryItemName;
 		return this;
 	}
+	
+	public ItemTemplateBuilder foodGroup(final int foodGroupTemplateId) {
+		this.foodGroup = foodGroupTemplateId;
+		return this;
+	}
+	
+	public ItemTemplateBuilder nutritionValues(final int calories, final int carbs, final int fats, final int proteins) {
+		this.hasNutritionValues = true;
+		this.calories = calories;
+		this.carbs = carbs;
+		this.fats = fats;
+		this.proteins = proteins;
+		return this;
+	}
+	
+	public ItemTemplateBuilder alcoholStrength(final int newAlcoholStrength) {
+		this.alcoholStrength = newAlcoholStrength;
+		return this;
+	}
 
+	public ItemTemplateBuilder grows(final int growsTemplateId) {
+		this.grows = growsTemplateId;
+		return this;
+	}
+
+	public ItemTemplateBuilder setCrushsTo(final int toTemplateId) {
+		this.crushsTo = toTemplateId;
+		return this;
+	}
+
+	public ItemTemplateBuilder harvestsTo(final int toTemplateId) {
+		this.harvestTo = toTemplateId;
+		return this;
+	}
+	
+	public ItemTemplateBuilder pickSeeds(final int seedTemplateId) {
+		this.pickSeeds = seedTemplateId;
+		return this;
+	}
+	
 	public ItemTemplate build(final String name, int size, final String plural, final String itemDescriptionSuperb, final String itemDescriptionNormal, final String itemDescriptionBad, final String itemDescriptionRotten, final String itemDescriptionLong, final short[] itemTypes, final short imageNumber,
 			final short behaviourType, final int combatDamage, final long decayTime, final int centimetersX, final int centimetersY, final int centimetersZ, final int primarySkill, final byte[] bodySpaces, final String modelName, final float difficulty, final int weightGrams, final byte material, int value, boolean isTraded, int armourType)
 			throws IOException {
@@ -211,24 +265,57 @@ public class ItemTemplateBuilder {
 	}
 
 	public ItemTemplate build() throws IOException {
-		ItemTemplate template = ItemTemplateFactory.getInstance().createItemTemplate(templateId, size, name, plural, itemDescriptionSuperb, itemDescriptionNormal, itemDescriptionBad, itemDescriptionRotten, itemDescriptionLong, itemTypes, imageNumber, behaviourType, combatDamage, decayTime, centimetersX,
-				centimetersY, centimetersZ, primarySkill, bodySpaces, modelName, difficulty, weightGrams, material, value, isTraded, dyeAmountOverrideGrams);
-
-		if (hasContainerSizes) {
-			template.setContainerSize(containerSizeX, containerSizeY, containerSizeZ);
+		try {
+			ItemTemplate template = ItemTemplateFactory.getInstance().createItemTemplate(templateId, size, name, plural, itemDescriptionSuperb, itemDescriptionNormal, itemDescriptionBad, itemDescriptionRotten, itemDescriptionLong, itemTypes, imageNumber, behaviourType, combatDamage, decayTime, centimetersX,
+					centimetersY, centimetersZ, primarySkill, bodySpaces, modelName, difficulty, weightGrams, material, value, isTraded, dyeAmountOverrideGrams);
+	
+			if (hasContainerSizes) {
+				template.setContainerSize(containerSizeX, containerSizeY, containerSizeZ);
+			}
+			if (maxItemCount >= 0) {
+				template.setMaxItemCount(maxItemCount);
+			}
+			if (maxItemWeight >= 0) {
+				template.setMaxItemWeight(maxItemWeight);
+			}
+	
+			template.setDyeAmountGrams(dyePrimaryAmountRequired);
+			if (secondaryItemName != null) {
+				template.setSecondryItem(secondaryItemName, dyeSecondaryAmountRequired);
+			}
+			
+			if (hasNutritionValues) {
+				template.setNutritionValues(calories, carbs, fats, proteins);
+			}
+			
+			if (alcoholStrength > 0) {
+				ReflectionUtil.callPrivateMethod(template, ReflectionUtil.getMethod(ItemTemplate.class, "setAlcoholStrength"), alcoholStrength);
+			}
+			
+			if (foodGroup > 0) {
+				ReflectionUtil.callPrivateMethod(template, ReflectionUtil.getMethod(ItemTemplate.class, "setFoodGroup"), foodGroup);
+			}
+			
+			if (crushsTo > 0) {
+				ReflectionUtil.callPrivateMethod(template, ReflectionUtil.getMethod(ItemTemplate.class, "setCrushsTo"), crushsTo);
+			}
+			
+			if (pickSeeds > 0) {
+				ReflectionUtil.callPrivateMethod(template, ReflectionUtil.getMethod(ItemTemplate.class, "setPickSeeds"), pickSeeds);
+			}
+			
+			if (grows > 0) {
+				ReflectionUtil.callPrivateMethod(template, ReflectionUtil.getMethod(ItemTemplate.class, "setGrows"), grows);
+			}
+			
+			if (harvestTo > 0) {
+				ReflectionUtil.callPrivateMethod(template, ReflectionUtil.getMethod(ItemTemplate.class, "setHarvestsTo"), harvestTo);
+			}
+			
+			return template;
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
+			throw new RuntimeException(e);
 		}
-		if (maxItemCount >= 0) {
-			template.setMaxItemCount(maxItemCount);
-		}
-		if (maxItemWeight >= 0) {
-			template.setMaxItemWeight(maxItemWeight);
-		}
-
-		template.setDyeAmountGrams(dyePrimaryAmountRequired);
-		if (secondaryItemName != null) {
-			template.setSecondryItem(secondaryItemName, dyeSecondaryAmountRequired);
-		}
-		return template;
 	}
 
 }
