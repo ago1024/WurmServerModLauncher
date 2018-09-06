@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
 		<artifactId>server-modlauncher-parent</artifactId>
-		<version>0.39-SNAPSHOT</version>
+		<version>0.39-beta1</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>org.gotti.wurmunlimited</groupId>
 			<artifactId>server-modlauncher</artifactId>
-			<version>0.39-SNAPSHOT</version>
+			<version>0.39-beta1</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -57,7 +57,7 @@
 						<dependency>
 							<groupId>org.gotti.wurmunlimited</groupId>
 							<artifactId>server-modlauncher</artifactId>
-							<version>0.39-SNAPSHOT</version>
+							<version>0.39-beta1</version>
 						</dependency>
 					</dependencies>
 					<executions>
