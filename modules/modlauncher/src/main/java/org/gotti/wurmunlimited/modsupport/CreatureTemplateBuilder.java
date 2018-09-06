@@ -350,13 +350,12 @@ public class CreatureTemplateBuilder {
 		return this;
 	}
 
-    public CreatureTemplateBuilder plural(String plural) {
-        this.plural = plural;
-        return this;
-    }
+	public CreatureTemplateBuilder plural(String plural) {
+		this.plural = plural;
+		return this;
+	}
 
-
-    public CreatureTemplateBuilder description(String description) {
+	public CreatureTemplateBuilder description(String description) {
 		this.description = description;
 		return this;
 	}
@@ -558,29 +557,49 @@ public class CreatureTemplateBuilder {
 
 	@Deprecated
 	public CreatureTemplateBuilder armourType(int i) {
-	    switch (i) {
-            case 1: this.armourType = ArmourTemplate.ARMOUR_TYPE_LEATHER; break;
-            case 2: this.armourType = ArmourTemplate.ARMOUR_TYPE_STUDDED; break;
-            case 3: this.armourType = ArmourTemplate.ARMOUR_TYPE_CHAIN; break;
-            case 4: this.armourType = ArmourTemplate.ARMOUR_TYPE_PLATE; break;
-            case 5: this.armourType = ArmourTemplate.ARMOUR_TYPE_RING; break;
-            case 6: this.armourType = ArmourTemplate.ARMOUR_TYPE_CLOTH; break;
-            case 7: this.armourType = ArmourTemplate.ARMOUR_TYPE_SCALE; break;
-            case 8: this.armourType = ArmourTemplate.ARMOUR_TYPE_SPLINT; break;
-            case 9: this.armourType = ArmourTemplate.ARMOUR_TYPE_LEATHER_DRAGON; break;
-            case 10: this.armourType = ArmourTemplate.ARMOUR_TYPE_SCALE_DRAGON; break;
-            default:  this.armourType = ArmourTemplate.ARMOUR_TYPE_CLOTH;
-        }
+		switch (i) {
+		case 1:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_LEATHER;
+			break;
+		case 2:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_STUDDED;
+			break;
+		case 3:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_CHAIN;
+			break;
+		case 4:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_PLATE;
+			break;
+		case 5:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_RING;
+			break;
+		case 6:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_CLOTH;
+			break;
+		case 7:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_SCALE;
+			break;
+		case 8:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_SPLINT;
+			break;
+		case 9:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_LEATHER_DRAGON;
+			break;
+		case 10:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_SCALE_DRAGON;
+			break;
+		default:
+			this.armourType = ArmourTemplate.ARMOUR_TYPE_CLOTH;
+		}
 		return this;
 	}
 
-    public CreatureTemplateBuilder armourType(ArmourTemplate.ArmourType t) {
-        this.armourType = t;
-        return this;
-    }
+	public CreatureTemplateBuilder armourType(ArmourTemplate.ArmourType t) {
+		this.armourType = t;
+		return this;
+	}
 
-
-    public CreatureTemplateBuilder baseCombatRating(float f) {
+	public CreatureTemplateBuilder baseCombatRating(float f) {
 		this.baseCombatRating = f;
 		return this;
 	}

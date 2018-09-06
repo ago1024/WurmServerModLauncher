@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.wurmonline.server.MiscConstants;
 import com.wurmonline.server.items.ItemTemplate;
 import com.wurmonline.server.items.ItemTemplateFactory;
-import org.gotti.wurmunlimited.modloader.ModLoader;
 
 public class ItemTemplateBuilder {
 
