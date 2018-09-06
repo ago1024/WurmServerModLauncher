@@ -8,6 +8,7 @@ import org.gotti.wurmunlimited.modsupport.vehicles.VehicleFacade;
 
 import com.wurmonline.mesh.Tiles;
 import com.wurmonline.server.behaviours.Vehicle;
+import com.wurmonline.server.combat.ArmourTemplate;
 import com.wurmonline.server.creatures.AttackAction;
 import com.wurmonline.server.creatures.AttackIdentifier;
 import com.wurmonline.server.creatures.AttackValues;
@@ -40,7 +41,7 @@ public class PandaBear implements ModCreature, CreatureTypes {
 		builder.boundsValues(-0.5f, -1.0f, 0.5f, 1.42f);
 		builder.handDamString("maul");
 		builder.maxAge(200);
-		builder.armourType(2);
+		builder.armourType(ArmourTemplate.ARMOUR_TYPE_STUDDED);
 		builder.baseCombatRating(9.0f);
 		builder.combatDamageType((byte) 0);
 		builder.maxGroupAttackSize(4);
