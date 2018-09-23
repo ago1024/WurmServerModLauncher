@@ -1,7 +1,9 @@
 package org.gotti.wurmunlimited.modsupport;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.Map.Entry;
 
 import com.wurmonline.server.combat.ArmourTemplate;
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 
 import com.wurmonline.server.creatures.AttackAction;
 import com.wurmonline.server.creatures.CreatureTemplate;
@@ -19,7 +22,44 @@ import com.wurmonline.server.skills.SkillsFactory;
 import com.wurmonline.shared.constants.ItemMaterials;
 
 public class CreatureTemplateBuilder {
+	
+	private static class RefHelper {
 
+		private final Field reputation;
+		private final Field hasHands;
+		private final Field isHorse;
+		private final Method createCreatureTemplate;
+		private final Method setAlignment;
+		private final Method setDenMaterial;
+		private final Method setDenName;
+		private final Method setMaxGroupAttackSize;
+		private final Method setBaseCombatRating;
+		private final Method setArmourType;
+		private final Method setMaxAge;
+		private final Method setKickDamString;
+
+		public RefHelper() {
+			try {
+				reputation = ReflectionUtil.getField(CreatureTemplate.class, "reputation");
+				hasHands = ReflectionUtil.getField(CreatureTemplate.class, "hasHands");
+				isHorse = ReflectionUtil.getField(CreatureTemplate.class, "isHorse");
+				createCreatureTemplate = ReflectionUtil.getMethod(CreatureTemplateFactory.class, "createCreatureTemplate");
+				setAlignment = ReflectionUtil.getMethod(CreatureTemplate.class, "setAlignment");
+				setDenMaterial = ReflectionUtil.getMethod(CreatureTemplate.class, "setDenMaterial");
+				setDenName = ReflectionUtil.getMethod(CreatureTemplate.class, "setDenName");
+				setMaxGroupAttackSize = ReflectionUtil.getMethod(CreatureTemplate.class, "setMaxGroupAttackSize");
+				setBaseCombatRating = ReflectionUtil.getMethod(CreatureTemplate.class, "setBaseCombatRating");
+				setArmourType = ReflectionUtil.getMethod(CreatureTemplate.class, "setArmourType");
+				setMaxAge = ReflectionUtil.getMethod(CreatureTemplate.class, "setMaxAge");
+				setKickDamString = ReflectionUtil.getMethod(CreatureTemplate.class, "setKickDamString");
+			} catch (NoSuchFieldException | NoSuchMethodException e) {
+				throw new HookException(e);
+			}
+		}
+	}
+	
+	private static final RefHelper REFHELPER = new RefHelper();
+	
 	private int templateId;
 
 	private Map<Integer, Float> skills = new HashMap<>();
@@ -142,6 +182,10 @@ public class CreatureTemplateBuilder {
 
 	private int eggTemplate;
 
+	private int childTemplate;
+
+	private byte daysOfPregnancy;
+
 	private boolean hasHands;
 
 	private boolean keepSex;
@@ -201,6 +245,10 @@ public class CreatureTemplateBuilder {
 	private float internalVulnerability;
 
 	private int leaderTemplateId = -1;
+
+	private float offZ;
+
+	private int reputation = 100;
 
 	public CreatureTemplateBuilder(int id) {
 		this.templateId = id;
@@ -388,6 +436,27 @@ public class CreatureTemplateBuilder {
 		this.eggTemplate = eggTemplate;
 		return this;
 	}
+	
+	/**
+	 * Set days of pregnancy
+	 * @param daysOfPregnancy days of pregnancy
+	 * @return this
+	 */
+	public CreatureTemplateBuilder daysOfPregnancy(byte daysOfPregnancy) {
+		this.daysOfPregnancy = daysOfPregnancy;
+		return this;
+	}
+	
+	/**
+	 * Set child template id
+	 * 
+	 * @param childTemplate child template id
+	 * @return this
+	 */
+	public CreatureTemplateBuilder childTemplate(int childTemplate) {
+		this.childTemplate = childTemplate;
+		return this;
+	}
 
 	public CreatureTemplate build() {
 		try {
@@ -406,41 +475,41 @@ public class CreatureTemplateBuilder {
 				temp.setHandDamString(handDamString);
 
 			if (this.kickDamString != null)
-				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setKickDamString"), kickDamString);
+				ReflectionUtil.callPrivateMethod(temp, REFHELPER.setKickDamString, kickDamString);
 
 			if (this.headbuttDamString != null) {
 				temp.setHeadbuttDamString(headbuttDamString);
 			}
 
 			if (maxAge > 0)
-				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setMaxAge"), maxAge);
+				ReflectionUtil.callPrivateMethod(temp, REFHELPER.setMaxAge, maxAge);
 
 			if (armourType != null)
-				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setArmourType"), armourType);
+				ReflectionUtil.callPrivateMethod(temp, REFHELPER.setArmourType, armourType);
 
 			if (baseCombatRating > 0)
-				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setBaseCombatRating"), baseCombatRating);
+				ReflectionUtil.callPrivateMethod(temp, REFHELPER.setBaseCombatRating, baseCombatRating);
 
 			if (combatDamageType > 0)
 				temp.combatDamageType = combatDamageType;
 
 			if (maxGroupAttackSize > 0)
-				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setMaxGroupAttackSize"), maxGroupAttackSize);
+				ReflectionUtil.callPrivateMethod(temp, REFHELPER.setMaxGroupAttackSize, maxGroupAttackSize);
 
 			if (denName != null)
-				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setDenName"), denName);
+				ReflectionUtil.callPrivateMethod(temp, REFHELPER.setDenName, denName);
 
 			if (denMaterial > 0)
-				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setDenMaterial"), denMaterial);
+				ReflectionUtil.callPrivateMethod(temp, REFHELPER.setDenMaterial, denMaterial);
 
 			if (maxPercentOfCreatures > 0)
 				temp.setMaxPercentOfCreatures(maxPercentOfCreatures);
 
 			if (alignment != 0)
-				ReflectionUtil.callPrivateMethod(temp, ReflectionUtil.getMethod(CreatureTemplate.class, "setAlignment"), alignment);
+				ReflectionUtil.callPrivateMethod(temp, REFHELPER.setAlignment, alignment);
 
 			if (isHorse)
-				ReflectionUtil.setPrivateField(temp, ReflectionUtil.getField(CreatureTemplate.class, "isHorse"), isHorse);
+				ReflectionUtil.setPrivateField(temp, REFHELPER.isHorse, isHorse);
 
 			if (usesNewAttacks)
 				temp.setUsesNewAttacks(usesNewAttacks);
@@ -459,6 +528,8 @@ public class CreatureTemplateBuilder {
 			temp.setSizeModX(sizeModX);
 			temp.setSizeModY(sizeModY);
 			temp.setSizeModZ(sizeModZ);
+			
+			temp.offZ = offZ;
 
 			temp.setGlowing(glowing);
 			if (onFire) {
@@ -473,9 +544,17 @@ public class CreatureTemplateBuilder {
 				temp.setEggLayer(this.isEggLayer);
 				temp.setEggTemplateId(this.eggTemplate);
 			}
+			
+			if (childTemplate != 0) {
+				temp.setChildTemplateId(childTemplate);
+			}
+			
+			if (daysOfPregnancy != 0) {
+				temp.setDaysOfPregnancy(daysOfPregnancy);
+			}
 
 			if (hasHands) {
-				ReflectionUtil.setPrivateField(temp, ReflectionUtil.getField(CreatureTemplate.class, "hasHands"), hasHands);
+				ReflectionUtil.setPrivateField(temp, REFHELPER.hasHands, hasHands);
 			}
 
 			temp.setKeepSex(keepSex);
@@ -515,18 +594,24 @@ public class CreatureTemplateBuilder {
 			temp.internalVulnerability = internalVulnerability;
 
 			temp.setLeaderTemplateId(leaderTemplateId);
+			
+			if (this.reputation != 100) {
+				ReflectionUtil.setPrivateField(temp, REFHELPER.reputation, reputation);
+			}
+			
+			
 
 			return temp;
-		} catch (IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | ClassCastException | NoSuchFieldException e) {
-			throw new RuntimeException(e);
+		} catch (IOException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassCastException e) {
+			throw new HookException(e);
 		}
 	}
 
 	private static CreatureTemplate createCreatureTemplate(final int id, final String name, final String plural, final String longDesc, final String modelName, final int[] types, final byte bodyType, final Skills skills, final short vision, final byte sex, final short centimetersHigh, final short centimetersLong,
 			final short centimetersWide, final String deathSndMale, final String deathSndFemale, final String hitSndMale, final String hitSndFemale, final float naturalArmour, final float handDam, final float kickDam, final float biteDam, final float headDam, final float breathDam,
-			final float speed, final int moveRate, final int[] itemsButchered, final int maxHuntDist, final int aggress, final byte meatMaterial) throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException {
+			final float speed, final int moveRate, final int[] itemsButchered, final int maxHuntDist, final int aggress, final byte meatMaterial) throws IOException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-		return ReflectionUtil.callPrivateMethod(CreatureTemplateFactory.getInstance(), ReflectionUtil.getMethod(CreatureTemplateFactory.class, "createCreatureTemplate"), id, name, plural, longDesc, modelName, types, bodyType, skills, vision, sex, centimetersHigh, centimetersLong, centimetersWide,
+		return ReflectionUtil.callPrivateMethod(CreatureTemplateFactory.getInstance(), REFHELPER.createCreatureTemplate, id, name, plural, longDesc, modelName, types, bodyType, skills, vision, sex, centimetersHigh, centimetersLong, centimetersWide,
 				deathSndMale, deathSndFemale, hitSndMale, hitSndFemale, naturalArmour, handDam, kickDam, biteDam, headDam, breathDam, speed, moveRate, itemsButchered, maxHuntDist, aggress, meatMaterial);
 	}
 
@@ -656,6 +741,18 @@ public class CreatureTemplateBuilder {
 		this.sizeModX = sizeModX;
 		this.sizeModY = sizeModY;
 		this.sizeModZ = sizeModZ;
+		return this;
+	}
+	
+	/**
+	 * Set z-offset.
+	 * The default is 0.0
+	 * 
+	 * @param offZ z-offset
+	 * @return this
+	 */
+	public CreatureTemplateBuilder offZ(float offZ) {
+		this.offZ = offZ;
 		return this;
 	}
 
@@ -852,6 +949,11 @@ public class CreatureTemplateBuilder {
 
 	public CreatureTemplateBuilder leaderTemplateId(int leaderTemplateId) {
 		this.leaderTemplateId = leaderTemplateId;
+		return this;
+	}
+	
+	public CreatureTemplateBuilder reputation(int reputation) {
+		this.reputation = reputation;
 		return this;
 	}
 }
