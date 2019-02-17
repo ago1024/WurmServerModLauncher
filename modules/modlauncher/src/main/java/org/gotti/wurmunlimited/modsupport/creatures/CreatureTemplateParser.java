@@ -1,5 +1,6 @@
 package org.gotti.wurmunlimited.modsupport.creatures;
 
+import org.gotti.wurmunlimited.modsupport.IdType;
 import org.gotti.wurmunlimited.modsupport.NonFreezingNamedIdParser;
 
 /**
@@ -20,6 +21,11 @@ public class CreatureTemplateParser extends NonFreezingNamedIdParser {
 	@Override
 	protected String cleanupFieldName(String fieldName) {
 		return fieldName.replaceAll("_CID$", "");
+	}
+	
+	@Override
+	protected IdType getIdFactoryType() {
+		return IdType.CREATURETEMPLATE;
 	}
 	
 	@Override

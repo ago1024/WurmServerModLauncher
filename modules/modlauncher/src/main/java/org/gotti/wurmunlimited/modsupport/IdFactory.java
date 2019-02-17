@@ -77,6 +77,31 @@ public class IdFactory {
 	}
 
 	/**
+	 * Retrieve an existing id or -10
+	 * @param identifier Identifier
+	 * @param idType Id Type
+	 * @return id or -10
+	 */
+	public int getExistingId(String identifier, IIdType idType) {
+		try (Connection dbcon = ModSupportDb.getModSupportDb()) {
+			try (PreparedStatement ps2 = dbcon.prepareStatement("SELECT ID FROM IDS WHERE TYPE=? AND NAME=?")) {
+				ps2.setString(1, idType.typeName());
+				ps2.setString(2, identifier);
+				try (ResultSet rs = ps2.executeQuery()) {
+					if (rs.next()) {
+						int id = rs.getInt(1);
+						idType.updateLastUsedId(id);
+						return id;
+					}
+					return -10;
+				}
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
 	 * Get all known ids for a type
 	 * @param idType Id type
 	 * @return list of known ids
@@ -103,6 +128,13 @@ public class IdFactory {
 	public static int getIdFor(String identifier, IdType idType) {
 		int id = getInstance().getId(identifier, idType);
 		logger.log(Level.INFO, String.format("Using id %d for %s %s", id, idType.name().toLowerCase(Locale.ROOT), identifier));
+		return id;
+	}
+	
+	public static int getExistingIdFor(String identifier, IdType idType) {
+		int id = getInstance().getExistingId(identifier, idType);
+		if (id != -10)
+			logger.log(Level.INFO, String.format("Using id %d for %s %s", id, idType.name().toLowerCase(Locale.ROOT), identifier));
 		return id;
 	}
 	

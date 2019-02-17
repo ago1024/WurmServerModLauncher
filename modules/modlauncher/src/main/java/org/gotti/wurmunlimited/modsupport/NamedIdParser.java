@@ -42,6 +42,14 @@ public abstract class NamedIdParser {
 	protected abstract Class<?> getNamesClass();
 
 	/**
+	 * Types prefixed with "mod:" will be looked up in the IdFactory using this type
+	 * @return type of null
+	 */
+	protected IdType getIdFactoryType() {
+		return null;
+	}
+
+	/**
 	 * Test if the field name is a valid entity name.
 	 */
 	protected boolean isValidName(String fieldName) {
@@ -74,6 +82,12 @@ public abstract class NamedIdParser {
 	 * Parse the entity name or id
 	 */
 	public int parse(String name) {
+		if (getIdFactoryType() != null && name.startsWith("mod:")) {
+			int id = IdFactory.getExistingIdFor(name.substring(4), getIdFactoryType());
+			if (id != -10)
+				return id;
+			return unparsable(name);
+		}
 		try {
 			return Integer.parseInt(name);
 		} catch (NumberFormatException e) {
