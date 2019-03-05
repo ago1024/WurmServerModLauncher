@@ -17,7 +17,7 @@
 		<dependency>
 			<groupId>org.gotti.wurmunlimited</groupId>
 			<artifactId>modloader-shared</artifactId>
-			<version>0.16</version>
+			<version>0.17</version>
 		</dependency>
 		<dependency>
 			<groupId>org.gotti.wurmunlimited</groupId>
