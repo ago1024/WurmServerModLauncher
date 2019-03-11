@@ -100,7 +100,7 @@ public class SpellMod implements WurmServerMod, Configurable, ServerStartedListe
 
 			if (favorLimit < Integer.MAX_VALUE) {
 				for (Spell spell : allGodSpells) {
-					if (spell.getCost(false) > favorLimit) {
+					if (spell.getCost() > favorLimit) {
 						try {
 							ReflectionUtil.setPrivateField(spell, cost, Integer.valueOf(favorLimit));
 						} catch (IllegalAccessException | IllegalArgumentException | ClassCastException e) {
