@@ -4,10 +4,10 @@ if test -e "logging.properties"; then
 fi
 
 
-if test -x "runtime/jre1.8.0_121/bin/java"; then
-	JAVA="runtime/jre1.8.0_121/bin/java"
-elif test -x "../runtime/jre1.8.0_121/bin/java"; then
-	JAVA="../runtime/jre1.8.0_121/bin/java"
+if test -x "runtime/jre1.8.0_172/bin/java"; then
+	JAVA="runtime/jre1.8.0_172/bin/java"
+elif test -x "../runtime/jre1.8.0_172/bin/java"; then
+	JAVA="../runtime/jre1.8.0_172/bin/java"
 else
 	JAVA="java"
 fi
