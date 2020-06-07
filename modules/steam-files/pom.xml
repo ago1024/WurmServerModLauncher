@@ -4,13 +4,13 @@
 
 	<groupId>org.gotti.wurmunlimited</groupId>
 	<artifactId>steam-files</artifactId>
-	<version>0.22</version>
+	<version>0.44-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
 		<artifactId>server-modlauncher-parent</artifactId>
-		<version>0.22</version>
+		<version>0.44-SNAPSHOT</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
