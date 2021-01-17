@@ -43,16 +43,23 @@ public class ModTraits {
 	public static final int TRAIT_RIFT = 27;
 	public static final int TRAIT_TRAITOR = 28;
 	public static final int TRAIT_VALREI = 29;
+	public static final int TRAIT_IS_BRED = 63;
 	
-	public static final int COLOR_EBONY_BLACK = 23;
-	public static final int COLOR_BLOOD_BAY = 25;
-	public static final int COLOR_PIEBALD_PINTO = 24;
-	public static final int COLOR_WHITE = 18;
-	public static final int COLOR_BLACK = 17;
-	public static final int COLOR_GOLD = 16;
+	// Colors in order as defined in CreatureTemplate.colourNameOverrides
 	public static final int COLOR_BROWN = 15;
+	public static final int COLOR_GOLD = 16;
+	public static final int COLOR_BLACK = 17;
+	public static final int COLOR_WHITE = 18;
+	public static final int COLOR_PIEBALD_PINTO = 24;
+	public static final int COLOR_BLOOD_BAY = 25;
+	public static final int COLOR_EBONY_BLACK = 23;
+	public static final int COLOR_SKEWBALD_PINTO = 30;
+	public static final int COLOR_GOLD_BUCKSKIN = 31;
+	public static final int COLOR_BLACK_SILVER = 32;
+	public static final int COLOR_APPALOOSA = 33;
+	public static final int COLOR_CHESTNUT = 34;
 	
-	public static final int REGULAR_TRAITS = 
+	public static final int REGULAR_TRAITS =
 			1 << TRAIT_FIERCLY |
 			1 << TRAIT_FLEETER |
 			1 << TRAIT_TOUGH_BUGGER |
@@ -72,15 +79,21 @@ public class ModTraits {
 			1 << TRAIT_STRONG_AND_HEALTHY |
 			1 << TRAIT_SPARK;
 	
-	public static final int COLOR_TRAITS = 
-			1 << COLOR_EBONY_BLACK |
-			1 << COLOR_BLOOD_BAY |
-			1 << COLOR_PIEBALD_PINTO |
-			1 << COLOR_WHITE |
-			1 << COLOR_BLACK |
+	public static final int COLOR_TRAITS =
+			1 << COLOR_BROWN |
 			1 << COLOR_GOLD |
-			1 << COLOR_BROWN;
-
+			1 << COLOR_BLACK |
+			1 << COLOR_WHITE |
+			1 << COLOR_PIEBALD_PINTO |
+			1 << COLOR_BLOOD_BAY |
+			1 << COLOR_EBONY_BLACK |
+			1 << COLOR_SKEWBALD_PINTO |
+			1 << COLOR_GOLD_BUCKSKIN |
+			1 << COLOR_BLACK_SILVER |
+			1 << COLOR_APPALOOSA |
+			1 << COLOR_CHESTNUT |
+			0;
+	
 	private static final Logger LOGGER = Logger.getLogger(Traits.class.getName());
 
 	private static Method creatureGetTraits;

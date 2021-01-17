@@ -6,8 +6,11 @@ import java.util.BitSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+import java.util.stream.IntStream;
 
 import org.junit.Test;
+
+import com.wurmonline.server.MiscConstants;
 
 public class ModTraitsTest {
 
@@ -35,13 +38,7 @@ public class ModTraitsTest {
 		long traits = ModTraits.calcNewTraits(random, 90, false, mothertraits, fathertraits, regulartraits, colortraits, false);
 		
 		BitSet expected = new BitSet();
-		expected.set(4);
-		expected.set(10);
-		expected.set(13);
-		expected.set(16);
-		expected.set(20);
-		expected.set(28);
-		expected.set(63);
+		IntStream.of(7, 28, 49, 54, 59, 63).forEach(expected::set);
 		
 		BitSet traitBits = new BitSet();
 		ModTraits.setTraitBits(traits, traitBits);
@@ -49,5 +46,19 @@ public class ModTraitsTest {
 		assertThat(traitBits).isEqualTo(expected);
 	}
 	
-
+	/**
+	 * verify that the server code did not change the number of traits
+	 */
+	@Test
+	public void testMaxColorTraits() {
+		assertThat(MiscConstants.CURRENT_MAX_TRAIT).isEqualTo(34);
+	}
+	
+	/**
+	 * verify that the server code did not change the number of creature colours
+	 */
+	@Test
+	public void testNumCreatureColours() {
+		assertThat(MiscConstants.CURRENT_NUM_CREATURE_COLOURS).isEqualTo(13);
+	}
 }
