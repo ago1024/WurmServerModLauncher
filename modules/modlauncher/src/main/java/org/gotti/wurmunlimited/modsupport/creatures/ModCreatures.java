@@ -205,11 +205,18 @@ public class ModCreatures {
 			}
 			
 			
-			ctCreature.getMethod("die", "(ZLjava/lang/String;)V").instrument(new ExprEditor() {
+			ctCreature.getMethod("die", "(ZLjava/lang/String;Z)V").instrument(new ExprEditor() {
 				@Override
 				public void edit(FieldAccess f) throws CannotCompileException {
 					if (f.getClassName().equals("com.wurmonline.server.creatures.CreatureTemplate") && f.getFieldName().equals("isHorse")) {
-						f.replace("{ String name = modcreatures.getTraitName(this); if (name != null) { corpse.setDescription(name); $_ = false; } else { $_ = $proceed($$); } }");
+						f.replace("{ $_ = modcreatures.hasTraits(this.getTemplate().getTemplateId()) || $proceed($$); }");
+					}
+				}
+				
+				@Override
+				public void edit(MethodCall m) throws CannotCompileException {
+					if (m.getClassName().equals("com.wurmonline.server.creatures.CreatureTemplate") && m.getMethodName().equals("getColourName")) {
+						m.replace("{ String color = modcreatures.getColourName(this); if (color != null) { $_ = color; } else { $_ = $proceed($$); } }");
 					}
 				}
 				
