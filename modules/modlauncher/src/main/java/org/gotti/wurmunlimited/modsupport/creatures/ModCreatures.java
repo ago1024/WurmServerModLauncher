@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
+import org.gotti.wurmunlimited.modloader.callbacks.CallbackApi;
 import org.gotti.wurmunlimited.modloader.classhooks.HookException;
 import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 import org.gotti.wurmunlimited.modloader.classhooks.InvocationHandlerFactory;
@@ -18,6 +19,7 @@ import org.gotti.wurmunlimited.modsupport.vehicles.ModVehicleBehaviours;
 import com.wurmonline.server.creatures.Creature;
 import com.wurmonline.server.creatures.CreatureTemplate;
 import com.wurmonline.server.creatures.Traits;
+import com.wurmonline.shared.util.StringUtilities;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -66,11 +68,11 @@ public class ModCreatures {
 			return name();
 		}
 	}
-
+	
 	private static List<ModCreature> creatures = new LinkedList<>();
 	private static Map<Integer, ModCreature> creaturesById = new HashMap<>();
 	private static boolean inited;
-		
+	
 	public static void init() {
 		if (inited)
 			return;
@@ -159,21 +161,19 @@ public class ModCreatures {
 		});
 		
 		try {
+			/**
+			 * Replace call for Traits.getTraitString() with a call to GmSetTraitsCallbacks.getTraitString()
+			 * where custom colors and custom traits are checked checked first before falling back to Traits.getTraitString()
+			 */
+			CtClass ctGmSetTraits = classPool.get("com.wurmonline.server.questions.GmSetTraits");
+			HookManager.getInstance().addCallback(ctGmSetTraits, "modcreatures", new GmSetTraitsCallbacks());
+			
 			// com.wurmonline.server.questions.GmSetTraits.sendQuestion()
-			classPool.get("com.wurmonline.server.questions.GmSetTraits").getMethod("sendQuestion", "()V").instrument(new ExprEditor() {
+			ctGmSetTraits.getMethod("sendQuestion", "()V").instrument(new ExprEditor() {
 				@Override
 				public void edit(MethodCall m) throws CannotCompileException {
 					if (m.getClassName().equals("com.wurmonline.server.creatures.Traits") && m.getMethodName().equals("getTraitString")) {
-						StringBuffer buffer = new StringBuffer();
-						buffer.append("{\n");
-						buffer.append("String name = null;\n");
-						buffer.append("org.gotti.wurmunlimited.modsupport.creatures.ModCreature c = org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.getModCreature(creature.getTemplate().getTemplateId());\n");
-						for (CustomTrait customTrait : CustomTrait.values()) {
-							buffer.append("if (c != null && $1 == " + customTrait.getTraitNumber() + ") { name = c.getTraitName(" + customTrait.getTraitNumber() + "); $_ = name != null ? name : \"\"; } else \n");
-						}
-						buffer.append("$_ = $proceed($$);\n");
-						buffer.append("}");
-						m.replace(buffer.toString());
+						m.replace("$_ = modcreatures.getTraitString(creature, $1);");
 					}
 				}
 			});
@@ -184,24 +184,32 @@ public class ModCreatures {
 		
 		try {
 			final CtClass ctCreature = classPool.get("com.wurmonline.server.creatures.Creature");
+			HookManager.getInstance().addCallback(ctCreature, "modcreatures", new CreatureCallbacks());
 
 			{
 				// com.wurmonline.server.creatures.Creature.getModelName()
-				String code = "{ String name = org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.getModelName($0); if (name != null) { return name; }; }";
+				String code = "{ String name = modcreatures.getModelName($0); if (name != null) { return name; }; }";
 				ctCreature.getMethod("getModelName", Descriptor.ofMethod(classPool.get("java.lang.String"), new CtClass[0])).insertBefore(code);
 			}
 			
 			{
 				// com.wurmonline.server.creatures.Creature.getColourName()
-				String code = "{ String colour = org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.getColourName($0); if (colour != null) { return colour; }; }";
+				String code = "{ String colour = modcreatures.getColourName($0); if (colour != null) { return colour; }; }";
 				ctCreature.getMethod("getColourName", Descriptor.ofMethod(classPool.get("java.lang.String"), new CtClass[0])).insertBefore(code);
 			}
+			
+			{
+				// com.wurmonline.server.creatures.Creature.getColourName(int trait)
+				String code = "{ String colour = modcreatures.getColourName($0, $1); if (colour != null) { return colour; }; }";
+				ctCreature.getMethod("getColourName", Descriptor.ofMethod(classPool.get("java.lang.String"), new CtClass[] { classPool.get("int") })).insertBefore(code);
+			}
+			
 			
 			ctCreature.getMethod("die", "(ZLjava/lang/String;)V").instrument(new ExprEditor() {
 				@Override
 				public void edit(FieldAccess f) throws CannotCompileException {
 					if (f.getClassName().equals("com.wurmonline.server.creatures.CreatureTemplate") && f.getFieldName().equals("isHorse")) {
-						f.replace("{ String name = org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.getTraitName(this); if (name != null) { corpse.setDescription(name); $_ = false; } else { $_ = $proceed($$); } }");
+						f.replace("{ String name = modcreatures.getTraitName(this); if (name != null) { corpse.setDescription(name); $_ = false; } else { $_ = $proceed($$); } }");
 					}
 				}
 				
@@ -211,7 +219,7 @@ public class ModCreatures {
 				@Override
 				public void edit(MethodCall m) throws CannotCompileException {
 					if (m.getClassName().equals("com.wurmonline.server.creatures.Traits") && m.getMethodName().equals("calcNewTraits") && m.getSignature().equals("(DZJJ)J")) {
-						m.replace("$_ = org.gotti.wurmunlimited.modsupport.creatures.ModCreatures#calcNewTraits($1, $2, this, father);");
+						m.replace("$_ = modcreatures.calcNewTraits($1, $2, this, father);");
 					}
 				}
 			});
@@ -224,15 +232,7 @@ public class ModCreatures {
 						public void edit(MethodCall m) throws CannotCompileException {
 							if (m.getClassName().equals("com.wurmonline.server.creatures.Creature") && m.getMethodName().equals("isHorse")) {
 								StringBuffer code = new StringBuffer();
-								
-								code.append("{");
-								code.append("if (org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.hasTraits($0.getTemplate().getTemplateId())) { ");
-								code.append("org.gotti.wurmunlimited.modsupport.creatures.ModCreatures.assignTraits($0);");
-								code.append("$_ = false;");
-								code.append("} else {");
-								code.append("$_ = $proceed($$);");
-								code.append("}");
-								code.append("}");
+								code.append("$_ = !modcreatures.assignTraits($0) && $proceed($$);");
 								m.replace(code.toString());
 							}
 						}
@@ -248,7 +248,7 @@ public class ModCreatures {
 
 		inited = true;
 	}
-
+	
 	public static void addCreature(ModCreature creature) {
 		if (!inited) {
 			throw new RuntimeException("ModCreatures was not initied");
@@ -345,5 +345,80 @@ public class ModCreatures {
 		}
 		
 		return modMother.calcNewTraits(breederSkill, inbred, mothertraits, fathertraits);
+	}
+	
+	private static class GmSetTraitsCallbacks {
+		@CallbackApi
+		public String getTraitString(Creature creature, int trait) {
+			ModCreature modCreature = ModCreatures.getModCreature(creature.getTemplate().getTemplateId());
+			if (modCreature != null && isCustomTrait(trait)) {
+				String colorName = modCreature.getColourName(trait);
+				if (colorName != null)
+					return StringUtilities.raiseFirstLetterOnly(colorName);
+				
+				String traitName = modCreature.getTraitName(trait);
+				if (traitName != null)
+					return traitName;
+			}
+			
+			return Traits.getTraitString(trait);
+		}
+	}
+	
+	private static class CreatureCallbacks {
+		
+		@CallbackApi
+		public String getModelName(Creature creature) {
+			return ModCreatures.getModelName(creature);
+		}
+		
+		@CallbackApi
+		public String getColourName(Creature creature) {
+			return ModCreatures.getColourName(creature);
+		}
+		
+		@CallbackApi
+		public String getColourName(Creature creature, int trait) {
+			ModCreature c = ModCreatures.getModCreature(creature.getTemplate().getTemplateId());
+			if (c != null && c.hasTraits()) {
+				// The creature has traits. Return the color name or an empty string
+				String color = c.getColourName(trait);
+				if (color != null) {
+					return color;
+				}
+				return "";
+			}
+			return null;
+		}
+		
+		
+		@CallbackApi
+		public String getTraitName() {
+			return ModCreatures.getTraitName(null);
+		}
+		
+		@CallbackApi
+		public boolean hasTraits(int templateId) {
+			return ModCreatures.hasTraits(templateId);
+		}
+		
+		@CallbackApi
+		public long calcNewTraits(final double breederSkill, final boolean inbred, final Creature mother, final Creature father) {
+			return ModCreatures.calcNewTraits(breederSkill, inbred, mother, father);
+		}
+		
+		/**
+		 * Assign traits if the creature has custom traits.
+		 * @return true if the creature has custom traits, false otherwise
+		 */
+		@CallbackApi
+		public boolean assignTraits(Creature creature) {
+			if (ModCreatures.hasTraits(creature.getTemplate().getTemplateId())) {
+				ModCreatures.assignTraits(creature);
+				return true;
+			}
+			return false;
+		}
+		
 	}
 }
