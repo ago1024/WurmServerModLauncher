@@ -113,12 +113,74 @@ public class ModTraits {
 		}
 	}
 
+	/**
+	 * Calculate new traits. Traits that are passed along by mother and father are preferred. Breeding skill determines the number of traits to
+	 * create. Inbreeding increases the chance of negative traits.
+	 * 
+	 * Trait bits are encoded in a 64bit number
+	 * 
+	 * @param breederSkill breeding skill of breeder
+	 * @param inbred is the new creature inbred
+	 * @param mothertraits traits of the mother
+	 * @param fathertraits traits of the father
+	 * @param regulartraits regular (non-color) traits
+	 * @param colortraits color traits
+	 * @param isThisAPvpServer pvp server
+	 * @return traits
+	 */
 	public static long calcNewTraits(final double breederSkill, final boolean inbred, final long mothertraits, final long fathertraits, final long regulartraits, final long colortraits) {
 		final Random rand = new Random();
 		return calcNewTraits(rand, breederSkill, inbred, mothertraits, fathertraits, regulartraits, colortraits, Servers.isThisAPvpServer());
 	}
-	
+
+	/**
+	 * Calculate new traits. Traits that are passed along by mother and father are preferred. Breeding skill determines the number of traits to
+	 * create. Inbreeding increases the chance of negative traits.
+	 * 
+	 * Trait bits are encoded in a 64bit number
+	 * 
+	 * @param rand random number generator
+	 * @param breederSkill breeding skill of breeder
+	 * @param inbred is the new creature inbred
+	 * @param mothertraits traits of the mother
+	 * @param fathertraits traits of the father
+	 * @param regulartraits regular (non-color) traits
+	 * @param colortraits color traits
+	 * @param isThisAPvpServer pvp server
+	 * @return traits
+	 */
 	public static long calcNewTraits(Random rand, final double breederSkill, final boolean inbred, final long mothertraits, final long fathertraits, final long regulartraits, final long colortraits, boolean isThisAPvpServer) {
+		TraitsInfo traitsInfo = new TraitsInfo() {
+			@Override
+			public boolean isTraitNegative(int trait) {
+				return Traits.isTraitNegative(trait);
+			}
+			@Override
+			public boolean isTraitNeutral(int trait) {
+				return Traits.isTraitNeutral(trait);
+			}
+		};
+		return calcNewTraits(rand, breederSkill, inbred, mothertraits, fathertraits, regulartraits, colortraits, isThisAPvpServer, traitsInfo);
+	}
+	
+	/**
+	 * Calculate new traits. Traits that are passed along by mother and father are preferred. Breeding skill determines the number of traits to
+	 * create. Inbreeding increases the chance of negative traits.
+	 * 
+	 * Trait bits are encoded in a 64bit number
+	 * 
+	 * @param rand random number generator
+	 * @param breederSkill breeding skill of breeder
+	 * @param inbred is the new creature inbred
+	 * @param mothertraits traits of the mother
+	 * @param fathertraits traits of the father
+	 * @param regulartraits regular (non-color) traits
+	 * @param colortraits color traits
+	 * @param isThisAPvpServer pvp server
+	 * @param traitsInfo interface to access wether a trait is negative or neutral
+	 * @return traits
+	 */
+	public static long calcNewTraits(Random rand, final double breederSkill, final boolean inbred, final long mothertraits, final long fathertraits, final long regulartraits, final long colortraits, boolean isThisAPvpServer, TraitsInfo traitsInfo) {
 		
 		final BitSet motherSet = new BitSet(64);
 		final BitSet fatherSet = new BitSet(64);
@@ -143,31 +205,31 @@ public class ModTraits {
 			availableTraits.add(bitIndex);
 			if (motherSet.get(bitIndex) && fatherSet.get(bitIndex)) {
 				int num = 50;
-				if (inbred && Traits.isTraitNegative(bitIndex)) {
+				if (inbred && traitsInfo.isTraitNegative(bitIndex)) {
 					num += 10;
 				}
 				newSet.put(bitIndex, num);
-				if (!Traits.isTraitNeutral(bitIndex)) {
+				if (!traitsInfo.isTraitNeutral(bitIndex)) {
 					allocated += 50;
 				}
 				availableTraits.remove((Object) bitIndex);
 			} else if (motherSet.get(bitIndex)) {
 				int num = 30;
-				if (inbred && Traits.isTraitNegative(bitIndex)) {
+				if (inbred && traitsInfo.isTraitNegative(bitIndex)) {
 					num += 10;
 				}
 				newSet.put(bitIndex, num);
-				if (!Traits.isTraitNeutral(bitIndex)) {
+				if (!traitsInfo.isTraitNeutral(bitIndex)) {
 					allocated += 30;
 				}
 				availableTraits.remove((Object) bitIndex);
 			} else if (fatherSet.get(bitIndex)) {
 				int num = 20;
-				if (inbred && Traits.isTraitNegative(bitIndex)) {
+				if (inbred && traitsInfo.isTraitNegative(bitIndex)) {
 					num += 10;
 				}
 				newSet.put(bitIndex, num);
-				if (!Traits.isTraitNeutral(bitIndex)) {
+				if (!traitsInfo.isTraitNeutral(bitIndex)) {
 					allocated += 20;
 				}
 				availableTraits.remove((Object) bitIndex);
@@ -185,13 +247,13 @@ public class ModTraits {
 				if (rand.nextBoolean()) {
 					int num2 = 20;
 					final Integer newTrait = availableTraits.remove(rand.nextInt(availableTraits.size()));
-					if (Traits.isTraitNegative(newTrait)) {
+					if (traitsInfo.isTraitNegative(newTrait)) {
 						num2 -= maxTraits;
 						if (inbred) {
 							num2 += 10;
 						}
 					}
-					if (Traits.isTraitNeutral(newTrait)) {
+					if (traitsInfo.isTraitNeutral(newTrait)) {
 						--x;
 					}
 					newSet.put(newTrait, num2);
@@ -207,7 +269,7 @@ public class ModTraits {
 				if (selected != 22 && selected != 27) {
 					childSet.set(selected, true);
 					newSet.remove(selected);
-					if (Traits.isTraitNeutral(selected)) {
+					if (traitsInfo.isTraitNeutral(selected)) {
 						--t;
 					}
 				}
@@ -263,6 +325,14 @@ public class ModTraits {
 
 	static long getTraitBits(final BitSet bitsprovided) {
 		return bitsprovided.toLongArray()[0];
+	}
+
+	public interface TraitsInfo {
+
+		boolean isTraitNegative(final int trait);
+
+		boolean isTraitNeutral(final int trait);
+
 	}
 
 }
