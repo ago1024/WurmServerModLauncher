@@ -32,6 +32,8 @@ public interface ServerPacks {
 
 	void addServerPack(Path path, ServerPackOptions... options);
 
+	void addServerPack(String name, Path path, ServerPackOptions... options);
+
 	void addServerPack(byte[] data, ServerPackOptions... options);
 
 	void addServerPack(String name, byte[] data, ServerPackOptions... options);

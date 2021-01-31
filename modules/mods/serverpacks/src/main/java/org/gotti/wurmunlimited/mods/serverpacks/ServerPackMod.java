@@ -164,6 +164,11 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 		addPack(sha1Sum, new PackInfo(packPath, options));
 		logger.info("Added pack " + sha1Sum + " for pack " + packPath);
 	}
+	
+	private void addPack(String name, Path packPath, ServerPackOptions... options) {
+		addPack(name, new PackInfo(packPath, options));
+		logger.info("Added pack " + name + " for pack " + packPath);
+	}
 
 	private void addPack(byte[] data, ServerPackOptions... options) throws NoSuchAlgorithmException, IOException {
 		String sha1Sum = getSha1Sum(new ByteArrayInputStream(data));
@@ -264,14 +269,25 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 			logger.log(Level.WARNING, e.getMessage(), e);
 		}
 	}
-
-	@Override
-	public void addServerPack(String name, byte[] data, ServerPackOptions... options) {
+	
+	private void checkPackName(String name) {
 		for (char c : name.toCharArray()) {
 			if (c == '.' || c == '/' || c == '%' || c == '?' || c == '#') {
 				throw new IllegalArgumentException(name);
 			}
 		}
+	}
+
+	@Override
+	public void addServerPack(String name, byte[] data, ServerPackOptions... options) {
+		checkPackName(name);
 		addPack(name, data, options);
 	}
+	
+	@Override
+	public void addServerPack(String name, Path path, ServerPackOptions... options) {
+		checkPackName(name);
+		addPack(name, path, options);
+	}
+	
 }
