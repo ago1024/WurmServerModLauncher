@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.gotti.wurmunlimited.mods.httpserver.ModHttpServerImpl;
 import org.gotti.wurmunlimited.mods.httpserver.api.ModHttpServer;
 import org.gotti.wurmunlimited.mods.serverpacks.api.ServerPacks;
 
+import com.wurmonline.server.Players;
 import com.wurmonline.server.players.Player;
 
 public class ServerPackMod implements WurmServerMod, ModListener, Initable, Configurable, ServerStartedListener, ServerPacks {
@@ -65,31 +67,7 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 					logger.log(Level.WARNING, "HTTP server did not start properly. No server packs will be delivered.");
 					return;
 				}
-				try {
-					URI uri = ModHttpServer.getInstance().getUri().resolve(prefix);
-					try (PacketWriter writer = new PacketWriter()) {
-						writer.writeInt(packs.size());
-						for (Map.Entry<String, PackInfo> entry : packs.entrySet()) {
-							final String packId = entry.getKey();
-							final PackInfo info = entry.getValue();
-
-							final Set<String> options = new LinkedHashSet<>();
-							if (info.prepend) {
-								options.add("prepend");
-							}
-							if (info.force) {
-								options.add("force");
-							}
-							final String query = options.isEmpty() ? "" : options.stream().collect(Collectors.joining("&", "?", ""));
-							final URI packUri = uri.resolve(packId);
-							writer.writeUTF(packId);
-							writer.writeUTF(packUri.toString() + query);
-						}
-						channel.sendMessage(player, writer.getBytes());
-					}
-				} catch (IOException | URISyntaxException e) {
-					logger.log(Level.WARNING, e.getMessage(), e);
-				}
+				notifyPlayer(player, packs);
 			}
 
 			@Override
@@ -183,21 +161,63 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 
 	private void addPack(Path packPath, ServerPackOptions... options) throws NoSuchAlgorithmException, IOException {
 		String sha1Sum = getSha1Sum(packPath);
-		packs.put(sha1Sum, new PackInfo(packPath, options));
+		addPack(sha1Sum, new PackInfo(packPath, options));
 		logger.info("Added pack " + sha1Sum + " for pack " + packPath);
 	}
 
 	private void addPack(byte[] data, ServerPackOptions... options) throws NoSuchAlgorithmException, IOException {
 		String sha1Sum = getSha1Sum(new ByteArrayInputStream(data));
-		packs.put(sha1Sum, new PackInfo(data, options));
+		addPack(sha1Sum, new PackInfo(data, options));
 		logger.info("Added pack " + sha1Sum);
 	}
 
 	private void addPack(String name, byte[] data, ServerPackOptions... options) {
-		packs.put(name, new PackInfo(data, options));
+		addPack(name, new PackInfo(data, options));
 		logger.info("Added pack " + name);
 	}
+	
+	private void addPack(String name, PackInfo packInfo) {
+		packs.put(name, packInfo);
+		notifyPlayers(Collections.singletonMap(name, packInfo));
+	}
+	
+	private void notifyPlayer(Player player, Map<String, PackInfo> packs) {
+		try {
+			URI uri = ModHttpServer.getInstance().getUri().resolve(prefix);
+			try (PacketWriter writer = new PacketWriter()) {
+				writer.writeInt(packs.size());
+				for (Map.Entry<String, PackInfo> entry : packs.entrySet()) {
+					final String packId = entry.getKey();
+					final PackInfo info = entry.getValue();
 
+					final Set<String> options = new LinkedHashSet<>();
+					if (info.prepend) {
+						options.add("prepend");
+					}
+					if (info.force) {
+						options.add("force");
+					}
+					final String query = options.isEmpty() ? "" : options.stream().collect(Collectors.joining("&", "?", ""));
+					final URI packUri = uri.resolve(packId);
+					writer.writeUTF(packId);
+					writer.writeUTF(packUri.toString() + query);
+				}
+				channel.sendMessage(player, writer.getBytes());
+			}
+		} catch (IOException | URISyntaxException e) {
+			logger.log(Level.WARNING, e.getMessage(), e);
+		}
+	}
+	
+	private void notifyPlayers(Map<String, PackInfo> packs) {
+		if (this.channel != null && this.prefix != null) {
+			for (Player player : Players.getInstance().getPlayers()) {
+				if (channel.isActiveForPlayer(player)) {
+					notifyPlayer(player, packs);
+				}
+			}
+		}
+	}
 
 	private InputStream servePack(String packid) {
 		try {
