@@ -32,7 +32,18 @@ public class ScriptManager {
 		return instance;
 	}
 	
+	public ScriptContext scriptContext(Path scriptPath, List<Path> importPaths, ClassLoader classLoader) {
+		return new ScriptContext(scriptPath, importPaths, classLoader);
+	}
+
 	public ScriptEngine refresh(Path scriptPath, List<Path> importPaths) throws IOException, ScriptException {
+		return refresh(scriptPath, importPaths, null);
+	}
+
+	public ScriptEngine refresh(Path scriptPath, List<Path> importPaths, ClassLoader classLoader) throws IOException, ScriptException {
+		if (classLoader != null) {
+			Thread.currentThread().setContextClassLoader(classLoader);
+		}
 		ScriptEngine engine = manager.getEngineByName("nashorn");
 		//engine.put("readFully", new ReadFully(scriptPath));
 		
@@ -76,6 +87,31 @@ public class ScriptManager {
 			} catch (NoSuchMethodException e) {
 				throw new ScriptException(e);
 			}
+		}
+	}
+
+	public class ScriptContext {
+
+		private final Path scriptPath;
+		private final List<Path> importPaths;
+		private final ClassLoader classLoader;
+
+		private ScriptContext(Path scriptPath, List<Path> importPaths, ClassLoader classLoader) {
+			this.scriptPath = scriptPath;
+			this.importPaths = importPaths;
+			this.classLoader = classLoader;
+		}
+
+		public void refresh() throws IOException, ScriptException {
+			ScriptManager.this.refresh(scriptPath, importPaths, classLoader);
+		}
+
+		public Object invoke(String methodName, Map<String, Object> context, Object... args) throws IOException, ScriptException {
+			final ScriptEngine engine = engines.get(scriptPath);
+			if (engine == null) {
+				this.refresh();
+			}
+			return ScriptManager.this.invoke(scriptPath, methodName, context, importPaths, args);
 		}
 	}
 }

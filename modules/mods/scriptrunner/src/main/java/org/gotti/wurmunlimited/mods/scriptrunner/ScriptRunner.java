@@ -16,6 +16,8 @@ import java.util.stream.StreamSupport;
 
 import javax.script.ScriptException;
 
+import org.gotti.wurmunlimited.mods.scriptrunner.ScriptManager.ScriptContext;
+
 public class ScriptRunner {
 	
 	private static class ScriptState {
@@ -46,17 +48,23 @@ public class ScriptRunner {
 	private List<Path> scripts = Collections.emptyList();
 	private String methodName;
 	private List<Path> importPaths;
+	private ClassLoader classLoader;
 
-	public ScriptRunner(Path folder, String methodName, boolean refresh, List<Path> importDirs) {
+	public ScriptRunner(Path folder, String methodName, boolean refresh, List<Path> importDirs, ClassLoader classLoader) {
 		this.refresh = refresh;
 		this.folder = folder;
 		this.methodName = methodName;
 		this.states = new HashMap<>(); 
 		this.importPaths = importDirs;
+		this.classLoader = classLoader;
 		
 		refreshScriptNames();
 	}
 	
+	public ScriptRunner(Path folder, String methodName, boolean refresh, List<Path> importDirs) {
+		this(folder, methodName, refresh, importDirs, null);
+	}
+
 	public void refreshScriptNames() {
 		if (!Files.exists(folder)) {
 			scripts = Collections.emptyList();
@@ -73,10 +81,11 @@ public class ScriptRunner {
 	
 	private Object runScript(Path file, Map<String, Object> context, Object... args) {
 		try {
+			ScriptContext scriptContext = ScriptManager.getInstance().scriptContext(file, importPaths, classLoader);
 			if (refresh && !states.computeIfAbsent(file, f -> new ScriptState(f)).check()) {
-				ScriptManager.getInstance().refresh(file, importPaths);
+				scriptContext.refresh();
 			}
-			return ScriptManager.getInstance().invoke(file, methodName, context, importPaths, args);
+			return scriptContext.invoke(methodName, context, args);
 		} catch (IOException | ScriptException e) {
 			String logger = String.format("%s.%s.%s", ScriptRunner.class.getName(), methodName, file.getFileName());
 			Logger.getLogger(logger).log(Level.SEVERE, e.getMessage(), e);

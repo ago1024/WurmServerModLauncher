@@ -55,17 +55,19 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 		ModCreatures.init();
 	}
 	
-	private void initRunner(String name, Properties properties, Path scriptsPath) {
-		boolean refresh = Boolean.parseBoolean(properties.getProperty(name + ".refresh", "false"));
-		final Path path = scriptsPath.resolve(name);
+	private void initRunner(String triggerName, Properties properties, Path scriptsPath, ModEntry<?> modEntry) {
+		boolean refresh = Boolean.parseBoolean(properties.getProperty(triggerName + ".refresh", "false"));
+		final Path path = scriptsPath.resolve(triggerName);
 		
 		if (!Files.exists(path) && !refresh) {
 			return;
 		}
-		LOGGER.info(String.format("script runner %s, path: %s, refresh: %s", name, path, refresh));
+		LOGGER.info(String.format("script runner %s, path: %s, refresh: %s", triggerName, path, refresh));
 		
 		ArrayList<Path> importPaths = new ArrayList<Path>();
+		// always add the scriptrunner imports
 		importPaths.add(Paths.get("mods").resolve("scriptrunner/imports"));
+		// add module specific import path
 		if (properties.getProperty("scriptsImport") != null) {
 			Path importPath = Paths.get("mods").resolve(properties.getProperty("scriptsImport"));
 			if (Files.isDirectory(importPath)) {
@@ -73,7 +75,8 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 			}
 		}
 		
-		scriptRunners.computeIfAbsent(name, key -> new ArrayList<>()).add(new ScriptRunner(path, name, refresh, importPaths));
+		final ClassLoader classLoader = modEntry.getModClassLoader();
+		scriptRunners.computeIfAbsent(triggerName, key -> new ArrayList<>()).add(new ScriptRunner(path, triggerName, refresh, importPaths, classLoader));
 	}
 	
 	private List<Object> run(List<ScriptRunner> runners, Object... args) {
@@ -135,23 +138,45 @@ public class ScriptRunnerMod implements WurmServerMod, Configurable, Initable, P
 		
 		Properties properties = entry.getProperties();
 		
-		String scriptsFolder = properties.getProperty("scriptsFolder", entry.getName() + "/scripts");
+		final String modName = entry.getName();
+		final String defaultScriptsFolder = modName + "/scripts";
+		final String scriptsFolder = properties.getProperty("scriptsFolder", defaultScriptsFolder);
 		
 		Path scriptsPath = Paths.get("mods").resolve(scriptsFolder);
 		if (Files.isDirectory(scriptsPath)) {
-			LOGGER.info(entry.getName() + ": scriptsFolder: " + scriptsFolder);
+			LOGGER.info(modName + ": scriptsFolder: " + scriptsFolder);
 		} else if (entry.getWurmMod() == this) {
+			// the scripts path must exist if the mod that's being initialized is the scriptrunner mod
 			throw new IllegalArgumentException("ScriptsPath does not exist: " + scriptsPath);
 		} else {
 			return;
 		}
+
+		ModContext context = new ModContext(properties, scriptsPath, entry);
+
+		context.initRunner("onServerStarted");
+		context.initRunner("onServerShutdown");
+		context.initRunner("onPlayerLogin");
+		context.initRunner("onPlayerLogout");
+		context.initRunner("onPlayerMessage");
+		context.initRunner("onItemTemplatesCreated");
+		context.initRunner("onServerPoll");
+	}
+
+	private class ModContext {
 		
-		initRunner("onServerStarted", properties, scriptsPath);
-		initRunner("onServerShutdown", properties, scriptsPath);
-		initRunner("onPlayerLogin", properties, scriptsPath);
-		initRunner("onPlayerLogout", properties, scriptsPath);
-		initRunner("onPlayerMessage", properties, scriptsPath);
-		initRunner("onItemTemplatesCreated", properties, scriptsPath);
-		initRunner("onServerPoll", properties, scriptsPath);
+		private final Properties properties;
+		private final Path scriptsPath;
+		private final ModEntry<?> modEntry;
+
+		public ModContext(Properties properties, Path scriptsPath, ModEntry<?> modEntry) {
+			this.properties = properties;
+			this.scriptsPath = scriptsPath;
+			this.modEntry = modEntry;
+		}
+
+		private void initRunner(String triggerName) {
+			ScriptRunnerMod.this.initRunner(triggerName, properties, scriptsPath, modEntry);
+		}
 	}
 }
