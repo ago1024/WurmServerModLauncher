@@ -52,9 +52,39 @@ public class ModCreatures {
 		Custom15(38),
 		Custom16(39),
 		Custom17(40),
+		Custom18(41),
+		Custom19(42),
+		Custom20(43),
+		Custom21(44),
+		Custom22(45),
+		Custom23(46),
+		Custom24(47),
+		Custom25(48),
+		Custom26(49),
+		Custom27(50),
+		Custom28(51),
+		Custom29(52),
+		Custom30(53),
+		Custom31(54),
+		Custom32(55),
+		Custom33(56),
+		Custom34(57),
+		Custom35(58),
+		Custom36(59),
+		Custom37(60),
+		Custom38(61),
+		Custom39(62),
 		;
 		
+		private static long customTraits;
 		private int number;
+		
+		static {
+			customTraits = 0;
+			for (CustomTrait trait : values()) {
+				customTraits |= 1l << trait.getTraitNumber();
+			}
+		}
 
 		private CustomTrait(int number) {
 			this.number = number;
@@ -66,6 +96,12 @@ public class ModCreatures {
 		
 		public String getTraitName() {
 			return name();
+		}
+		
+		public static boolean isCustomTrait(int number) {
+			if (number <= 0 || number > 63)
+				return false;
+			return (customTraits & (1l << number)) != 0;
 		}
 	}
 	
@@ -151,7 +187,7 @@ public class ModCreatures {
 						boolean[] neutralTraits = ReflectionUtil.getPrivateField(Traits.class, ReflectionUtil.getField(Traits.class, "neutralTraits"));
 						
 						for (CustomTrait customTrait : CustomTrait.values()) {
-							neutralTraits[customTrait.getTraitNumber()] = true;;
+							neutralTraits[customTrait.getTraitNumber()] = true;
 						}
 						
 						return null;
@@ -333,12 +369,7 @@ public class ModCreatures {
 	}
 
 	public static boolean isCustomTrait(int trait) {
-		for (CustomTrait customTrait : CustomTrait.values()) {
-			if (trait == customTrait.getTraitNumber()) {
-				return true;
-			}
-		}
-		return false;
+		return CustomTrait.isCustomTrait(trait);
 	}
 	
 	public static long calcNewTraits(final double breederSkill, final boolean inbred, final Creature mother, final Creature father) {
