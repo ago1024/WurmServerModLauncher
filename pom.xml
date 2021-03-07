@@ -3,7 +3,7 @@
 
 	<groupId>org.gotti.wurmunlimited</groupId>
 	<artifactId>server-modlauncher-parent</artifactId>
-	<version>0.45-SNAPSHOT</version>
+	<version>0.45</version>
 	<packaging>pom</packaging>
 
 	<name>server modlauncher parent</name>
