@@ -30,6 +30,8 @@ public class ModTraits {
 	public static final int TRAIT_STRONG_LEGS = 6;
 	public static final int TRAIT_KEEN_SENSES = 7;
 	public static final int TRAIT_MALFORMED_LEGS = 8;
+	public static final int TRAIT_DIFFERENT_LENGTH = 9;
+	@Deprecated
 	public static final int TRAIT_DIFFERNENT_LENGTH = 9;
 	public static final int TRAIT_OVERLY_AGGRESSIVE = 10;
 	public static final int TRAIT_UNMOTIVATED = 11;
@@ -69,7 +71,7 @@ public class ModTraits {
 			1 << TRAIT_STRONG_LEGS |
 			1 << TRAIT_KEEN_SENSES |
 			1 << TRAIT_MALFORMED_LEGS |
-			1 << TRAIT_DIFFERNENT_LENGTH |
+			1 << TRAIT_DIFFERENT_LENGTH |
 			1 << TRAIT_OVERLY_AGGRESSIVE |
 			1 << TRAIT_UNMOTIVATED |
 			1 << TRAIT_STRONG_WILLED |
