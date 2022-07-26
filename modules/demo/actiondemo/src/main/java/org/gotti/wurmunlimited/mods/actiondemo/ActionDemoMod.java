@@ -15,7 +15,7 @@ import com.wurmonline.server.items.ItemTypes;
 
 public class ActionDemoMod implements WurmServerMod, Initable, PreInitable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants {
 
-	private static Logger logger = Logger.getLogger(ActionDemoMod.class.getName());
+	private static final Logger logger = Logger.getLogger(ActionDemoMod.class.getName());
 
 	@Override
 	public void onItemTemplatesCreated() {

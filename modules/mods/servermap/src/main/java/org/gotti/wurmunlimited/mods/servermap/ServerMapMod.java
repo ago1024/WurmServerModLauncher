@@ -34,7 +34,7 @@ import com.wurmonline.server.Servers;
  */
 public class ServerMapMod implements WurmServerMod, Configurable, ServerStartedListener {
 
-	private Logger logger = Logger.getLogger(ServerMapMod.class.getName());
+	private static final Logger logger = Logger.getLogger(ServerMapMod.class.getName());
 	
 	private enum Renderer {
 		SHADED {
@@ -59,13 +59,13 @@ public class ServerMapMod implements WurmServerMod, Configurable, ServerStartedL
 				}
 			}
 			String values = Arrays.stream(Renderer.values()).map(Renderer::name).collect(Collectors.joining(", "));
-			String message = String.format("Invalid renderer %s. Possible values are: ", name, values);
+			String message = String.format("Invalid renderer %s. Possible values are: %s", name, values);
 			throw new IllegalArgumentException(message);
 		}
 	}
 
 	/**
-	 * add a pack with the server map
+	 * Add a pack with the server map
 	 */
 	private boolean addServerMapPack = true;
 

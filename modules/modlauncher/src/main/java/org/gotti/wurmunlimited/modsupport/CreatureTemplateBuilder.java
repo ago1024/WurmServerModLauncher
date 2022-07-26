@@ -749,7 +749,7 @@ public class CreatureTemplateBuilder {
 	 * The default is 0.0
 	 * 
 	 * @param offZ z-offset
-	 * @return this
+	 * @return builder
 	 */
 	public CreatureTemplateBuilder offZ(float offZ) {
 		this.offZ = offZ;
@@ -759,10 +759,10 @@ public class CreatureTemplateBuilder {
 	/**
 	 * Set a custom color.
 	 *
-	 * @param red
-	 * @param green
-	 * @param blue
-	 * @return
+	 * @param red red value 0-255
+	 * @param green green value 0-255
+	 * @param blue blue value 0-255
+	 * @return builder
 	 */
 	public CreatureTemplateBuilder color(int red, int green, int blue) {
 		this.colorRed = red;
@@ -773,8 +773,8 @@ public class CreatureTemplateBuilder {
 
 	/**
 	 * Set glowing status.
-	 * @param glowing
-	 * @return
+	 * @param glowing glowing status
+	 * @return builder
 	 */
 	public CreatureTemplateBuilder glowing(boolean glowing) {
 		this.glowing = glowing;
@@ -785,7 +785,7 @@ public class CreatureTemplateBuilder {
 	 * Set fire status
 	 * @param onFire onFire flag
 	 * @param fireRadius fire radius to use if onFire is set
-	 * @return
+	 * @return builder
 	 */
 	public CreatureTemplateBuilder onFire(boolean onFire, byte fireRadius) {
 		this.onFire = onFire;

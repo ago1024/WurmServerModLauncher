@@ -25,7 +25,7 @@ import com.wurmonline.server.zones.Zones;
 
 public class UnhitchAction implements BehaviourProvider, ActionPerformer {
 	
-	private static Logger logger = Logger.getLogger(HitchingPostMod.class.getName());
+	private static final Logger logger = Logger.getLogger(HitchingPostMod.class.getName());
 	
 	private HitchingPostMod mod;
 	

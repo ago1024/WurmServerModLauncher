@@ -73,7 +73,7 @@ public class PatchServerJar {
 		
 	}
 
-	private static Logger logger = Logger.getLogger(PatchServerJar.class.getName());
+	private static final Logger logger = Logger.getLogger(PatchServerJar.class.getName());
 
 
 	private void run() throws NotFoundException, CannotCompileException, IOException {
@@ -85,7 +85,7 @@ public class PatchServerJar {
 
 			Path origFile = serverFS.getPath("PatchedLauncher.class");
 			if (Files.exists(origFile)) {
-				logger.info("PatchedLauncher does already exist. server.jar is already patched");
+				logger.info("PatchedLauncher already exists. server.jar is already patched");
 				return;
 			}
 

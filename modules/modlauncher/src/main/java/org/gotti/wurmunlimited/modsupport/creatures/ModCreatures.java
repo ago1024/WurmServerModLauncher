@@ -199,7 +199,7 @@ public class ModCreatures {
 		try {
 			/**
 			 * Replace call for Traits.getTraitString() with a call to GmSetTraitsCallbacks.getTraitString()
-			 * where custom colors and custom traits are checked checked first before falling back to Traits.getTraitString()
+			 * where custom colors and custom traits are checked first before falling back to Traits.getTraitString()
 			 */
 			CtClass ctGmSetTraits = classPool.get("com.wurmonline.server.questions.GmSetTraits");
 			HookManager.getInstance().addCallback(ctGmSetTraits, "modcreatures", new GmSetTraitsCallbacks());
@@ -294,7 +294,7 @@ public class ModCreatures {
 	
 	public static void addCreature(ModCreature creature) {
 		if (!inited) {
-			throw new RuntimeException("ModCreatures was not initied");
+			throw new RuntimeException("ModCreatures was not inited");
 		}
 		creatures.add(creature);
 	}

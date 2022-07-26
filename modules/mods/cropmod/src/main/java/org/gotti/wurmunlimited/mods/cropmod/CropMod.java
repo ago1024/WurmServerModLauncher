@@ -31,7 +31,7 @@ public class CropMod implements WurmServerMod, Configurable, Initable, PreInitab
 
 	private boolean disableWeeds = true;
 	private int extraHarvest = 0;
-	private Logger logger = Logger.getLogger(this.getClass().getName());
+	private static final Logger logger = Logger.getLogger(CropMod.class.getName());
 
 	//
 	// The method configure is called when the mod is being loaded
@@ -39,8 +39,8 @@ public class CropMod implements WurmServerMod, Configurable, Initable, PreInitab
 	@Override
 	public void configure(Properties properties) {
 
-		disableWeeds = Boolean.valueOf(properties.getProperty("disableWeeds", Boolean.toString(disableWeeds)));
-		extraHarvest = Integer.valueOf(properties.getProperty("extraHarvest", Integer.toString(extraHarvest)));
+		disableWeeds = Boolean.parseBoolean(properties.getProperty("disableWeeds", Boolean.toString(disableWeeds)));
+		extraHarvest = Integer.parseInt(properties.getProperty("extraHarvest", Integer.toString(extraHarvest)));
 		logger.log(Level.INFO, "disableWeeds: " + disableWeeds);
 		logger.log(Level.INFO, "extraHarvest: " + extraHarvest);
 	}

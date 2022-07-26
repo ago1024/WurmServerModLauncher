@@ -38,7 +38,7 @@ public class ModIntraServerHandler {
 	}
 
 	/**
-	 * Handler a PACKTE_MESSAGE
+	 * Handle a PACKET_MESSAGE
 	 * @param intraServerConnection Connection
 	 * @param byteBuffer Buffer
 	 */

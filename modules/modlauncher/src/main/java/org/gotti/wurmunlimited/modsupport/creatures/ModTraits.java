@@ -127,7 +127,6 @@ public class ModTraits {
 	 * @param fathertraits traits of the father
 	 * @param regulartraits regular (non-color) traits
 	 * @param colortraits color traits
-	 * @param isThisAPvpServer pvp server
 	 * @return traits
 	 */
 	public static long calcNewTraits(final double breederSkill, final boolean inbred, final long mothertraits, final long fathertraits, final long regulartraits, final long colortraits) {
@@ -179,7 +178,7 @@ public class ModTraits {
 	 * @param regulartraits regular (non-color) traits
 	 * @param colortraits color traits
 	 * @param isThisAPvpServer pvp server
-	 * @param traitsInfo interface to access wether a trait is negative or neutral
+	 * @param traitsInfo interface to access whether a trait is negative or neutral
 	 * @return traits
 	 */
 	public static long calcNewTraits(Random rand, final double breederSkill, final boolean inbred, final long mothertraits, final long fathertraits, final long regulartraits, final long colortraits, boolean isThisAPvpServer, TraitsInfo traitsInfo) {
@@ -325,8 +324,8 @@ public class ModTraits {
 		return toSet;
 	}
 
-	static long getTraitBits(final BitSet bitsprovided) {
-		return bitsprovided.toLongArray()[0];
+	static long getTraitBits(final BitSet bitsProvided) {
+		return bitsProvided.toLongArray()[0];
 	}
 
 	public interface TraitsInfo {

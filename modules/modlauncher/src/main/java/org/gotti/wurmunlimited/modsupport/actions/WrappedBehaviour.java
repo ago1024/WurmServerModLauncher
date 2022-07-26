@@ -174,15 +174,11 @@ class WrappedBehaviour extends Behaviour {
 	 * Get the default action() method return value. This is true (finish action) for any custom actions
 	 * and false (continue action) for any server actions.
 	 * 
-	 * @param action
-	 * @return
+	 * @param action Action
+	 * @return true if the action is added by a mod, false if it's a default action
 	 */
 	public static boolean getDefaultActionReturnValue(Action action) {
-		if (action.getNumber() > ModActions.getLastServerActionId()) {
-			return true;
-		} else {
-			return false;
-		}
+		return action.getNumber() > ModActions.getLastServerActionId();
 	}
 
 	/**

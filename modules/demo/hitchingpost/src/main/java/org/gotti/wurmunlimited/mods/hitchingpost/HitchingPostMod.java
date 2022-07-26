@@ -35,7 +35,7 @@ import com.wurmonline.server.skills.SkillList;
  */
 public class HitchingPostMod implements WurmServerMod, PreInitable, Initable, ServerStartedListener, ItemTemplatesCreatedListener, ItemTypes, MiscConstants {
 
-	private static Logger logger = Logger.getLogger(HitchingPostMod.class.getName());
+	private static final Logger logger = Logger.getLogger(HitchingPostMod.class.getName());
 	private int hitchingPostId;
 
 	@Override

@@ -52,19 +52,19 @@ public class BagOfHoldingMod implements WurmServerMod, Initable, PreInitable, Co
 	@Override
 	public void onServerStarted() {
 		new Runnable() {
-			
+
 			@Override
 			public void run() {
 				logger.log(Level.INFO, "Registering BagOfHolding spell");
 
 				BagOfHolding bagOfHolding = new BagOfHolding(spellCost, spellDifficulty, spellCooldown);
-				
+
 				try {
 					ReflectionUtil.callPrivateMethod(Spells.class, ReflectionUtil.getMethod(Spells.class, "addSpell"), bagOfHolding);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException e ) {
 					throw new RuntimeException(e);
 				}
-				
+
 				for (Deity deity : Deities.getDeities()) {
 					deity.addSpell(bagOfHolding);
 				}
@@ -74,10 +74,10 @@ public class BagOfHoldingMod implements WurmServerMod, Initable, PreInitable, Co
 	
 	@Override
 	public void configure(Properties properties) {
-		spellCost = Integer.valueOf(properties.getProperty("spellCost", Integer.toString(spellCost)));
-		spellDifficulty = Integer.valueOf(properties.getProperty("spellDifficulty", Integer.toString(spellDifficulty)));
-		spellCooldown = Long.valueOf(properties.getProperty("spellCooldown", Long.toString(spellCooldown)));
-		effectModifier = Integer.valueOf(properties.getProperty("effectModifier", Integer.toString(effectModifier)));
+		spellCost = Integer.parseInt(properties.getProperty("spellCost", Integer.toString(spellCost)));
+		spellDifficulty = Integer.parseInt(properties.getProperty("spellDifficulty", Integer.toString(spellDifficulty)));
+		spellCooldown = Long.parseLong(properties.getProperty("spellCooldown", Long.toString(spellCooldown)));
+		effectModifier = Integer.parseInt(properties.getProperty("effectModifier", Integer.toString(effectModifier)));
 		allowComponentItems = Boolean.parseBoolean(properties.getProperty("allowComponentItems", "false"));
 		
 		logger.log(Level.INFO, "spellCost: " + spellCost);

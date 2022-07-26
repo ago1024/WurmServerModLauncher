@@ -59,7 +59,7 @@ public class GetRemoteTemplatesMessage implements IntraRequest {
 		ServerEntry serverEntry = Servers.getServerWithId(targetServer);
 
 		ModIntraServerMessage message = new ModIntraServerMessage(serverEntry, new GetRemoteTemplatesMessage(targetServer), new byte[0]);
-		Server.getInstance().addIntraCommand(message);
+		server.addIntraCommand(message);
 	}
 
 	/**

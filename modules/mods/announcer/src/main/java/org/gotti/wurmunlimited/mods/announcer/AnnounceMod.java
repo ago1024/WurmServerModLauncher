@@ -21,13 +21,14 @@ public class AnnounceMod implements WurmServerMod, Initable, PreInitable, Config
 
 	@Override
 	public void configure(Properties properties) {
-		announcePlayers = Boolean.valueOf(properties.getProperty("announcePlayers", String.valueOf(announcePlayers)));
-		announcePlayerLogout = Boolean.valueOf(properties.getProperty("announcePlayerLogout", String.valueOf(announcePlayerLogout)));
-		announceMaxPower = Integer.valueOf(properties.getProperty("announceMaxPower", String.valueOf(announceMaxPower)));
+		announcePlayers = Boolean.parseBoolean(properties.getProperty("announcePlayers", String.valueOf(announcePlayers)));
+		announcePlayerLogout = Boolean.parseBoolean(properties.getProperty("announcePlayerLogout", String.valueOf(announcePlayerLogout)));
+		announceMaxPower = Integer.parseInt(properties.getProperty("announceMaxPower", String.valueOf(announceMaxPower)));
 
-		Logger.getLogger(AnnounceMod.class.getName()).log(Level.INFO, "announcePlayers: " + announcePlayers);
-		Logger.getLogger(AnnounceMod.class.getName()).log(Level.INFO, "announcePlayerLogout: " + announcePlayerLogout);
-		Logger.getLogger(AnnounceMod.class.getName()).log(Level.INFO, "announceMaxPower: " + announceMaxPower);
+		final Logger logger = Logger.getLogger(AnnounceMod.class.getName());
+		logger.log(Level.INFO, "announcePlayers: " + announcePlayers);
+		logger.log(Level.INFO, "announcePlayerLogout: " + announcePlayerLogout);
+		logger.log(Level.INFO, "announceMaxPower: " + announceMaxPower);
 	}
 
 	@Override

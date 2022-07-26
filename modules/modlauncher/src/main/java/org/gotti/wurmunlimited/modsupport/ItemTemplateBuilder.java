@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.gotti.wurmunlimited.modloader.ReflectionUtil;
 
 import com.wurmonline.server.MiscConstants;
-import com.wurmonline.server.creatures.CreatureTemplate;
 import com.wurmonline.server.items.ItemTemplate;
 import com.wurmonline.server.items.ItemTemplateFactory;
 

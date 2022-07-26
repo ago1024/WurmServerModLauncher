@@ -43,19 +43,19 @@ public class CreatureAgeMod implements WurmServerMod, Configurable, Initable, Pr
 			CreatureTemplateIds.SKELETON_CID
 			));
 
-	private Logger logger = Logger.getLogger(this.getClass().getName());
+	private final Logger logger = Logger.getLogger(this.getClass().getName());
 
 	@Override
 	public void configure(Properties properties) {
 		
-		increaseGrowthUntilAge = Integer.valueOf(properties.getProperty("increaseGrowthUntilAge", Integer.toString(increaseGrowthUntilAge)));
-		increaseGrowthTimer = Math.min(ORIG_CREATURE_POLL_TIMER, Long.valueOf(properties.getProperty("increaseGrowthTimer", Long.toString(increaseGrowthTimer))));
+		increaseGrowthUntilAge = Integer.parseInt(properties.getProperty("increaseGrowthUntilAge", Integer.toString(increaseGrowthUntilAge)));
+		increaseGrowthTimer = Math.min(ORIG_CREATURE_POLL_TIMER, Long.parseLong(properties.getProperty("increaseGrowthTimer", Long.toString(increaseGrowthTimer))));
 		
 		final CreatureTemplateParser parser = new CreatureTemplateParser() {
 			protected int unparsable(String name) {
 				logger.warning("Invalid template " + name);
 				return -1;
-			};
+			}
 		};
 		
 		String excl = properties.getProperty("excludedTemplates");
@@ -95,10 +95,7 @@ public class CreatureAgeMod implements WurmServerMod, Configurable, Initable, Pr
 				@Override
 				public void edit(FieldAccess f) throws CannotCompileException {
 					if ("lastPolledAge".equals(f.getFieldName())) {
-						StringBuilder replacement = new StringBuilder();
-						
-						replacement.append("$_ = creatureagemod.getAdjustedLastPolledAge(this, reborn);");
-						f.replace(replacement.toString());
+						f.replace("$_ = creatureagemod.getAdjustedLastPolledAge(this, reborn);");
 					}
 				}
 			});

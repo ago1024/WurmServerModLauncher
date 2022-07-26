@@ -213,7 +213,7 @@ public interface ActionPerformer extends ActionPerformerBase {
 	}
 
 	/**
-	 * Get the action if which is handled by this ActionPerformer.
+	 * Get the action id which is handled by this ActionPerformer.
 	 */
 	public short getActionId();
 

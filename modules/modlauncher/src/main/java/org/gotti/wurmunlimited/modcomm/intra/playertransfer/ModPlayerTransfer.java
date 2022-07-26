@@ -308,7 +308,7 @@ public class ModPlayerTransfer {
 	/**
 	 * Set creature template mapper for the target server
 	 * @param targetServer Target server
-	 * @param itemTemplateMapper Template mapper
+	 * @param creatureTemplateMapper Template mapper
 	 */
 	public static void setCreatureTemplateMapper(int targetServer, TemplateIdMapper creatureTemplateMapper) {
 		getInstance().creatureTemplateMappers.put(targetServer, creatureTemplateMapper);
@@ -351,7 +351,7 @@ public class ModPlayerTransfer {
 	}
 
 	/**
-	 * Statup communications
+	 * Startup communications
 	 */
 	public static void serverStarted() {
 		GetRemoteTemplatesMessage.register();

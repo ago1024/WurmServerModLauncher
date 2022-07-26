@@ -19,7 +19,7 @@ import com.wurmonline.server.spells.SpellEffect;
 
 public class BagOfHolding extends ModReligiousSpell {
 
-	private static Logger logger = Logger.getLogger(BagOfHolding.class.getName());
+	private static final Logger logger = Logger.getLogger(BagOfHolding.class.getName());
 
 	public BagOfHolding(int cost, int difficulty, long cooldown) {
 
@@ -68,17 +68,17 @@ public class BagOfHolding extends ModReligiousSpell {
 		}
 		SpellEffect eff = effs.getSpellEffect(BUFF_COURIER);
 		if (eff == null) {
-			performer.getCommunicator().sendNormalServerMessage("You magicly enlarge the " + target.getName() + ".");
+			performer.getCommunicator().sendNormalServerMessage("You magically enlarge the " + target.getName() + ".");
 			eff = new SpellEffect(target.getWurmId(), BUFF_COURIER, (float) power, 20000000);
 			effs.addSpellEffect(eff);
-			Server.getInstance().broadCastAction(String.valueOf(performer.getName()) + " looks pleased as " + performer.getHeSheItString() + " magicly enlarges the " + target.getName() + ".", performer, 5);
+			Server.getInstance().broadCastAction(performer.getName() + " looks pleased as " + performer.getHeSheItString() + " magically enlarges the " + target.getName() + ".", performer, 5);
 		} else if (eff.getPower() > power) {
 			performer.getCommunicator().sendNormalServerMessage("You frown as you fail to enlarge the " + target.getName() + ".");
-			Server.getInstance().broadCastAction(String.valueOf(performer.getName()) + " frowns.", performer, 5);
+			Server.getInstance().broadCastAction(performer.getName() + " frowns.", performer, 5);
 		} else {
 			performer.getCommunicator().sendNormalServerMessage("You succeed in enlarging the " + target.getName() + ".");
 			eff.improvePower(performer, (float) power);
-			Server.getInstance().broadCastAction(String.valueOf(performer.getName()) + " looks pleased as " + performer.getHeSheItString() + " enlarges the " + target.getName() + ".", performer, 5);
+			Server.getInstance().broadCastAction(performer.getName() + " looks pleased as " + performer.getHeSheItString() + " enlarges the " + target.getName() + ".", performer, 5);
 		}
 	}
 
