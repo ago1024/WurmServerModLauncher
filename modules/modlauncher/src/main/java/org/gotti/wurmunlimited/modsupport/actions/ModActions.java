@@ -107,16 +107,16 @@ public class ModActions {
 					@Override
 					public void edit(MethodCall m) throws CannotCompileException {
 						if (m.getClassName().equals("com.wurmonline.server.behaviours.Behaviour") && m.getMethodName().equals("getBehavioursFor")) {
-							StringBuffer code = new StringBuffer();
-							code.append("{\n");
-							code.append("    org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider behaviourProvider = org.gotti.wurmunlimited.modsupport.actions.ModActions.getBehaviourProvider($0);\n");
-							code.append("    if (behaviourProvider != null) {\n");
-							code.append("        $_ = behaviourProvider.getBehavioursFor($$);\n");
-							code.append("    } else {\n");
-							code.append("        $_ = $proceed($$);\n");
-							code.append("    }\n");
-							code.append("}\n");
-							m.replace(code.toString());
+							String code =
+									"{\n" +
+									"    org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider behaviourProvider = org.gotti.wurmunlimited.modsupport.actions.ModActions.getBehaviourProvider($0);\n" +
+									"    if (behaviourProvider != null) {\n" +
+									"        $_ = behaviourProvider.getBehavioursFor($$);\n" +
+									"    } else {\n" +
+									"        $_ = $proceed($$);\n" +
+									"    }\n" +
+									"}\n";
+							m.replace(code);
 						}
 					}
 				});
@@ -127,19 +127,19 @@ public class ModActions {
 				@Override
 				public void edit(FieldAccess f) throws CannotCompileException {
 					if (f.getClassName().equals("com.wurmonline.server.behaviours.BehaviourDispatcher") && f.getFieldName().equals("emptyActions")) {
-						StringBuffer code = new StringBuffer();
-						code.append("{\n");
-						code.append("    com.wurmonline.server.creatures.Creature creature = comm.getPlayer();\n");
-						code.append("    com.wurmonline.server.behaviours.Behaviour behaviour = com.wurmonline.server.behaviours.Action.getBehaviour(target, creature.isOnSurface());\n");
-						code.append("    org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider behaviourProvider = org.gotti.wurmunlimited.modsupport.actions.ModActions.getBehaviourProvider(behaviour);\n");
-						code.append("    com.wurmonline.server.skills.Skill skill = org.gotti.wurmunlimited.modsupport.actions.ModActions.getSkillOrNull(creature, skillid);\n");
-						code.append("    if (skill != null && behaviourProvider != null) {\n");
-						code.append("        $_ = behaviourProvider.getBehavioursFor(creature, skill);\n");
-						code.append("    } else {\n");
-						code.append("        $_ = $proceed();\n");
-						code.append("    }\n");
-						code.append("}\n");
-						f.replace(code.toString());
+						String code =
+								"{\n" +
+								"    com.wurmonline.server.creatures.Creature creature = comm.getPlayer();\n" +
+								"    com.wurmonline.server.behaviours.Behaviour behaviour = com.wurmonline.server.behaviours.Action.getBehaviour(target, creature.isOnSurface());\n" +
+								"    org.gotti.wurmunlimited.modsupport.actions.BehaviourProvider behaviourProvider = org.gotti.wurmunlimited.modsupport.actions.ModActions.getBehaviourProvider(behaviour);\n" +
+								"    com.wurmonline.server.skills.Skill skill = org.gotti.wurmunlimited.modsupport.actions.ModActions.getSkillOrNull(creature, skillid);\n" +
+								"    if (skill != null && behaviourProvider != null) {\n" +
+								"        $_ = behaviourProvider.getBehavioursFor(creature, skill);\n" +
+								"    } else {\n" +
+								"        $_ = $proceed();\n" +
+								"    }\n" +
+								"}\n";
+						f.replace(code);
 					}
 				}
 				
@@ -149,16 +149,16 @@ public class ModActions {
 				@Override
 				public void edit(MethodCall m) throws CannotCompileException {
 					if (m.getClassName().equals("com.wurmonline.server.behaviours.Behaviour") && m.getMethodName().equals("action")) {
-						StringBuffer code = new StringBuffer();
-						code.append("{\n");
-						code.append("    org.gotti.wurmunlimited.modsupport.actions.ActionPerformerBase actionPerformer = org.gotti.wurmunlimited.modsupport.actions.ModActions.getActionPerformer(this);\n");
-						code.append("    if (actionPerformer != null) {\n");
-						code.append("        $_ = actionPerformer.action($$);\n");
-						code.append("    } else {\n");
-						code.append("        $_ = $proceed($$);\n");
-						code.append("    }\n");
-						code.append("}\n");
-						m.replace(code.toString());
+						String code =
+								"{\n" +
+								"    org.gotti.wurmunlimited.modsupport.actions.ActionPerformerBase actionPerformer = org.gotti.wurmunlimited.modsupport.actions.ModActions.getActionPerformer(this);\n" +
+								"    if (actionPerformer != null) {\n" +
+								"        $_ = actionPerformer.action($$);\n" +
+								"    } else {\n" +
+								"        $_ = $proceed($$);\n" +
+								"    }\n" +
+								"}\n";
+						m.replace(code);
 					}
 				}
 			});
