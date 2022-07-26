@@ -120,14 +120,14 @@ public class CropMod implements WurmServerMod, Configurable, Initable, PreInitab
 				ctPollCropTiles.instrument(new ExprEditor() {
 					public void edit(MethodCall methodCall) throws CannotCompileException {
 						if (methodCall.getClassName().equals("com.wurmonline.server.zones.CropTilePoller") && methodCall.getMethodName().equals("checkForFarmGrowth")) {
-							StringBuffer code = new StringBuffer();
-							code.append("if (((data >> 4) & 0x7) == 6) {\n");
-							code.append("	toRemove.add(cTile);\n");
-							code.append("	$_ = null;\n");
-							code.append("} else {\n");
-							code.append("	$_ = $proceed($$);\n");
-							code.append("}\n");
-							methodCall.replace(code.toString());
+							String code =
+									"if (((data >> 4) & 0x7) == 6) {\n" +
+									"	toRemove.add(cTile);\n" +
+									"	$_ = null;\n" +
+									"} else {\n" +
+									"	$_ = $proceed($$);\n" +
+									"}\n";
+							methodCall.replace(code);
 						}
 					}
 				});
@@ -143,11 +143,11 @@ public class CropMod implements WurmServerMod, Configurable, Initable, PreInitab
 				ctCheckEffects.instrument(new ExprEditor() {
 					public void edit(MethodCall methodCall) throws CannotCompileException {
 						if (methodCall.getClassName().equals("com.wurmonline.server.zones.TilePoller") && methodCall.getMethodName().equals("checkForFarmGrowth")) {
-							StringBuffer code = new StringBuffer();
-							code.append("if ((($5 >> 4) & 0x7) != 6) {\n");
-							code.append("	$_ = $proceed($$);\n");
-							code.append("}\n");
-							methodCall.replace(code.toString());
+							String code =
+									"if ((($5 >> 4) & 0x7) != 6) {\n" +
+									"	$_ = $proceed($$);\n" +
+									"}\n";
+							methodCall.replace(code);
 						}
 					}
 				});

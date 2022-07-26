@@ -58,28 +58,28 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 					if (!dredgeToShip && "com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("testInsertItem")) {
 						
 						// dredgeToShip = false disables dredging into the ship by always returning false from testInsertItem on the boat object
-						
-						StringBuffer buffer = new StringBuffer();
-						buffer.append("if ($0.isBoat()) {\n");
-						buffer.append("  $_ = false;");
-						buffer.append("} else {\n");
-						buffer.append("  $_ = $proceed($$);\n");
-						buffer.append("}\n");
-						m.replace(buffer.toString());
+
+						String code =
+								"if ($0.isBoat()) {\n" +
+								"  $_ = false;" +
+								"} else {\n" +
+								"  $_ = $proceed($$);\n" +
+								"}\n";
+						m.replace(code);
 					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("insertItem")) {
 						
 						// We check if the item to be inserted is the dug up item (dirt, clay, sand...)
 						// and if we are not inserting the item into a boat. Dredging into the boat is either
 						// allowed anyway or prevented by overwriting testInsertItem above
-						
-						StringBuffer buffer = new StringBuffer();
-						buffer.append("if ($1 != null && $1.getTemplateId() == createdItemTemplate && !$0.isBoat()) {\n");
-						buffer.append("  $1.putItemInfrontof(performer);");
-						buffer.append("  $_ = true;");
-						buffer.append("} else {\n");
-						buffer.append("  $_ = $proceed($$);\n");
-						buffer.append("}\n");
-						m.replace(buffer.toString());
+
+						String code =
+								"if ($1 != null && $1.getTemplateId() == createdItemTemplate && !$0.isBoat()) {\n" +
+								"  $1.putItemInfrontof(performer);" +
+								"  $_ = true;" +
+								"} else {\n" +
+								"  $_ = $proceed($$);\n" +
+								"}\n";
+						m.replace(code);
 					} else if ("com.wurmonline.server.Server".equals(m.getClassName()) && m.getMethodName().equals("isDirtHeightLower")) {
 						// After isDirtHeightLower the gem and mission items are handled
 						//replaceInsertItem = false;

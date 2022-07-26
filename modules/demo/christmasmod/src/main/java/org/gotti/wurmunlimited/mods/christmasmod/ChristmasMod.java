@@ -86,13 +86,13 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 				public void edit(MethodCall m) throws CannotCompileException {
 					// com.wurmonline.server.items.Item.setAuxData(byte)
 					if (m.getClassName().equals("com.wurmonline.server.items.Item") && m.getMethodName().equals("setAuxData")) {
-						StringBuffer code = new StringBuffer();
-						code.append("if (java.time.Year.now().getValue() > 2007) {\n");
-						code.append("    $_ = $proceed((byte)(java.time.Year.now().getValue() - 2007));\n");
-						code.append("} else {\n");
-						code.append("    $_ = $proceed($$);\n");
-						code.append("}");
-						m.replace(code.toString());
+						String code =
+								"if (java.time.Year.now().getValue() > 2007) {\n" +
+								"    $_ = $proceed((byte)(java.time.Year.now().getValue() - 2007));\n" +
+								"} else {\n" +
+								"    $_ = $proceed($$);\n" +
+								"}";
+						m.replace(code);
 					} else if (m.getClassName().equals("com.wurmonline.server.players.PlayerInfo") && m.getMethodName().equals("setReimbursed")) {
 						m.replace("christmasmod.setPlayerReceivedPresent((com.wurmonline.server.players.Player)performer);");
 					}
