@@ -1,7 +1,6 @@
 package org.gotti.wurmunlimited.modcomm;
 
 import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
@@ -16,7 +15,7 @@ public class PacketReader extends DataInputStream {
             this.buf = buf;
         }
 
-        public int read() throws IOException {
+        public int read() {
             if (buf.hasRemaining()) {
                 return buf.get() & 0xFF;
             } else {
@@ -24,7 +23,7 @@ public class PacketReader extends DataInputStream {
             }
         }
 
-        public int read(byte[] bytes, int off, int len) throws IOException {
+        public int read(byte[] bytes, int off, int len) {
             if (buf.hasRemaining()) {
                 len = Math.min(len, buf.remaining());
                 buf.get(bytes, off, len);

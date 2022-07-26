@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
-import javassist.NotFoundException;
 
 public class PatchServerJar {
 	
@@ -76,7 +75,7 @@ public class PatchServerJar {
 	private static final Logger logger = Logger.getLogger(PatchServerJar.class.getName());
 
 
-	private void run() throws NotFoundException, CannotCompileException, IOException {
+	private void run() throws CannotCompileException, IOException {
 
 		Path serverJar = Paths.get("server.jar");
 		Path loaderJar = Paths.get("modlauncher.jar");
