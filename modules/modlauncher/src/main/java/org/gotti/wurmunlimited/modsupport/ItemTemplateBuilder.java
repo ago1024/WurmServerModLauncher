@@ -235,7 +235,33 @@ public class ItemTemplateBuilder {
 		this.pickSeeds = seedTemplateId;
 		return this;
 	}
-	
+
+	public ItemTemplate build(final String name, int size, final String plural, final String itemDescriptionSuperb, final String itemDescriptionNormal, final String itemDescriptionBad, final String itemDescriptionRotten, final String itemDescriptionLong, final short[] itemTypes, final short imageNumber,
+							  final short behaviourType, final int combatDamage, final long decayTime, final int centimetersX, final int centimetersY, final int centimetersZ, final int primarySkill, final byte[] bodySpaces, final String modelName, final float difficulty, final int weightGrams, final byte material, int value, boolean isTraded)
+			throws IOException {
+
+		this.name(name, plural, itemDescriptionLong);
+		this.size(size);
+		this.descriptions(itemDescriptionSuperb, itemDescriptionNormal, itemDescriptionBad, itemDescriptionRotten);
+		this.itemTypes(itemTypes);
+		this.imageNumber(imageNumber);
+		this.behaviourType(behaviourType);
+		this.combatDamage(combatDamage);
+		this.decayTime(decayTime);
+		this.dimensions(centimetersX, centimetersY, centimetersZ);
+		this.primarySkill(primarySkill);
+		this.bodySpaces(bodySpaces);
+		this.modelName(modelName);
+		this.difficulty(difficulty);
+		this.weightGrams(weightGrams);
+		this.material(material);
+		this.value(value);
+		this.isTraded(isTraded);
+
+		return build();
+
+	}
+	@Deprecated
 	public ItemTemplate build(final String name, int size, final String plural, final String itemDescriptionSuperb, final String itemDescriptionNormal, final String itemDescriptionBad, final String itemDescriptionRotten, final String itemDescriptionLong, final short[] itemTypes, final short imageNumber,
 			final short behaviourType, final int combatDamage, final long decayTime, final int centimetersX, final int centimetersY, final int centimetersZ, final int primarySkill, final byte[] bodySpaces, final String modelName, final float difficulty, final int weightGrams, final byte material, int value, boolean isTraded, int armourType)
 			throws IOException {
@@ -257,7 +283,6 @@ public class ItemTemplateBuilder {
 		this.material(material);
 		this.value(value);
 		this.isTraded(isTraded);
-		this.armourType(armourType);
 
 		return build();
 
