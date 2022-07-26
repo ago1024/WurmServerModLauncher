@@ -113,7 +113,7 @@ public class ModHttpServerImpl implements ModHttpServer {
 	protected void start() throws IOException {
 		this.packServer = new PackServer(port, publicServerAddress, publicServerPort, internalServerAddress, maxThreads) {
 			@Override
-			protected InputStream getStream(String path) throws IOException {
+			protected InputStream getStream(String path) {
 				return handle(path);
 			}
 		};

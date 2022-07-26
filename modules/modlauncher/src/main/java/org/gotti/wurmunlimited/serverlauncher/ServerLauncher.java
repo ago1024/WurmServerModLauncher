@@ -1,15 +1,13 @@
 package org.gotti.wurmunlimited.serverlauncher;
 
 import javassist.Loader;
+import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.gotti.wurmunlimited.modloader.classhooks.HookManager;
 
 public class ServerLauncher {
 
@@ -39,7 +37,7 @@ public class ServerLauncher {
 
 	}
 	
-	private static void initLogger() throws SecurityException, IOException {
+	private static void initLogger() throws SecurityException {
 		//  Use externally configured loggers
 		if (System.getProperty("java.util.logging.config.file") != null) {
 			return;
