@@ -34,7 +34,7 @@ public class ActionEntryBuilder {
 	/**
 	 * Internal constructor. Preset values from public constructors.
 	 */
-	private ActionEntryBuilder(short aNumber, int aPriority, String aActionString, String aVerbString, String aAnimationString, int[] aTypes, int aRange, boolean blockedByUseOnGroundOnly) {
+	private ActionEntryBuilder(short aNumber, int aPriority, String aActionString, String aVerbString, int[] aTypes, int aRange, boolean blockedByUseOnGroundOnly) {
 		if (constructor == null) {
 			throw new HookException("ActionEntryBuilder should be called after the server started");
 		}
@@ -57,7 +57,7 @@ public class ActionEntryBuilder {
 	 * @param verbString Action verb (i.e. digging)
 	 */
 	public ActionEntryBuilder(short number, String actionString, String verbString) {
-		this(number, 5, actionString, verbString, actionString, (int[]) null, 4, true);
+		this(number, 5, actionString, verbString, (int[]) null, 4, true);
 	}
 
 	/**
@@ -69,7 +69,7 @@ public class ActionEntryBuilder {
 	 * @param types Action types. See {@link ActionTypes}
 	 */
 	public ActionEntryBuilder(short number, String actionString, String verbString, int[] types) {
-		this(number, 5, actionString, verbString, actionString, types, 2, true);
+		this(number, 5, actionString, verbString, types, 2, true);
 	}
 
 	/**
