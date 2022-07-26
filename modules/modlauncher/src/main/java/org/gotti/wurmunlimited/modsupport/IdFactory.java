@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class IdFactory {
 	
-	private static Logger logger = Logger.getLogger(IdFactory.class.getName());
+	private static final Logger logger = Logger.getLogger(IdFactory.class.getName());
 	private static IdFactory instance;
 	
 	private IdFactory() {

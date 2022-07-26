@@ -40,7 +40,7 @@ public class SpellMod implements WurmServerMod, Configurable, ServerStartedListe
 	private boolean allowLightSpells = true;
 	private boolean unlimitedPrayers = false;
 	private boolean noPrayerDelay = false;
-	private Logger logger = Logger.getLogger(this.getClass().getName());
+	private static final Logger logger = Logger.getLogger(SpellMod.class.getName());
 
 	@Override
 	public void onServerStarted() {
@@ -90,7 +90,7 @@ public class SpellMod implements WurmServerMod, Configurable, ServerStartedListe
 
 				if (removePriestRestrictions) {
 					try {
-						ReflectionUtil.setPrivateField(deity, buildWallBonus, Float.valueOf(0.0f));
+						ReflectionUtil.setPrivateField(deity, buildWallBonus, 0.0f);
 						ReflectionUtil.setPrivateField(deity, roadProtector, Boolean.FALSE);
 					} catch (IllegalAccessException | IllegalArgumentException | ClassCastException e) {
 						logger.log(Level.WARNING, e.getMessage(), e);
@@ -102,7 +102,7 @@ public class SpellMod implements WurmServerMod, Configurable, ServerStartedListe
 				for (Spell spell : allGodSpells) {
 					if (spell.getCost() > favorLimit) {
 						try {
-							ReflectionUtil.setPrivateField(spell, cost, Integer.valueOf(favorLimit));
+							ReflectionUtil.setPrivateField(spell, cost, favorLimit);
 						} catch (IllegalAccessException | IllegalArgumentException | ClassCastException e) {
 							logger.log(Level.WARNING, e.getMessage(), e);
 						}

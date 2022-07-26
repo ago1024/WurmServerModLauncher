@@ -43,12 +43,12 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 
 	@Override
 	public void configure(Properties properties) {
-		present2015 = Integer.valueOf(properties.getProperty("present2015", String.valueOf(present2015)));
-		present2016 = Integer.valueOf(properties.getProperty("present2016", String.valueOf(present2016)));
-		present2017 = Integer.valueOf(properties.getProperty("present2017", String.valueOf(present2017)));
-		present2018 = Integer.valueOf(properties.getProperty("present2018", String.valueOf(present2018)));
-		present2019 = Integer.valueOf(properties.getProperty("present2019", String.valueOf(present2019)));
-		present2020 = Integer.valueOf(properties.getProperty("present2020", String.valueOf(present2020)));
+		present2015 = Integer.parseInt(properties.getProperty("present2015", String.valueOf(present2015)));
+		present2016 = Integer.parseInt(properties.getProperty("present2016", String.valueOf(present2016)));
+		present2017 = Integer.parseInt(properties.getProperty("present2017", String.valueOf(present2017)));
+		present2018 = Integer.parseInt(properties.getProperty("present2018", String.valueOf(present2018)));
+		present2019 = Integer.parseInt(properties.getProperty("present2019", String.valueOf(present2019)));
+		present2020 = Integer.parseInt(properties.getProperty("present2020", String.valueOf(present2020)));
 
 		LOGGER.log(Level.INFO, "present2015: " + present2015);
 		LOGGER.log(Level.INFO, "present2016: " + present2016);

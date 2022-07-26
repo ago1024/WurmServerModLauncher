@@ -22,7 +22,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 public class DigToGround implements WurmServerMod, PreInitable, Initable, Configurable {
 
-	private static Logger logger = Logger.getLogger(DigToGround.class.getName());
+	private static final Logger logger = Logger.getLogger(DigToGround.class.getName());
 	
 	boolean dredgeToShip = true;
 	
@@ -81,7 +81,7 @@ public class DigToGround implements WurmServerMod, PreInitable, Initable, Config
 						buffer.append("}\n");
 						m.replace(buffer.toString());
 					} else if ("com.wurmonline.server.Server".equals(m.getClassName()) && m.getMethodName().equals("isDirtHeightLower")) {
-						// After isDirtHightLower the gem and mission items are handled
+						// After isDirtHeightLower the gem and mission items are handled
 						//replaceInsertItem = false;
 					} else if ("com.wurmonline.server.items.Item".equals(m.getClassName()) && m.getMethodName().equals("getNumItemsNotCoins")) {
 						m.replace("$_ = 0;");

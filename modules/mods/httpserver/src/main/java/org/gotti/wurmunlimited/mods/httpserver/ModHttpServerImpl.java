@@ -30,7 +30,7 @@ public class ModHttpServerImpl implements ModHttpServer {
 		Function<String, InputStream> handler;
 	}
 	
-	private static Logger logger = Logger.getLogger(HttpServerMod.class.getName());
+	private static final Logger logger = Logger.getLogger(HttpServerMod.class.getName());
 
 	private static ModHttpServerImpl instance;
 

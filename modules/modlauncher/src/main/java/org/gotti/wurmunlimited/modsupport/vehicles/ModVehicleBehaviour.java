@@ -23,12 +23,12 @@ public abstract class ModVehicleBehaviour {
 	protected Seat createSeat(byte typeHitched) {
 		try {
 			Constructor<Seat> c = Seat.class.getDeclaredConstructor(byte.class);
-			boolean wasAcessible = c.isAccessible();
+			boolean wasAccessible = c.isAccessible();
 			c.setAccessible(true);
 			try {
 				return c.newInstance(typeHitched);
 			} finally {
-				c.setAccessible(wasAcessible);
+				c.setAccessible(wasAccessible);
 			}
 		} catch (InvocationTargetException | NoSuchMethodException | SecurityException | IllegalAccessException | InstantiationException e) {
 			throw new RuntimeException(e);

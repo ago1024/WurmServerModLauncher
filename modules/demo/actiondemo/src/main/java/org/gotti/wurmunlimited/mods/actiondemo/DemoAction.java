@@ -25,7 +25,7 @@ import com.wurmonline.server.players.Player;
  */
 public class DemoAction implements ModAction, BehaviourProvider, ActionPerformer {
 
-	private static Logger logger = Logger.getLogger(DemoAction.class.getName());
+	private static final Logger logger = Logger.getLogger(DemoAction.class.getName());
 
 	private final short actionId;
 	private final ActionEntry actionEntry;
@@ -67,9 +67,7 @@ public class DemoAction implements ModAction, BehaviourProvider, ActionPerformer
 				performer.sendActionControl("Waving the " + source.getName(), true, time);
 				
 			} else {
-				int time = 0;
-
-				time = performer.getCurrentAction().getTimeLeft();
+				int time = performer.getCurrentAction().getTimeLeft();
 
 				if (counter * 10.0f > time) {
 					Item item = ItemFactory.createItem(ItemList.christmasTree, 99.0f, performer.getName());

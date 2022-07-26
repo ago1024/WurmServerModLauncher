@@ -56,7 +56,7 @@ public class ModItems {
 
 	/**
 	 * Retrieve a custom model name for an item.
-	 * 
+	 *
 	 * @param item
 	 *            Item
 	 * @return custom model name or null
@@ -85,7 +85,7 @@ public class ModItems {
 	}
 
 	/**
-	 * Get the instance
+	 * Get the instance of this class
 	 * 
 	 * @return the instance
 	 */
@@ -98,7 +98,7 @@ public class ModItems {
 
 	/**
 	 * Add a model name provider
-	 * 
+	 *
 	 * @param templateId
 	 *            Item template id
 	 * @param modelNameProvider

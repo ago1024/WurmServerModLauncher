@@ -34,7 +34,7 @@ import com.wurmonline.server.players.Player;
 
 public class HarvestHelperMod implements WurmServerMod, Configurable, Initable, PreInitable, PlayerLoginListener, PlayerMessageListener {
 
-	private static Logger logger = Logger.getLogger(HarvestHelperMod.class.getName());
+	private static final Logger logger = Logger.getLogger(HarvestHelperMod.class.getName());
 
 	private boolean allowMountedHarvest = true;
 	private boolean enableSeasonsCommand = true;

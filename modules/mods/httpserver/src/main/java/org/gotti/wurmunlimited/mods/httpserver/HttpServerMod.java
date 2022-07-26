@@ -15,7 +15,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 
 public class HttpServerMod implements WurmServerMod, Initable, Configurable, ServerStartedListener, ServerShutdownListener, ModListener {
 
-	private Logger logger = Logger.getLogger(HttpServerMod.class.getName());
+	private static final Logger logger = Logger.getLogger(HttpServerMod.class.getName());
 
 	private int serverPort = 0;
 	private String publicServerAddress = null;

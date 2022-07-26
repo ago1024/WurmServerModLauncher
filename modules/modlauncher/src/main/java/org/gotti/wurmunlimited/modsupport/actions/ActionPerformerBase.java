@@ -87,7 +87,7 @@ public interface ActionPerformerBase {
 	boolean action(Action action, Creature performer, Wound target, short num, float counter);
 
 	/**
-	 * Wound {@link CounterTypes#COUNTER_TYPE_WOUND} (8)
+	 * Wound {@link CounterTypes#COUNTER_TYPE_WOUNDS} (8)
 	 */
 	boolean action(Action action, Creature performer, Item source, Wound target, short num, float counter);
 
@@ -181,12 +181,12 @@ public interface ActionPerformerBase {
 	// Tile border
 	//
 	/**
-	 * Tileborder {@link CounterTypes#COUNTER_TYPE_TILEBORDER} (12)
+	 * Tile border {@link CounterTypes#COUNTER_TYPE_TILEBORDER} (12)
 	 */
 	boolean action(Action action, Creature performer, Item source, int tilex, int tiley, boolean onSurface, int heightOffset, Tiles.TileBorderDirection dir, long borderId, short num, float counter);
 
 	/**
-	 * Tileborder {@link CounterTypes#COUNTER_TYPE_TILEBORDER} (12)
+	 * Tile border {@link CounterTypes#COUNTER_TYPE_TILEBORDER} (12)
 	 */
 	boolean action(Action action, Creature performer, int tilex, int tiley, boolean onSurface, Tiles.TileBorderDirection dir, long borderId, short num, float counter);
 

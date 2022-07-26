@@ -19,7 +19,7 @@ import com.wurmonline.server.players.Player;
 
 public class TestAction implements ModAction, BehaviourProvider, ActionPerformer {
 
-	private static Logger logger = Logger.getLogger(TestAction.class.getName());
+	private static final Logger logger = Logger.getLogger(TestAction.class.getName());
 
 	private final short actionId;
 	private final ActionEntry actionEntry;
@@ -74,9 +74,7 @@ public class TestAction implements ModAction, BehaviourProvider, ActionPerformer
 				performer.getCurrentAction().setTimeLeft(time);
 				performer.sendActionControl("Counting", true, time);
 			} else {
-				int time = 0;
-
-				time = performer.getCurrentAction().getTimeLeft();
+				int time = performer.getCurrentAction().getTimeLeft();
 
 				if (counter * 10.0f <= time) {
 					if (action.justTickedSecond()) {

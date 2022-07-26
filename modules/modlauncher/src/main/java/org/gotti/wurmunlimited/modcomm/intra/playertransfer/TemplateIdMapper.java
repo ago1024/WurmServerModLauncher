@@ -50,14 +50,14 @@ public class TemplateIdMapper {
 	public int getRemoteTemplate(int localTemplateId) {
 		Integer remoteId = templateMap.get(localTemplateId);
 		if (remoteId == null) {
-			ModPlayerTransfer.LOG.warning("Trying item transfer with not transferrable item " + localTemplateId);
+			ModPlayerTransfer.LOG.warning("Trying item transfer with not transferable item " + localTemplateId);
 			return localTemplateId;
 		}
 		return remoteId;
 	}
 
 	/**
-	 * Builde.
+	 * Builder.
 	 */
 	public static class Builder {
 		private final Map<String, Integer> localMap = new HashMap<>();

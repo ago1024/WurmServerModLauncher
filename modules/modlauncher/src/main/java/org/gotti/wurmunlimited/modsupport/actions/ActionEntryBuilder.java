@@ -152,7 +152,7 @@ public class ActionEntryBuilder {
 	 * Resolve ActionEntry constructor
 	 */
 	public static void init() {
-		Class<?> parameterTypes[] = {
+		Class<?>[] parameterTypes = {
 				short.class /* number */,
 				int.class /* priority */,
 				String.class /* actionString */,
@@ -160,7 +160,7 @@ public class ActionEntryBuilder {
 				String.class /* animationString */,
 				int[].class /* types */,
 				int.class /* range */,
-				boolean.class /* blockedByUseOnGroud */
+				boolean.class /* blockedByUseOnGround */
 		};
 		Class<ActionEntry> clazz = ActionEntry.class;
 

@@ -48,7 +48,7 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 
 	private Map<String, PackInfo> packs = new HashMap<>();
 
-	private Logger logger = Logger.getLogger(ServerPackMod.class.getName());
+	private static final Logger logger = Logger.getLogger(ServerPackMod.class.getName());
 
 	private Channel channel;
 
@@ -74,13 +74,10 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 			public void handleMessage(Player player, ByteBuffer message) {
 				try (PacketReader reader = new PacketReader(message)) {
 					byte cmd = reader.readByte();
-					switch (cmd) {
-					case CMD_REFRESH:
+					if (cmd == CMD_REFRESH) {
 						CommandHandler.sendModelRefresh(player);
-						break;
-					default:
+					} else {
 						logger.log(Level.WARNING, String.format("Unknown channel command 0x%02x", 128 + cmd));
-						break;
 					}
 				} catch (IOException e) {
 					logger.log(Level.WARNING, e.getMessage(), e);
@@ -130,7 +127,7 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 				if (Files.isRegularFile(packPath)) {
 					addPack(packPath, options);
 				} else {
-					logger.log(Level.WARNING, "Missing serverPack " + packPath);
+					logger.log(Level.WARNING, "Missing server pack " + packPath);
 				}
 			} catch (IOException | NoSuchAlgorithmException e) {
 				logger.log(Level.WARNING, "Error reading server pack", e);

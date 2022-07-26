@@ -25,7 +25,6 @@ public interface IIdType {
 
 	/**
 	 * Get the last used id. This can be the lowest or highest used id depending on {@link IIdType#isCountingDown()}
-	 * @return
 	 */
 	int getLastUsedId();
 }

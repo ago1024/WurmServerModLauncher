@@ -25,8 +25,8 @@ public class BBHelper {
 	 * @return string
 	 */
 	public static String getUtf8String(ByteBuffer buffer) {
-		int lenght = buffer.getInt();
-		byte[] data = new byte[lenght];
+		int length = buffer.getInt();
+		byte[] data = new byte[length];
 		buffer.get(data);
 		return new String(data, StandardCharsets.UTF_8);
 	}
