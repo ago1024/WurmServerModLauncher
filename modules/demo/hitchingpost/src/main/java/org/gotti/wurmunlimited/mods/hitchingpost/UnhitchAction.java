@@ -76,6 +76,12 @@ public class UnhitchAction implements BehaviourProvider, ActionPerformer {
 	public boolean action(Action action, Creature performer, Creature target, short num, float counter) {
 		if (canUnhitch(performer, target)) {
 			final Vehicle hitched = target.getHitched();
+			if (!hitched.positionDragger(target, performer)) {
+				performer.getCommunicator().sendNormalServerMessage("You can't unhitch the " + target.getName() + ". Please contact an administrator.");
+				logger.warning(performer.getName()+" was not able to unhitch the "+target.getName()+" from a hitching post at "+target.getTileX()+","+target.getTileY());
+				return propagate(action);
+			}
+			
 			try {
 				final Zone z = Zones.getZone(target.getTilePos(), target.isOnSurface());
 				target.getStatus().savePosition(target.getWurmId(), true, z.getId(), true);
