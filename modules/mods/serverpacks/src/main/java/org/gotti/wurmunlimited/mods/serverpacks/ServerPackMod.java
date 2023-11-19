@@ -74,10 +74,13 @@ public class ServerPackMod implements WurmServerMod, ModListener, Initable, Conf
 			public void handleMessage(Player player, ByteBuffer message) {
 				try (PacketReader reader = new PacketReader(message)) {
 					byte cmd = reader.readByte();
-					if (cmd == CMD_REFRESH) {
-						CommandHandler.sendModelRefresh(player);
-					} else {
-						logger.log(Level.WARNING, String.format("Unknown channel command 0x%02x", 128 + cmd));
+					switch (cmd) {
+						case CMD_REFRESH:
+							CommandHandler.sendModelRefresh(player);
+							break;
+						default:
+							logger.log(Level.WARNING, String.format("Unknown channel command 0x%02x", 128 + cmd));
+							break;
 					}
 				} catch (IOException e) {
 					logger.log(Level.WARNING, e.getMessage(), e);
