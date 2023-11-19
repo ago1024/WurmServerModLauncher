@@ -14,7 +14,7 @@ public class ModCommConstants {
     /**
      * Human-readable message that will be sent to connecting players
      */
-    public static final String BANNER = MARKER + " This is a modded server, additional features might be available if you install Ago's Client Mod Launcher ( https://forum.wurmonline.com/index.php?/topic/134945-released-client-mod-loader/ )";
+    public static final String BANNER = MARKER + " This is a modded server, additional features might be available if you install Ago's Client Mod Launcher. See https://forum.wurmonline.com/index.php?/topic/134945-released-client-mod-loader/ for details.";
 
     /**
      * Version of the internal protocol
