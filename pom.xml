@@ -18,7 +18,7 @@
 	<repositories>
 		<repository>
 			<id>gotti-no-ip-org-ssh-repository</id>
-			<url>http://gotti.no-ip.org/maven/repository</url>
+			<url>https://gotti.no-ip.org/maven/repository</url>
 		</repository>
 	</repositories>
 
