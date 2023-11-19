@@ -32,7 +32,7 @@ public class ModTraits {
 	public static final int TRAIT_MALFORMED_LEGS = 8;
 	public static final int TRAIT_DIFFERENT_LENGTH = 9;
 	@Deprecated
-	public static final int TRAIT_DIFFERNENT_LENGTH = 9;
+	public static final int TRAIT_DIFFERNENT_LENGTH = TRAIT_DIFFERENT_LENGTH;
 	public static final int TRAIT_OVERLY_AGGRESSIVE = 10;
 	public static final int TRAIT_UNMOTIVATED = 11;
 	public static final int TRAIT_STRONG_WILLED = 12;
