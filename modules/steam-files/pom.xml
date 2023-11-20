@@ -4,13 +4,13 @@
 
 	<groupId>org.gotti.wurmunlimited</groupId>
 	<artifactId>steam-files</artifactId>
-	<version>0.44-SNAPSHOT</version>
+	<version>0.46-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	
 	<parent>
 		<groupId>org.gotti.wurmunlimited</groupId>
 		<artifactId>server-modlauncher-parent</artifactId>
-		<version>0.44-SNAPSHOT</version>
+		<version>0.46-SNAPSHOT</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.gotti.stubgenerator</groupId>
 			<artifactId>stubgenerator</artifactId>
-			<version>1.1</version>
+			<version>1.2</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
@@ -82,10 +82,10 @@
 						<configuration>
 							<executable>${steamcmd}</executable>
 							<arguments>
-								<argument>+login</argument>
-								<argument>anonymous</argument>
 								<argument>+force_install_dir</argument>
 								<argument>${project.build.directory}/steam</argument>
+								<argument>+login</argument>
+								<argument>anonymous</argument>
 								<argument>+app_update</argument>
 								<argument>402370</argument>
 								<argument>-beta</argument>
@@ -107,6 +107,8 @@
 								<argument>${project.build.directory}/steam/common.jar</argument>
 								<argument>--target</argument>
 								<argument>${project.build.directory}/common-${steamapps_buildid}.jar</argument>
+								<argument>--include</argument>
+								<argument>com.wumonline</argument>
 							</arguments>
 						</configuration>
 					</execution>
@@ -123,48 +125,11 @@
 								<argument>${project.build.directory}/steam/server.jar</argument>
 								<argument>--target</argument>
 								<argument>${project.build.directory}/server-${steamapps_buildid}.jar</argument>
+								<argument>--include</argument>
+								<argument>com.wumonline</argument>
 							</arguments>
 							<additionalClasspathElements>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/activation-1.1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/annotations-2.0.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/annotations-16.0.2.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/byte-buddy-1.5.5.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/byte-buddy-agent-1.5.5.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/cling-core-2.1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/cling-support-2.1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/commons-codec-1.6.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/commons-logging-1.1.3.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/controlsfx-8.40.14.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/flyway-core-4.0.3.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/guava-18.0.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/hamcrest-core-1.3.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/httpclient-4.2.6.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/httpcore-4.2.4.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/javassist-3.23.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/javax.servlet-api-3.0.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/jaxb-api-2.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/jaxb-impl-2.1.6.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/jaxb-xjc-2.1.6.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/jimfs-1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/jnlp-api-8.0.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/jsr305-3.0.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/jtwitter-2.8.5.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/junit-4.11.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/mail-1.4.7.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/mockito-core-2.3.11.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/mysql-connector-java-5.1.10.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/nethelper-1.1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/objenesis-2.4.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/seamless-http-1.1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/seamless-swing-1.1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/seamless-util-1.1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/seamless-xml-1.1.1.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/ServerLauncher-0.43.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/signpost-core-1.2.1.2.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/sqlite-jdbc-3.8.11.2.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/stax-api-1.0-2.jar</additionalClasspathElement>
 								<additionalClasspathElement>${project.build.directory}/steam/lib/SteamServerJni.jar</additionalClasspathElement>
-								<additionalClasspathElement>${project.build.directory}/steam/lib/WurmUnlimitedCommon-1.9.2.7.jar</additionalClasspathElement>
 							</additionalClasspathElements>
 						</configuration>
 					</execution>
@@ -175,6 +140,10 @@
 				<artifactId>maven-install-plugin</artifactId>
 				<version>2.5.2</version>
 				<inherited>false</inherited>
+				<configuration>
+					<groupId>org.gotti.wurmunlimited</groupId>
+					<version>${steamapps_buildid}</version>
+				</configuration>
 				<executions>
 					<execution>
 						<id>install-common</id>
@@ -183,11 +152,9 @@
 							<goal>install-file</goal>
 						</goals>
 						<configuration>
-							<file>${project.build.directory}/common-${steamapps_buildid}.jar</file>
-							<groupId>org.gotti.wurmunlimited</groupId>
+							<file>${project.build.directory}/steam/common.jar</file>
 							<artifactId>common</artifactId>
 							<packaging>jar</packaging>
-							<version>${steamapps_buildid}</version>
 						</configuration>
 					</execution>
 					<execution>
@@ -197,11 +164,9 @@
 							<goal>install-file</goal>
 						</goals>
 						<configuration>
-							<file>${project.build.directory}/server-${steamapps_buildid}.jar</file>
-							<groupId>org.gotti.wurmunlimited</groupId>
+							<file>${project.build.directory}/steam/server.jar</file>
 							<artifactId>server</artifactId>
 							<packaging>jar</packaging>
-							<version>${steamapps_buildid}</version>
 						</configuration>
 					</execution>
 				</executions>
@@ -235,6 +200,12 @@
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.7</version>
+				<configuration>
+					<groupId>org.gotti.wurmunlimited</groupId>
+					<version>${steamapps_buildid}</version>
+					<repositoryId>gotti-no-ip-org-ssh-repository</repositoryId>
+					<url>scp://gotti.no-ip.org/srv/maven/repository</url>
+				</configuration>
 				<executions>
 					<execution>
 						<id>deploy-server</id>
@@ -244,12 +215,8 @@
 						</goals>
 						<configuration>
 							<file>${project.build.directory}/server-${steamapps_buildid}.jar</file>
-							<groupId>org.gotti.wurmunlimited</groupId>
 							<artifactId>server</artifactId>
 							<packaging>jar</packaging>
-							<version>${steamapps_buildid}</version>
-							<repositoryId>gotti-no-ip-org-ssh-repository</repositoryId>
-							<url>scp://gotti.no-ip.org/srv/maven/repository</url>
 						</configuration>
 					</execution>
 					<execution>
@@ -260,12 +227,8 @@
 						</goals>
 						<configuration>
 							<file>${project.build.directory}/common-${steamapps_buildid}.jar</file>
-							<groupId>org.gotti.wurmunlimited</groupId>
 							<artifactId>common</artifactId>
 							<packaging>jar</packaging>
-							<version>${steamapps_buildid}</version>
-							<repositoryId>gotti-no-ip-org-ssh-repository</repositoryId>
-							<url>scp://gotti.no-ip.org/srv/maven/repository</url>
 						</configuration>
 					</execution>
 				</executions>
