@@ -98,7 +98,7 @@ public class UnhitchAction implements BehaviourProvider, ActionPerformer {
 			t.sendAttachCreature(target.getWurmId(), -10L, 0.0f, 0.0f, 0.0f, 0);
 			return propagate(action, ActionPropagation.NO_SERVER_PROPAGATION, ActionPropagation.NO_ACTION_PERFORMER_PROPAGATION, ActionPropagation.FINISH_ACTION);
 		}
-		return propagate(action);
+		return defaultPropagation(action);
 	}
 	
 	@Override
