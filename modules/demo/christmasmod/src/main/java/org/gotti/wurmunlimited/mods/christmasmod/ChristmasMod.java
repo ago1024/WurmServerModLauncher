@@ -1,7 +1,9 @@
 package org.gotti.wurmunlimited.mods.christmasmod;
 
 import java.time.Year;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +17,7 @@ import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.mods.christmasmod.OpenPresentActionPerformer.GiftData;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
+import org.gotti.wurmunlimited.modsupport.items.ItemIdParser;
 import org.gotti.wurmunlimited.modsupport.properties.ModPlayerProperties;
 import org.gotti.wurmunlimited.modsupport.properties.Property;
 
@@ -33,29 +36,19 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 	private static final String PROPERTY_NAME = "christmasmod.present";
 
 	private static final Logger LOGGER = Logger.getLogger(ChristmasMod.class.getName());
-	
-	int present2015 = 972;
-	int present2016 = 972;
-	int present2017 = 972;
-	int present2018 = 972;
-	int present2019 = 972;
-	int present2020 = 972;
+
+	private final Map<String, Integer> presents = new HashMap<>();
 
 	@Override
 	public void configure(Properties properties) {
-		present2015 = Integer.parseInt(properties.getProperty("present2015", String.valueOf(present2015)));
-		present2016 = Integer.parseInt(properties.getProperty("present2016", String.valueOf(present2016)));
-		present2017 = Integer.parseInt(properties.getProperty("present2017", String.valueOf(present2017)));
-		present2018 = Integer.parseInt(properties.getProperty("present2018", String.valueOf(present2018)));
-		present2019 = Integer.parseInt(properties.getProperty("present2019", String.valueOf(present2019)));
-		present2020 = Integer.parseInt(properties.getProperty("present2020", String.valueOf(present2020)));
-
-		LOGGER.log(Level.INFO, "present2015: " + present2015);
-		LOGGER.log(Level.INFO, "present2016: " + present2016);
-		LOGGER.log(Level.INFO, "present2017: " + present2017);
-		LOGGER.log(Level.INFO, "present2018: " + present2018);
-		LOGGER.log(Level.INFO, "present2019: " + present2019);
-		LOGGER.log(Level.INFO, "present2020: " + present2020);
+		ItemIdParser itemIdParser = new ItemIdParser();
+		for (String key : properties.stringPropertyNames()) {
+			if (key.matches("^present[0-9]{4}$")) {
+				int itemId = itemIdParser.parse(properties.getProperty(key));
+				presents.put(key, itemId);
+				LOGGER.log(Level.INFO, key + ": " + itemId);
+			}
+		}
 	}
 
 	@Override
@@ -145,22 +138,15 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 	}
 	
 	private GiftData createGiftData(byte auxdata) {
-		switch (auxdata) {
-		case 8:
-			return new GiftData(present2015);
-		case 9:
-			return new GiftData(present2016);
-		case 10:
-			return new GiftData(present2017);
-		case 11:
-			return new GiftData(present2018);
-		case 12:
-			return new GiftData(present2019);
-		case 13:
-			return new GiftData(present2020);
-		default:
-			return OpenPresentActionPerformer.getDefaultPresentData(auxdata);
+		if (auxdata >= 8) {
+			String key = "present" + String.valueOf(2007 + auxdata);
+			Integer itemId = presents.get(key);
+			if (itemId != null) {
+				return new GiftData(itemId);
+			}
 		}
+
+		return OpenPresentActionPerformer.getDefaultPresentData(auxdata);
 	}
 	
 	@CallbackApi

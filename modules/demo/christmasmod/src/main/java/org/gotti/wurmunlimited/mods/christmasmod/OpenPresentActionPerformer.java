@@ -124,9 +124,8 @@ public class OpenPresentActionPerformer implements ActionPerformer {
 	public static GiftData getDefaultPresentData(byte auxData) {
 
 		switch (auxData) {
-		case 0: // 2007 and fallback
-
-		default:
+		case 0: // 2007
+		default: // and fallback
 			return new GiftData(ItemList.farwalkerAmulet, 99.0f);
 		case 1: // 2008
 			return new GiftData(ItemList.wandSculpting, 60.0f, (byte) 1).doAfter(OpenPresentActionPerformer::makeHummingSound);
