@@ -15,7 +15,7 @@ public class ItemIdParser extends NonFreezingNamedIdParser {
 	
 	@Override
 	protected IdType getIdFactoryType() {
-		return IdType.CREATURETEMPLATE;
+		return IdType.ITEMTEMPLATE;
 	}
 		
 	@Override

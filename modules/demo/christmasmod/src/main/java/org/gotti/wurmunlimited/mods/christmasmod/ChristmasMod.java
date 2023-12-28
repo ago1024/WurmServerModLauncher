@@ -1,9 +1,7 @@
 package org.gotti.wurmunlimited.mods.christmasmod;
 
 import java.time.Year;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +15,6 @@ import org.gotti.wurmunlimited.modloader.interfaces.ServerStartedListener;
 import org.gotti.wurmunlimited.modloader.interfaces.WurmServerMod;
 import org.gotti.wurmunlimited.mods.christmasmod.OpenPresentActionPerformer.GiftData;
 import org.gotti.wurmunlimited.modsupport.actions.ModActions;
-import org.gotti.wurmunlimited.modsupport.items.ItemIdParser;
 import org.gotti.wurmunlimited.modsupport.properties.ModPlayerProperties;
 import org.gotti.wurmunlimited.modsupport.properties.Property;
 
@@ -37,18 +34,12 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 
 	private static final Logger LOGGER = Logger.getLogger(ChristmasMod.class.getName());
 
-	private final Map<String, Integer> presents = new HashMap<>();
+	private final ChristmasModConfiguration config = new ChristmasModConfiguration();
+
 
 	@Override
 	public void configure(Properties properties) {
-		ItemIdParser itemIdParser = new ItemIdParser();
-		for (String key : properties.stringPropertyNames()) {
-			if (key.matches("^present[0-9]{4}$")) {
-				int itemId = itemIdParser.parse(properties.getProperty(key));
-				presents.put(key, itemId);
-				LOGGER.log(Level.INFO, key + ": " + itemId);
-			}
-		}
+		config.configure(properties);
 	}
 
 	@Override
@@ -62,16 +53,18 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 			HookManager.getInstance().addCallback(classPool.get("com.wurmonline.server.behaviours.ItemBehaviour"), "christmasmod", this);
 			HookManager.getInstance().addCallback(classPool.get("com.wurmonline.server.behaviours.CreatureBehaviour"), "christmasmod", this);
 
+			HookManager.getInstance().addCallback(classPool.get("com.wurmonline.server.WurmCalendar"), "christmasmodcalendar", config.createCalendar());
+
 			CtClass ctWurmCalendar = classPool.get("com.wurmonline.server.WurmCalendar");
 
 			// com.wurmonline.server.WurmCalendar.isChristmas()
-			ctWurmCalendar.getMethod("isChristmas", "()Z").setBody("return nowIsBetween(17, 0, 23, 11, java.time.Year.now().getValue(), 6, 0, 29, 11, java.time.Year.now().getValue());");
+			ctWurmCalendar.getMethod("isChristmas", "()Z").setBody("return christmasmodcalendar.isChristmas();");
 
 			// com.wurmonline.server.WurmCalendar.isBeforeChristmas()
-			ctWurmCalendar.getMethod("isBeforeChristmas", "()Z").setBody("return nowIsBefore(17, 0, 23, 11, java.time.Year.now().getValue());");
+			ctWurmCalendar.getMethod("isBeforeChristmas", "()Z").setBody("return christmasmodcalendar.isBeforeChristmas();");
 
 			// com.wurmonline.server.WurmCalendar.isAfterChristmas()
-			ctWurmCalendar.getMethod("isAfterChristmas", "()Z").setBody("return nowIsAfter(6, 0, 29, 11, java.time.Year.now().getValue());");
+			ctWurmCalendar.getMethod("isAfterChristmas", "()Z").setBody("return christmasmodcalendar.isAfterChristmas();");
 
 			// com.wurmonline.server.behaviours.ItemBehaviour.awardChristmasPresent(Creature)
 			classPool.get("com.wurmonline.server.behaviours.ItemBehaviour").getMethod("awardChristmasPresent", Descriptor.ofMethod(CtClass.voidType, new CtClass[] { classPool.get("com.wurmonline.server.creatures.Creature") })).instrument(new ExprEditor() {
@@ -139,8 +132,7 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 	
 	private GiftData createGiftData(byte auxdata) {
 		if (auxdata >= 8) {
-			String key = "present" + String.valueOf(2007 + auxdata);
-			Integer itemId = presents.get(key);
+			Integer itemId = config.getPresentItemId(2007 + auxdata);
 			if (itemId != null) {
 				return new GiftData(itemId);
 			}
@@ -160,4 +152,5 @@ public class ChristmasMod implements WurmServerMod, PreInitable, Configurable, S
 	public void setPlayerReceivedPresent(Player player) {
 		ModPlayerProperties.getInstance().setPlayerProperty(PROPERTY_NAME, player.getWurmId(), Year.now().getValue());
 	}
+
 }
