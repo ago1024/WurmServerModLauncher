@@ -63,6 +63,11 @@ public class ChristmasModConfiguration {
 		startTime = LocalTime.parse(properties.getProperty("startTime", DEFAULT_START_TIME));
 		endDay = MonthDay.parse(properties.getProperty("endDay", DEFAULT_END_DAY));
 		endTime = LocalTime.parse(properties.getProperty("endTime", DEFAULT_END_TIME));
+
+		LOGGER.log(Level.INFO, "startDay: " + startDay);
+		LOGGER.log(Level.INFO, "startTime: " + startTime);
+		LOGGER.log(Level.INFO, "endDay: " + endDay);
+		LOGGER.log(Level.INFO, "endTime: " + endTime);
 	}
 
 	public MonthDay getStartDay() {
